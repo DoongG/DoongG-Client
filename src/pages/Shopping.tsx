@@ -1,6 +1,14 @@
+import ShoppingHeaderSelectBar from '../components/ShoppingHeaderSelectBar';
+import ShoppingSlide from '../components/ShoppingSlide';
+
 //shopping
 const Shopping = () => {
-    return <></>;
+    return (
+        <>
+            <ShoppingHeaderSelectBar />
+            <ShoppingSlide />
+        </>
+    );
 };
 
 export { Shopping };
