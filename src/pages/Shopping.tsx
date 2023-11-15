@@ -1,7 +1,7 @@
 import ShoppingHeaderSelectBar from "../components/ShoppingHeaderSelectBar";
 import ShoppingSlideResent from "../components/ShoppingSlideResent";
 import ShoppingSlideHot from "../components/ShoppingSlideHot";
-import useShoppingHeaderSelectBarStore from "../store/store";
+import { useShoppingHeaderSelectBarStore } from "../store/shoppingHeaderSelectBarStore";
 import ShoppingList from "../components/ShoppingList";
 
 //shopping

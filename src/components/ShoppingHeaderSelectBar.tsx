@@ -1,7 +1,7 @@
 import { useState } from "react";
 import create from "zustand";
 import styled from "styled-components";
-import useShoppingHeaderSelectBarStore from "../store/store";
+import { useShoppingHeaderSelectBarStore } from "../store/shoppingHeaderSelectBarStore";
 
 interface Props {
   isSelected: boolean;
