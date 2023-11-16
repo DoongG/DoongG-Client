@@ -1,10 +1,13 @@
 import { GalleryStyle } from "../components/GalleryStyle";
 import { ListStyle } from "../components/ListStyle";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import Carousel from "../components/Carousel";
 import G from "../assets/gallery-icon.png";
 import L from "../assets/list-icon.png";
+import { BoardStore } from "../store/storeT";
+
+import ramen from "../assets/ramen1.jpg";
 
 const _BoardHeader = styled.div`
   width: 100%;
@@ -46,6 +49,116 @@ const _galleryContainer = styled.div`
 
 const Board = () => {
   const [styleSwitch, setStyleSwitch] = useState(true);
+  const { carousel, setCarousel } = BoardStore();
+  useEffect(() => {
+    setCarousel([
+      {
+        url: ramen,
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+    ]);
+  }, []);
 
   return (
     <>
