@@ -3,10 +3,13 @@ import { BoardStore } from "../store/storeT";
 import { useEffect, useState } from "react";
 import ramen from "../assets/ramen1.jpg";
 import fox from "../assets/fox.jpg";
+import { Search } from "./Search";
 
 const _listContainer = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   width: 90%;
   height: 700px;
   background-color: #cccccc;
@@ -28,10 +31,28 @@ const _listRow = styled.table`
 
 const ListStyle = () => {
   const { listData, setListData } = BoardStore();
-  const [postNum, setPostNum] = useState();
+  const [postNum, setPostNum] = useState(10);
 
-  const pagination = () => {
-    return <></>;
+  const pagination = (num: number) => {
+    let data = [];
+    for (let i = 1; i <= num; i++) {
+      data.push(i);
+    }
+
+    return (
+      <div
+        style={{
+          margin: "10px",
+          width: "60%",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        {data.map((x) => {
+          return <span>{x}</span>;
+        })}
+      </div>
+    );
   };
 
   useEffect(() => {
@@ -202,24 +223,32 @@ const ListStyle = () => {
   }, []);
   return (
     <_listContainer>
+      <Search />
       <_listRow>
         <tr>
-          <th style={{ width: "120px" }}>번호</th>
-          <th>제목</th>
-          <th>댓글</th>
-          <th>조회수</th>
+          <th style={{ width: "100px", borderBottom: "1px solid #000" }}>
+            번호
+          </th>
+          <th style={{ borderBottom: "1px solid #000" }}>제목</th>
+          <th style={{ borderBottom: "1px solid #000" }}>조회수</th>
+          <th style={{ borderBottom: "1px solid #000" }}>추천수</th>
         </tr>
         {listData.map((x: any, index: number) => {
           return (
-            <tr>
-              <td>{index}</td>
-              <td id="title">{x.title}</td>
-              <td>{x.comments}</td>
-              <td>{x.visits}</td>
-            </tr>
+            <>
+              <tr>
+                <td style={{ borderBottom: "1px solid #000" }}>{index}</td>
+                <td style={{ borderBottom: "1px solid #000" }} id="title">
+                  {x.title} [{x.comments}]
+                </td>
+                <td style={{ borderBottom: "1px solid #000" }}>{x.visits}</td>
+                <td style={{ borderBottom: "1px solid #000" }}>{x.likes}</td>
+              </tr>
+            </>
           );
         })}
       </_listRow>
+      {pagination(postNum)}
     </_listContainer>
   );
 };
