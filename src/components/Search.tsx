@@ -19,14 +19,29 @@ const Search = () => {
         <_SearchSection>
             <_SearchBox>
                 <_InputContainer>
+                    <_SelectOptionBox>
+                        <_SelectOption value="All">전체</_SelectOption>
+                        <_SelectOption value="Title">제목</_SelectOption>
+                        <_SelectOption value="Writer">작성자</_SelectOption>
+                        <_SelectOption value="HashTag">해쉬태그</_SelectOption>
+                    </_SelectOptionBox>
                     <BiSearch style={{ marginLeft: '5px', marginRight: '5px' }} className="search_icon" size={20} />
-                    <_InputSearch placeholder="검색어를 입력해주세요" />
+                    <_InputSearch placeholder="검색어를 입력해주세요" className="input_search" />
                 </_InputContainer>
                 <_SearchButton onClick={handleSearch}>검색</_SearchButton>
             </_SearchBox>
         </_SearchSection>
     );
 };
+
+const _SelectOptionBox = styled.select`
+    text-align: center;
+    border: none;
+    outline: none;
+`;
+const _SelectOption = styled.option`
+    border: none;
+`;
 
 // 검색 전체 부분
 const _SearchSection = styled.div`
