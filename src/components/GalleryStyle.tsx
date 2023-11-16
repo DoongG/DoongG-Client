@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import styled from "styled-components";
 import { FaRegComment } from "react-icons/fa";
 import ramen from "../assets/ramen1.jpg";
 import fox from "../assets/fox.jpg";
 import eyes from "../assets/eyes.png";
+import { BoardStore } from "../store/storeT";
 
 const _cardContainer = styled.div`
   width: 90vw;
@@ -103,147 +105,150 @@ const _cardFooterSection = styled.div`
 `;
 
 const GalleryStyle = () => {
-  const tempdb = [
-    {
-      url: ramen,
-      profileImg: fox,
-      writer: "여우",
-      title:
-        "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-      comments: 12,
-      likes: 12,
-      visits: 121,
-    },
-    {
-      url: fox,
-      profileImg: fox,
-      writer: "여우",
-      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-      comments: 12,
-      likes: 12,
-      visits: 121,
-    },
-    {
-      url: ramen,
-      profileImg: fox,
-      writer: "여우",
-      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-      comments: 12,
-      likes: 12,
-      visits: 121,
-    },
-    {
-      url: ramen,
-      profileImg: fox,
-      writer: "여우",
-      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-      comments: 12,
-      likes: 12,
-      visits: 121,
-    },
-    {
-      url: ramen,
-      profileImg: fox,
-      writer: "여우",
-      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-      comments: 12,
-      likes: 12,
-      visits: 121,
-    },
-    {
-      url: ramen,
-      profileImg: fox,
-      writer: "여우",
-      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-      comments: 12,
-      likes: 12,
-      visits: 121,
-    },
-    {
-      url: ramen,
-      profileImg: fox,
-      writer: "여우",
-      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-      comments: 12,
-      likes: 12,
-      visits: 121,
-    },
-    {
-      url: ramen,
-      profileImg: fox,
-      writer: "여우",
-      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-      comments: 12,
-      likes: 12,
-      visits: 121,
-    },
-    {
-      url: ramen,
-      profileImg: fox,
-      writer: "여우",
-      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-      comments: 12,
-      likes: 12,
-      visits: 121,
-    },
-    {
-      url: ramen,
-      profileImg: fox,
-      writer: "여우",
-      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-      comments: 12,
-      likes: 12,
-      visits: 121,
-    },
-    {
-      url: ramen,
-      profileImg: fox,
-      writer: "여우",
-      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-      comments: 12,
-      likes: 12,
-      visits: 121,
-    },
-    {
-      url: ramen,
-      profileImg: fox,
-      writer: "여우",
-      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-      comments: 12,
-      likes: 12,
-      visits: 121,
-    },
-    {
-      url: ramen,
-      profileImg: fox,
-      writer: "여우",
-      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-      comments: 12,
-      likes: 12,
-      visits: 121,
-    },
-    {
-      url: ramen,
-      profileImg: fox,
-      writer: "여우",
-      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-      comments: 12,
-      likes: 12,
-      visits: 121,
-    },
-    {
-      url: ramen,
-      profileImg: fox,
-      writer: "여우",
-      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-      comments: 12,
-      likes: 12,
-      visits: 121,
-    },
-  ];
+  const { galleryData, setGalleryData } = BoardStore();
+  useEffect(() => {
+    setGalleryData([
+      {
+        url: ramen,
+        profileImg: fox,
+        writer: "여우",
+        title:
+          "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: fox,
+        profileImg: fox,
+        writer: "여우",
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        profileImg: fox,
+        writer: "여우",
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        profileImg: fox,
+        writer: "여우",
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        profileImg: fox,
+        writer: "여우",
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        profileImg: fox,
+        writer: "여우",
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        profileImg: fox,
+        writer: "여우",
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        profileImg: fox,
+        writer: "여우",
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        profileImg: fox,
+        writer: "여우",
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        profileImg: fox,
+        writer: "여우",
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        profileImg: fox,
+        writer: "여우",
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        profileImg: fox,
+        writer: "여우",
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        profileImg: fox,
+        writer: "여우",
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        profileImg: fox,
+        writer: "여우",
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+      {
+        url: ramen,
+        profileImg: fox,
+        writer: "여우",
+        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+        comments: 12,
+        likes: 12,
+        visits: 121,
+      },
+    ]);
+  }, []);
   return (
     <_cardContainer>
-      {tempdb.map((x) => {
+      {galleryData.map((x: any) => {
         return (
           <div>
             {/* <_cardLike>♥{x.likes}</_cardLike> */}

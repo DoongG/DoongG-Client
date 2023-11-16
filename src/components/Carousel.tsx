@@ -9,6 +9,7 @@ import SwiperCore, {
 import "swiper/swiper-bundle.css";
 import styled from "styled-components";
 import ramen from "../assets/ramen1.jpg";
+import { BoardStore } from "../store/storeT";
 
 const _customSwiper = styled(Swiper)`
   width: 90%;
@@ -167,6 +168,8 @@ export default function ShoppingSlide() {
       visits: 121,
     },
   ];
+
+  const { carousel, setCarousel } = BoardStore();
   return (
     <>
       <_swiperWrapper className="swiperWrppaer">
@@ -196,7 +199,7 @@ export default function ShoppingSlide() {
             },
           }}
         >
-          {tempdb.map((x) => {
+          {carousel.map((x: any) => {
             return (
               <SwiperSlide
                 style={{
