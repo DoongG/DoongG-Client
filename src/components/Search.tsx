@@ -34,11 +34,12 @@ const _SearchSection = styled.div`
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    margin-top: 100px;
+    margin-top: 10px;
 `;
 
 // 검색창 부분
 const _SearchBox = styled.div`
+    background-color: white;
     margin: 5px;
     display: flex;
     justify-content: space-between;
