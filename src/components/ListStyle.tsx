@@ -3,7 +3,8 @@ import { BoardStore } from "../store/storeT";
 import { useEffect, useState } from "react";
 import ramen from "../assets/ramen1.jpg";
 import fox from "../assets/fox.jpg";
-import { Search } from "./Search";
+import { IoMdPhotos } from "react-icons/io";
+import { BoardUpperPart } from "./BoardUpperPart";
 
 const _listContainer = styled.div`
   display: flex;
@@ -11,8 +12,8 @@ const _listContainer = styled.div`
   justify-content: center;
   align-items: center;
   width: 90%;
-  height: 700px;
-  background-color: #cccccc;
+  height: auto;
+  /* background-color: #cccccc; */
   margin: 0px 0px 20px 0px;
 `;
 
@@ -29,9 +30,18 @@ const _listRow = styled.table`
   }
 `;
 
+const _th = styled.th`
+  border-bottom: 1px solid #000;
+`;
+
+const _td = styled.td`
+  border-bottom: 1px solid #000;
+`;
+
 const ListStyle = () => {
   const { listData, setListData } = BoardStore();
-  const [postNum, setPostNum] = useState(10);
+  const [postNum, setPostNum] = useState(0);
+  const [whichOrder, setWhichOrder] = useState(false);
 
   const pagination = (num: number) => {
     let data = [];
@@ -49,200 +59,283 @@ const ListStyle = () => {
         }}
       >
         {data.map((x) => {
-          return <span>{x}</span>;
+          return (
+            <span
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                generatePage(x);
+              }}
+            >
+              {x}
+            </span>
+          );
         })}
       </div>
     );
   };
 
+  const sampledb = [
+    {
+      id: 1,
+      url: ramen,
+      profileImg: fox,
+      writer: "여우",
+      title:
+        "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      id: 2,
+      url: fox,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+  ];
+
+  const generatePage = (e: number) => {
+    let addArr: any = [];
+    for (let i = 16 * (e - 1); i < 16 * e; i++) {
+      if (sampledb[i]) {
+        addArr.push(sampledb[i]);
+      }
+    }
+    setListData(addArr);
+  };
+
   useEffect(() => {
-    setListData([
-      {
-        id: 1,
-        url: ramen,
-        profileImg: fox,
-        writer: "여우",
-        title:
-          "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-      {
-        id: 2,
-        url: fox,
-        profileImg: fox,
-        writer: "여우",
-        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-      {
-        id: 2,
-        url: fox,
-        profileImg: fox,
-        writer: "여우",
-        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-      {
-        id: 2,
-        url: fox,
-        profileImg: fox,
-        writer: "여우",
-        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-      {
-        id: 2,
-        url: fox,
-        profileImg: fox,
-        writer: "여우",
-        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-      {
-        id: 2,
-        url: fox,
-        profileImg: fox,
-        writer: "여우",
-        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-      {
-        id: 2,
-        url: fox,
-        profileImg: fox,
-        writer: "여우",
-        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-      {
-        id: 2,
-        url: fox,
-        profileImg: fox,
-        writer: "여우",
-        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-      {
-        id: 2,
-        url: fox,
-        profileImg: fox,
-        writer: "여우",
-        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-      {
-        id: 2,
-        url: fox,
-        profileImg: fox,
-        writer: "여우",
-        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-      {
-        id: 2,
-        url: fox,
-        profileImg: fox,
-        writer: "여우",
-        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-      {
-        id: 2,
-        url: fox,
-        profileImg: fox,
-        writer: "여우",
-        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-      {
-        id: 2,
-        url: fox,
-        profileImg: fox,
-        writer: "여우",
-        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-      {
-        id: 2,
-        url: fox,
-        profileImg: fox,
-        writer: "여우",
-        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-      {
-        id: 2,
-        url: fox,
-        profileImg: fox,
-        writer: "여우",
-        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-      {
-        id: 2,
-        url: fox,
-        profileImg: fox,
-        writer: "여우",
-        title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
-        comments: 12,
-        likes: 12,
-        visits: 121,
-      },
-    ]);
-    // setPostNum()
+    generatePage(1);
+    setPostNum(10); // 여기에 숫자받은거 계산하는 로직짜기
   }, []);
+
   return (
     <_listContainer>
-      <Search />
+      <BoardUpperPart />
       <_listRow>
         <tr>
-          <th style={{ width: "100px", borderBottom: "1px solid #000" }}>
-            번호
-          </th>
-          <th style={{ borderBottom: "1px solid #000" }}>제목</th>
-          <th style={{ borderBottom: "1px solid #000" }}>조회수</th>
-          <th style={{ borderBottom: "1px solid #000" }}>추천수</th>
+          <_th style={{ width: "100px" }}>번호</_th>
+          <_th>제목</_th>
+          <_th>조회수</_th>
+          <_th>추천수</_th>
         </tr>
         {listData.map((x: any, index: number) => {
           return (
             <>
               <tr>
-                <td style={{ borderBottom: "1px solid #000" }}>{index}</td>
-                <td style={{ borderBottom: "1px solid #000" }} id="title">
+                <_td>{index}</_td>
+                <_td id="title">
+                  <span style={{ color: "orange" }}>
+                    {x.url && <IoMdPhotos />}
+                  </span>{" "}
                   {x.title} [{x.comments}]
-                </td>
-                <td style={{ borderBottom: "1px solid #000" }}>{x.visits}</td>
-                <td style={{ borderBottom: "1px solid #000" }}>{x.likes}</td>
+                </_td>
+                <_td>{x.visits}</_td>
+                <_td>{x.likes}</_td>
               </tr>
             </>
           );

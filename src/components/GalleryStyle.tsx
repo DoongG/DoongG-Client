@@ -7,12 +7,21 @@ import eyes from "../assets/eyes.png";
 import { BoardStore } from "../store/storeT";
 import axios from "axios";
 import { useInView } from "react-intersection-observer";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { BoardUpperPart } from "./BoardUpperPart";
 
-const _allArea = styled.div``;
+const _allArea = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`;
 
 const _cardContainer = styled.div`
-  width: 90vw;
+  width: 95vw;
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
 `;
 
@@ -68,8 +77,9 @@ const _cardTitle = styled.p`
 
 const _cardLike = styled.div`
   position: absolute;
-  margin-top: -200px;
-  margin-left: 100px;
+  margin-top: 15px;
+  margin-left: -200px;
+  text-align: start;
   font-size: 25px;
   color: red;
 `;
@@ -112,6 +122,7 @@ const GalleryStyle = () => {
   const [reference, inView] = useInView();
   const [loadedData, setLoadedData] = useState<any>([]);
   const [getCount, setGetCount] = useState(0);
+  const [stop, setStop] = useState(false);
   const sampledb = [
     {
       url: ramen,
@@ -360,11 +371,19 @@ const GalleryStyle = () => {
   ];
   const dataGenerate = () => {
     let addArr: any = [];
+    let tempStop = stop;
     for (let i = 12 * getCount; i < 12 * (getCount + 1); i++) {
       if (sampledb[i]) {
         addArr.push(sampledb[i]);
+      } else {
+        if (tempStop == false) {
+          addArr.push({ status: "dummy" });
+          tempStop = true;
+          setStop(true);
+        }
       }
     }
+    console.log(addArr);
     setLoadedData((prevState: any) => prevState.concat(addArr));
     setGetCount((prevState: any) => prevState + 1);
   };
@@ -377,12 +396,16 @@ const GalleryStyle = () => {
 
   return (
     <_allArea>
+      <BoardUpperPart></BoardUpperPart>
       <_cardContainer>
         {loadedData?.map((x: any) => {
-          return (
+          return !x.status ? (
             <div>
-              {/* <_cardLike>♥{x.likes}</_cardLike> */}
               <_cardBox>
+                <_cardLike>
+                  <FontAwesomeIcon icon={faHeart} />
+                  {x.likes}
+                </_cardLike>
                 <_cardDisplay>
                   <_card id="img" src={x.url} />
                 </_cardDisplay>
@@ -400,7 +423,6 @@ const GalleryStyle = () => {
                     <img style={{ width: "15px" }} src={eyes}></img>
                     {x.visits}
                   </_cardFooterSection>
-
                   <_cardFooterSection>
                     <FaRegComment
                       style={{ fontSize: "12px", marginTop: "5px" }}
@@ -410,10 +432,21 @@ const GalleryStyle = () => {
                 </_cardFooter>
               </_cardBox>
             </div>
+          ) : (
+            <div
+              style={{ width: "300px", height: "320px", margin: "20px" }}
+            ></div>
           );
         })}
       </_cardContainer>
-      <div ref={reference}>더보기</div>
+      <div
+        ref={reference}
+        onClick={() => {
+          console.log(loadedData);
+        }}
+      >
+        더보기
+      </div>
     </_allArea>
   );
 };

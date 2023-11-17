@@ -6,10 +6,15 @@ import Carousel from "../components/Carousel";
 import G from "../assets/gallery-icon.png";
 import L from "../assets/list-icon.png";
 import { BoardStore } from "../store/storeT";
+import { PostModal } from "../components/PostModal";
 
 import ramen from "../assets/ramen1.jpg";
 
-const _BoardHeader = styled.div`
+const _boardArea = styled.div`
+  width: 100%;
+`;
+
+const _boardHeader = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
@@ -19,10 +24,6 @@ const _innerBoardHeader = styled.div`
   width: 75%;
   display: flex;
   justify-content: space-between;
-`;
-
-const _BoardSlide = styled.div`
-  width: 90vw;
 `;
 
 const _switchButton = styled.button`
@@ -49,7 +50,7 @@ const _galleryContainer = styled.div`
 
 const Board = () => {
   const [styleSwitch, setStyleSwitch] = useState(true);
-  const { carousel, setCarousel } = BoardStore();
+  const { setCarousel, postModalOn } = BoardStore();
   useEffect(() => {
     setCarousel([
       {
@@ -161,8 +162,9 @@ const Board = () => {
   }, []);
 
   return (
-    <>
-      <_BoardHeader>
+    <_boardArea>
+      {postModalOn && <PostModal />}
+      <_boardHeader>
         <_innerBoardHeader>
           <h1>라면 게시판</h1>
           <div style={{ display: "flex", flexDirection: "row" }}>
@@ -182,12 +184,12 @@ const Board = () => {
             </_switchButton>
           </div>
         </_innerBoardHeader>
-      </_BoardHeader>
+      </_boardHeader>
       <Carousel />
       <_galleryContainer>
         {styleSwitch ? <GalleryStyle></GalleryStyle> : <ListStyle></ListStyle>}
       </_galleryContainer>
-    </>
+    </_boardArea>
   );
 };
 
