@@ -28,12 +28,6 @@ const _Error = styled.div`
         border-width: 11px;
         margin-left: -20px;
     }
-
-    /* 추가된 부분: fade-out 클래스가 적용될 때 가시성이 서서히 사라지도록 설정 */
-    &.fade-out {
-        visibility: hidden;
-        transition: visibility 1s ease-in-out;
-    }
 `;
 const SearchComponent: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -68,7 +62,7 @@ const SearchComponent: React.FC = () => {
             <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="검색어를 입력하세요" />
             <button onClick={handleSearch}>검색</button>
 
-            {showWarning && <_Error className="fade-out">검색어를 입력하세요!</_Error>}
+            {showWarning && <_Error>검색어를 입력하세요!</_Error>}
         </div>
     );
 };
