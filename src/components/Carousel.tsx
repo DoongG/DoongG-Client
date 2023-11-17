@@ -10,6 +10,8 @@ import "swiper/swiper-bundle.css";
 import styled from "styled-components";
 import ramen from "../assets/ramen1.jpg";
 import { BoardStore } from "../store/storeT";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
 
 const _customSwiper = styled(Swiper)`
   width: 90%;
@@ -35,6 +37,14 @@ const _swiperWrapper = styled.div`
   }
 `;
 
+const _cusomSwiperSlide = styled(SwiperSlide)`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
 const _card = styled.img`
   border-radius: 20px;
   width: 150px;
@@ -53,8 +63,8 @@ const _cardTitle = styled.p`
 
 const _cardLike = styled.div`
   position: absolute;
-  margin-top: -200px;
-  margin-left: -100px;
+  margin-top: -180px;
+  margin-left: -80px;
   font-size: 25px;
   color: red;
 `;
@@ -172,7 +182,7 @@ export default function ShoppingSlide() {
   const { carousel, setCarousel } = BoardStore();
   return (
     <>
-      <_swiperWrapper className="swiperWrppaer">
+      <_swiperWrapper>
         <_customSwiper
           modules={[Navigation, Pagination]}
           //   spaceBetween={5}
@@ -201,19 +211,14 @@ export default function ShoppingSlide() {
         >
           {carousel.map((x: any) => {
             return (
-              <SwiperSlide
-                style={{
-                  position: "relative",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <_cardLike>♥{x.likes}</_cardLike>
+              <_cusomSwiperSlide>
+                <_cardLike>
+                  <FontAwesomeIcon icon={faHeart} />
+                  {x.likes}
+                </_cardLike>
                 <_card src={x.url} />
                 <_cardTitle>{x.title}</_cardTitle>
-              </SwiperSlide>
+              </_cusomSwiperSlide>
             );
           })}
         </_customSwiper>
