@@ -61,7 +61,7 @@ const Search = () => {
         width: 100%;
         height: 20px;
         border: 2px solid #daddb1;
-        border-radius: 4px;
+        border-radius: 10px;
         background-color: #daddb1;
         margin-top: 3px;
 
@@ -70,7 +70,7 @@ const Search = () => {
             cursor: pointer;
             margin-left: 4px;
             &:hover {
-                color: red; // Optional: Change color on hover
+                color: red;
             }
         }
     `;
@@ -172,7 +172,7 @@ const Search = () => {
                                     })
                                 )}
                             </_HashTagBoxesContainer>
-                            <_InputHashTag value={inputHashTag} onChange={changeHashTagInput} onKeyUp={addHashTag} onKeyDown={keyDownHandler} placeholder="#해시태그를 등록해보세요. (최대 10개)" className="hashTagInput" />
+                            <_InputHashTag value={inputHashTag} onChange={changeHashTagInput} onKeyUp={addHashTag} onKeyDown={keyDownHandler} placeholder="#해시태그(최대 10개) 스페이스바 또는 ,(콤마)로 입력 가능합니다" className="hashTagInput" />
                         </_HashSection>
                     ) : (
                         <_InputSearch placeholder="검색어를 입력해주세요" className="input_search" />
