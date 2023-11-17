@@ -1,6 +1,7 @@
+import React from 'react';
 import { useState } from 'react';
-import { BiSearch } from 'react-icons/bi';
 import styled from 'styled-components';
+import { IoIosClose } from 'react-icons/io';
 
 const Search = () => {
     const [selectedOption, setSelectedOption] = useState('All');
@@ -20,6 +21,12 @@ const Search = () => {
         }
     };
 
+    // 해시태그 지우기
+    const removeHashTag = (removedTag: string) => {
+        setHashTags((prevHashTags) => prevHashTags.filter((tag) => tag !== removedTag));
+        setHashTagBoxes((prevBoxes) => prevBoxes.filter((box) => box.key !== removedTag));
+    };
+
     // 해시태그 선택
     const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedOption(event.target.value);
@@ -31,8 +38,45 @@ const Search = () => {
         }
     };
 
+    const IoIosCloseStyled = styled(IoIosClose)`
+        cursor: pointer;
+        margin-left: 4px;
+        &:hover {
+            color: red; // Optional: Change color on hover
+        }
+    `;
+
+    const HashTagBox = styled.div`
+        @font-face {
+            font-family: 'omyu_pretty';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+        font-family: 'omyu_pretty';
+        display: flex;
+        padding: 0 0 0 2px;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 20px;
+        border: 2px solid #daddb1;
+        border-radius: 4px;
+        background-color: #daddb1;
+        margin-top: 3px;
+
+        // Add this part to include the close icon with onClick event
+        > ${IoIosCloseStyled} {
+            cursor: pointer;
+            margin-left: 4px;
+            &:hover {
+                color: red; // Optional: Change color on hover
+            }
+        }
+    `;
+
     // 해시태그 입력 제한 개수
-    const maxHashTagCount = 8;
+    const maxHashTagCount = 10;
 
     // 해시태그 입력
     const addHashTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -76,7 +120,10 @@ const Search = () => {
             // 새로운 해시태그가 추가될 때마다 네모칸 생성
             const newHashTagBoxes = (
                 <HashTagBoxContainer key={newHashTag}>
-                    <HashTagBox>#{newHashTag}</HashTagBox>
+                    <HashTagBox>
+                        #{newHashTag}
+                        <IoIosClose />
+                    </HashTagBox>
                 </HashTagBoxContainer>
             );
 
@@ -107,7 +154,6 @@ const Search = () => {
 
     return (
         <_SearchSection>
-            <_HashTagBoxesContainer>{hashTagBoxes}</_HashTagBoxesContainer>
             <_SearchBox>
                 <_InputContainer>
                     <_SelectOptionBox value={selectedOption} onChange={handleSelectChange}>
@@ -117,9 +163,17 @@ const Search = () => {
                         <_SelectOption value="HashTag">해쉬태그</_SelectOption>
                     </_SelectOptionBox>
                     {selectedOption === 'HashTag' ? (
-                        <>
+                        <_HashSection>
+                            <_HashTagBoxesContainer>
+                                {hashTagBoxes.map((box) =>
+                                    // Add onClick event to the IoIosClose component
+                                    React.cloneElement(box, {
+                                        onClick: () => box.key && removeHashTag(box.key),
+                                    })
+                                )}
+                            </_HashTagBoxesContainer>
                             <_InputHashTag value={inputHashTag} onChange={changeHashTagInput} onKeyUp={addHashTag} onKeyDown={keyDownHandler} placeholder="#해시태그를 등록해보세요. (최대 10개)" className="hashTagInput" />
-                        </>
+                        </_HashSection>
                     ) : (
                         <_InputSearch placeholder="검색어를 입력해주세요" className="input_search" />
                     )}
@@ -129,6 +183,11 @@ const Search = () => {
         </_SearchSection>
     );
 };
+
+const _HashSection = styled.div`
+    margin-top: -5px;
+    width: 100%;
+`;
 
 const _SelectOptionBox = styled.select`
     text-align: center;
@@ -143,9 +202,9 @@ const _SelectOption = styled.option`
 const _SearchSection = styled.div`
     width: 100%;
     display: flex;
-    flex-direction: column; /* 수정된 부분: 세로로 정렬 */
+    flex-direction: column;
     justify-content: center;
-    align-items: center; /* 가로 중앙 정렬 */
+    align-items: center;
     margin-top: 10px;
 `;
 
@@ -178,6 +237,13 @@ const _InputSearch = styled.input`
 `;
 
 const _InputHashTag = styled.input`
+    @font-face {
+        font-family: 'omyu_pretty';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'omyu_pretty';
     width: 100%;
     padding: 10px;
     border: none;
@@ -186,25 +252,22 @@ const _InputHashTag = styled.input`
     }
 `;
 
-const _HashTagBoxesContainer = styled.div`
+const HashTagBoxesContainer = styled.div`
     display: flex;
-    margin-top: 10px;
+    flex-wrap: wrap;
+    padding-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5pxx;
+`;
+
+const _HashTagBoxesContainer = styled(HashTagBoxesContainer)`
+    max-height: 54px;
+    overflow-y: auto;
 `;
 
 const HashTagBoxContainer = styled.div`
     display: flex;
     margin-right: 4px;
-`;
-
-const HashTagBox = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%; /* 해시태그 네모칸의 너비 조절 */
-    height: 24px;
-    border: 2px solid #daddb1;
-    border-radius: 4px;
-    background-color: #daddb1;
 `;
 
 // 검색 버튼
