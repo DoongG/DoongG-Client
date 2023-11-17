@@ -1,10 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { FaRegComment } from "react-icons/fa";
 import ramen from "../assets/ramen1.jpg";
 import fox from "../assets/fox.jpg";
 import eyes from "../assets/eyes.png";
 import { BoardStore } from "../store/storeT";
+import axios from "axios";
+import { useInView } from "react-intersection-observer";
+
+const _allArea = styled.div``;
 
 const _cardContainer = styled.div`
   width: 90vw;
@@ -105,7 +109,9 @@ const _cardFooterSection = styled.div`
 `;
 
 const GalleryStyle = () => {
-  const { galleryData, setGalleryData } = BoardStore();
+  const [reference, inView] = useInView();
+  const [loadedData, setLoadedData] = useState<any>([]);
+  const [getCount, setGetCount] = useState(0);
   const sampledb = [
     {
       url: ramen,
@@ -288,47 +294,127 @@ const GalleryStyle = () => {
       likes: 12,
       visits: 121,
     },
+    {
+      url: ramen,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      url: ramen,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      url: ramen,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      url: ramen,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      url: ramen,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      url: ramen,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
+    {
+      url: ramen,
+      profileImg: fox,
+      writer: "여우",
+      title: "미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로",
+      comments: 12,
+      likes: 12,
+      visits: 121,
+    },
   ];
-  useEffect(() => {
-    // setGalleryData();
-  }, []);
-  return (
-    <_cardContainer>
-      {galleryData.map((x: any) => {
-        return (
-          <div>
-            {/* <_cardLike>♥{x.likes}</_cardLike> */}
-            <_cardBox>
-              <_cardDisplay>
-                <_card id="img" src={x.url} />
-              </_cardDisplay>
-              <_cardInst>
-                <_cardLeft>
-                  <_cardProfileImg src={x.profileImg}></_cardProfileImg>
-                </_cardLeft>
-                <_cardRight>
-                  <_cardTitle id="title">{x.title}</_cardTitle>
-                  <_cardWriter>{x.writer}</_cardWriter>
-                </_cardRight>
-              </_cardInst>
-              <_cardFooter>
-                <_cardFooterSection>
-                  <img style={{ width: "15px" }} src={eyes}></img>
-                  {x.visits}
-                </_cardFooterSection>
+  const dataGenerate = () => {
+    let addArr: any = [];
+    for (let i = 12 * getCount; i < 12 * (getCount + 1); i++) {
+      if (sampledb[i]) {
+        addArr.push(sampledb[i]);
+      }
+    }
+    setLoadedData((prevState: any) => prevState.concat(addArr));
+    setGetCount((prevState: any) => prevState + 1);
+  };
 
-                <_cardFooterSection>
-                  <FaRegComment
-                    style={{ fontSize: "12px", marginTop: "5px" }}
-                  />
-                  {x.comments}
-                </_cardFooterSection>
-              </_cardFooter>
-            </_cardBox>
-          </div>
-        );
-      })}
-    </_cardContainer>
+  useEffect(() => {
+    if (inView) {
+      dataGenerate();
+    }
+  }, [inView]);
+
+  return (
+    <_allArea>
+      <_cardContainer>
+        {loadedData?.map((x: any) => {
+          return (
+            <div>
+              {/* <_cardLike>♥{x.likes}</_cardLike> */}
+              <_cardBox>
+                <_cardDisplay>
+                  <_card id="img" src={x.url} />
+                </_cardDisplay>
+                <_cardInst>
+                  <_cardLeft>
+                    <_cardProfileImg src={x.profileImg}></_cardProfileImg>
+                  </_cardLeft>
+                  <_cardRight>
+                    <_cardTitle id="title">{x.title}</_cardTitle>
+                    <_cardWriter>{x.writer}</_cardWriter>
+                  </_cardRight>
+                </_cardInst>
+                <_cardFooter>
+                  <_cardFooterSection>
+                    <img style={{ width: "15px" }} src={eyes}></img>
+                    {x.visits}
+                  </_cardFooterSection>
+
+                  <_cardFooterSection>
+                    <FaRegComment
+                      style={{ fontSize: "12px", marginTop: "5px" }}
+                    />
+                    {x.comments}
+                  </_cardFooterSection>
+                </_cardFooter>
+              </_cardBox>
+            </div>
+          );
+        })}
+      </_cardContainer>
+      <div ref={reference}>더보기</div>
+    </_allArea>
   );
 };
 
