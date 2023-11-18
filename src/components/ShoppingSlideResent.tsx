@@ -69,6 +69,8 @@ const _customFontAwesome = styled(FontAwesomeIcon)`
 const _swiperWrapper = styled.div`
   padding: 20px 80px 32px;
   position: relative;
+  background-color: white;
+
   .swiper-wrapper {
     transition-timing-function: linear !important;
     transition-duration: 500ms !important;

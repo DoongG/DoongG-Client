@@ -8,6 +8,7 @@ interface Props {
 }
 
 const _selectWrapperBox = styled.div`
+  background-color: white;
   display: flex;
   padding: 40px;
 `;
