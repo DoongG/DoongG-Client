@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { IoIosClose } from 'react-icons/io';
@@ -9,17 +9,51 @@ const Search = () => {
     const [hashTags, setHashTags] = useState<string[]>([]);
     const [hashTagBoxes, setHashTagBoxes] = useState<JSX.Element[]>([]);
 
+    const [showEmptySearchBalloon, setShowEmptySearchBalloon] = useState(false);
+
+    useEffect(() => {
+        let timeoutId: NodeJS.Timeout;
+
+        if (showEmptySearchBalloon) {
+            timeoutId = setTimeout(() => {
+                setShowEmptySearchBalloon(false);
+            }, 4000);
+        }
+
+        return () => clearTimeout(timeoutId);
+    }, [showEmptySearchBalloon]);
+
     const handleSearch = () => {
         const inputElement = document.querySelector('.input_search');
         if (inputElement) {
             const inputValue = (inputElement as HTMLInputElement).value;
             if (inputValue === '') {
-                alert('검색어를 입력해 주세요!!');
+                setShowEmptySearchBalloon(true);
             } else {
                 alert('검색어 : ' + inputValue);
             }
         }
     };
+    const EmptySearchBalloon = styled.div`
+        position: absolute;
+        background-color: #ffe066;
+        color: #333;
+        padding: 8px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        animation: fadeOut 5s linear;
+        top: -30px;
+        right: 140px;
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+    `;
 
     // 해시태그 지우기
     const removeHashTag = (removedTag: string) => {
@@ -31,7 +65,7 @@ const Search = () => {
     const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedOption(event.target.value);
 
-        // 선택된 옵션이 해시태그가 아닌 경우 해시태그 관련 상태 초기화
+        // 초기화
         if (event.target.value !== 'HashTag') {
             setHashTags([]);
             setHashTagBoxes([]);
@@ -179,6 +213,7 @@ const Search = () => {
                     )}
                 </_InputContainer>
                 <_SearchButton onClick={handleSearch}>검색</_SearchButton>
+                {showEmptySearchBalloon && <EmptySearchBalloon>검색어를 입력해 주세요!!</EmptySearchBalloon>}
             </_SearchBox>
         </_SearchSection>
     );
