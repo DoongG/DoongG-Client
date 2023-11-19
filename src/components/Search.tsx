@@ -30,7 +30,7 @@ const Search = () => {
             if (inputValue === '') {
                 setShowEmptySearchBalloon(true);
             } else {
-                alert('검색어 : ' + inputValue);
+                // 성공시 로직 작성
             }
         }
     };
