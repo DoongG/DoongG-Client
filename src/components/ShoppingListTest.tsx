@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 import shopping1 from "../assets/shopping1.jpg";
 import shopping2 from "../assets/shopping2.jpg";
@@ -7,20 +8,13 @@ import shopping4 from "../assets/shopping4.jpg";
 import shopping5 from "../assets/shopping5.jpg";
 import listbar from "../assets/listbar.png";
 import React, { useState, useRef } from "react";
-import { createGlobalStyle } from "styled-components";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
-const GlobalStyle = createGlobalStyle`
-  html, body, #root {
-    height: 100vh;
-    margin: 0;
-  }
-`;
-
 const tempdb = [
   {
-    title: "부침개 논라 종결 해물파전/김치전 반반ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ",
+    title: "사막 여우",
     realCost: 10000,
     discountCost: 8600,
     likes: 12,
@@ -292,6 +286,13 @@ const _productDivWrapper = styled.div`
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
+  a {
+    width: 95%;
+    display: flex;
+    text-decoration: none;
+    color: black;
+    justify-content: center;
+  }
 `;
 const _productDiv = styled.div`
   width: 95%;
@@ -426,15 +427,6 @@ export default function ShoppingListTest() {
   const listWrapper = useRef<HTMLDivElement>(null);
   const imgBar = useRef<HTMLImageElement>(null);
 
-  const calculateBottomValue = (itemCount: number) => {
-    // 여기에서 필터링된 아이템 수를 기반으로 높이를 계산합니다.
-    const itemHeight = 350; // 각 아이템의 높이
-    const margin = 150; // 여백 등 추가
-    const calculatedHeight = Math.floor(itemCount / 4) * itemHeight + margin;
-
-    return calculatedHeight;
-  };
-
   // 현재 ImgBar의 슬라이드 상황
   // True : translateY(0%) -> translateY(40%)
   // false : translateY(40%) -> translateY(0%)
@@ -448,12 +440,12 @@ export default function ShoppingListTest() {
     if (shouldAnimate === false && imgBar.current && categoryDiv.current && listWrapper.current) {
       imgBar.current.style.animation = "slideUp 1s linear 1 forwards ";
       categoryDiv.current.style.animation = "listDown 1s linear 1 forwards ";
-
+      const calculatedHeight = categoryDiv.current.offsetHeight;
+      setDivHeigth(calculatedHeight);
+      console.log(calculatedHeight);
       // scrollIntoView가 작동하는 시간
       setTimeout(() => {
         if (listWrapper.current) {
-          const calculatedHeight = calculateBottomValue(filteredItems.length);
-          setDivHeigth(calculatedHeight);
           listWrapper.current.scrollIntoView({ behavior: "smooth" });
           setShouldAnimate(true);
         }
@@ -478,7 +470,6 @@ export default function ShoppingListTest() {
 
   return (
     <>
-      <GlobalStyle />
       <_listWrapper className="listWrapper" ref={listWrapper}>
         <_categoryBar className="categoryBar">
           <_ul>
@@ -504,21 +495,24 @@ export default function ShoppingListTest() {
               return (
                 <>
                   <_productDivWrapper className="productDivWrapper">
-                    <_productDiv className="productDiv">
-                      <_imgDiv className="imgDiv">
-                        <_img src={item.img}></_img>
-                      </_imgDiv>
-                      <_infosDiv className="infosDiv">
-                        <_title className="title">{item.title}</_title>
-                        <_price className="price">
-                          <_per className="per">14%</_per>
-                          <_priceDiv>
-                            <_initPriceDiv className="beforePrice">{item.realCost}</_initPriceDiv>
-                            <_realPriceDiv className="afterPrice">{item.discountCost}</_realPriceDiv>
-                          </_priceDiv>
-                        </_price>
-                      </_infosDiv>
-                    </_productDiv>
+                    {/* encodeURLComponent로 주소 중간에 "/"가 있는것을 알아서 피해감 */}
+                    <Link to={`/shopping/${item.category}/${encodeURIComponent(item.title)}`}>
+                      <_productDiv className="productDiv">
+                        <_imgDiv className="imgDiv">
+                          <_img src={item.img}></_img>
+                        </_imgDiv>
+                        <_infosDiv className="infosDiv">
+                          <_title className="title">{item.title}</_title>
+                          <_price className="price">
+                            <_per className="per">14%</_per>
+                            <_priceDiv>
+                              <_initPriceDiv className="beforePrice">{item.realCost}</_initPriceDiv>
+                              <_realPriceDiv className="afterPrice">{item.discountCost}</_realPriceDiv>
+                            </_priceDiv>
+                          </_price>
+                        </_infosDiv>
+                      </_productDiv>
+                    </Link>
                   </_productDivWrapper>
                 </>
               );
