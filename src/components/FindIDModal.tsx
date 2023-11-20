@@ -2,12 +2,16 @@ import React, { ChangeEvent, PropsWithChildren, useState } from 'react';
 import styled from 'styled-components';
 import { AiOutlineClose } from 'react-icons/ai';
 import { User, UserData } from './data/User';
+import axios from 'axios';
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
 }
 
-function FindIDModal({ onClickToggleModal, children }: PropsWithChildren<ModalDefaultType>) {
+function FindIDModal({
+    onClickToggleModal,
+    children,
+}: PropsWithChildren<ModalDefaultType>) {
     const [isModalOpen, setModalOpen] = useState(true);
     const [nickname, setNickname] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -19,7 +23,10 @@ function FindIDModal({ onClickToggleModal, children }: PropsWithChildren<ModalDe
         if (phoneNumber.length >= 4 && phoneNumber.length <= 7) {
             return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3)}`;
         } else if (phoneNumber.length >= 8 && phoneNumber.length <= 11) {
-            return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 7)}-${phoneNumber.slice(7)}`;
+            return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(
+                3,
+                7,
+            )}-${phoneNumber.slice(7)}`;
         } else {
             return phoneNumber;
         }
@@ -43,7 +50,11 @@ function FindIDModal({ onClickToggleModal, children }: PropsWithChildren<ModalDe
 
     // 아이디 찾기
     const handleFindID = () => {
-        const user = UserData.find((u) => u.nickname === nickname && u.phone_number === formattedPhoneNumber.replace(/-/g, ''));
+        const user = UserData.find(
+            (u) =>
+                u.nickname === nickname &&
+                u.phone_number === formattedPhoneNumber.replace(/-/g, ''),
+        );
 
         if (user) {
             const maskedEmail = maskEmail(user.email);
@@ -54,10 +65,40 @@ function FindIDModal({ onClickToggleModal, children }: PropsWithChildren<ModalDe
 
         setFindIDClicked(true);
     };
+
+    // 백엔드 합칠때 코드
+    // const handleFindID = async () => {
+    //     try {
+    //         // API 요청을 보내고 응답을 받아옴
+    //         const response = await axios.post('/your-api-endpoint', {
+    //             nickname: nickname,
+    //             phoneNumber: formattedPhoneNumber.replace(/-/g, ''),
+    //         });
+
+    //         // 응답 데이터에서 이메일을 가져옴
+    //         const userEmail = response.data;
+
+    //         if (userEmail && userEmail !== 'false') {
+    //             // 이메일이 존재하면 결과를 표시
+    //             const maskedEmail = maskEmail(userEmail);
+    //             setFoundEmail(maskedEmail);
+    //         } else {
+    //             // 이메일이 존재하지 않으면 결과를 표시
+    //             setFoundEmail(null);
+    //         }
+
+    //         setFindIDClicked(true);
+    //     } catch (error) {
+    //         console.error('Error while fetching user information:', error);
+    //         // 에러 발생 시 예외처리
+    //     }
+    // };
+
     // 이메일 가리기
     const maskEmail = (email: string): string => {
         const [username, domain] = email.split('@');
-        const maskedUsername = username.substring(0, 3) + '*'.repeat(username.length - 3);
+        const maskedUsername =
+            username.substring(0, 3) + '*'.repeat(username.length - 3);
         return `${maskedUsername}@${domain}`;
     };
 
@@ -70,10 +111,23 @@ function FindIDModal({ onClickToggleModal, children }: PropsWithChildren<ModalDe
                 <_Title>아이디 찾기</_Title>
                 <_FindIDForm>
                     <_FormTitle>닉네임</_FormTitle>
-                    <_FormInput type="text" placeholder="닉네임을 입력해주세요." value={nickname} onChange={(e) => setNickname(e.target.value)} />
+                    <_FormInput
+                        type="text"
+                        placeholder="닉네임을 입력해주세요."
+                        value={nickname}
+                        onChange={(e) => setNickname(e.target.value)}
+                        disabled={isFindIDClicked && foundEmail !== null}
+                    />
                     <_FormTitle>전화번호</_FormTitle>
-                    <_PhoneNumInput placeholder="(예시) 01000000000" value={formattedPhoneNumber} onChange={handlePhoneNumChange} />
-                    <_FindIDButton onClick={handleFindID}>아이디 찾기</_FindIDButton>
+                    <_PhoneNumInput
+                        placeholder="(예시) 01000000000"
+                        value={formattedPhoneNumber}
+                        onChange={handlePhoneNumChange}
+                        disabled={isFindIDClicked && foundEmail !== null}
+                    />
+                    <_FindIDButton onClick={handleFindID}>
+                        아이디 찾기
+                    </_FindIDButton>
                 </_FindIDForm>
                 <_Line />
                 {/* 결과를 표시하는 부분 */}
@@ -116,7 +170,8 @@ const _ModalClose = styled.div`
 const _Title = styled.div`
     @font-face {
         font-family: 'MBC1961GulimM';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/MBC1961GulimM.woff2') format('woff2');
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/MBC1961GulimM.woff2')
+            format('woff2');
         font-weight: normal;
         font-style: normal;
     }
