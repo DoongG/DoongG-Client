@@ -1,10 +1,11 @@
 import React, { PropsWithChildren, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { AiOutlineClose } from 'react-icons/ai';
-import Kakao from '../assets/Kakao.png';
+import KakaoImg from '../assets/Kakao.png';
 import Google from '../assets/Google.png';
 import { SignUpModal } from './SignUpModal';
 import { User, UserData } from './data/User';
+import { FindIDModal } from './FindIDModal';
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
@@ -13,7 +14,8 @@ interface ModalDefaultType {
 function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>) {
     // 모달 열려 있나 없나 확인 스테이트
     const [isModalOpen, setModalOpen] = useState(true);
-    const [isOpenModal, setOpemModal] = useState<Boolean>(false);
+    const [isSignUpModalOpen, setSignUpModalOpen] = useState(false);
+    const [isFindIDModalOpen, setFindIDModalOpen] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loginError, setLoginError] = useState<string | null>(null);
@@ -27,9 +29,13 @@ function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>)
         }
     };
 
-    const onClickToggleSignUp = useCallback(() => {
-        setOpemModal(!isOpenModal);
-    }, [isOpenModal]);
+    const toggleSignUpModal = () => {
+        setSignUpModalOpen(!isSignUpModalOpen);
+    };
+
+    const toggleFindIDModal = () => {
+        setFindIDModalOpen(!isFindIDModalOpen);
+    };
 
     // 로그인 로직
     const handleLogin = () => {
@@ -43,6 +49,7 @@ function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>)
             setLoginError('이메일 또는 비밀번호가 올바르지 않습니다.');
         }
     };
+
     // 엔터 눌러도 로그인 되는 로직
     const handleOnKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
@@ -75,16 +82,17 @@ function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>)
                     <_LoginButton onClick={handleLogin}>로그인</_LoginButton>
                 </_LoginForm>
                 <_GoSignUp>
-                    <_GoSignUpText>아이디 찾기</_GoSignUpText>
+                    {isFindIDModalOpen && <FindIDModal onClickToggleModal={toggleFindIDModal}>Modal</FindIDModal>}
+                    <_GoSignUpText onClick={toggleFindIDModal}>아이디 찾기</_GoSignUpText>
                     <_GoSignUpText>|</_GoSignUpText>
                     <_GoSignUpText>비밀번호 찾기</_GoSignUpText>
                     <_GoSignUpText>|</_GoSignUpText>
-                    {isOpenModal && <SignUpModal onClickToggleModal={onClickToggleSignUp}>Modal</SignUpModal>}
-                    <_GoSignUpText onClick={onClickToggleSignUp}>회원가입</_GoSignUpText>
+                    {isSignUpModalOpen && <SignUpModal onClickToggleModal={toggleSignUpModal}>Modal</SignUpModal>}
+                    <_GoSignUpText onClick={toggleSignUpModal}>회원가입</_GoSignUpText>
                 </_GoSignUp>
                 <_Line />
                 <_SocialLogin>
-                    <_SocialImg src={Kakao} />
+                    <_SocialImg src={KakaoImg} />
                     <_SocialImg src={Google} />
                 </_SocialLogin>
             </_DialogBox>
@@ -105,6 +113,9 @@ function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>)
 const _ModalClose = styled.div`
     font-size: 20px;
     margin-left: auto;
+    &:hover {
+        cursor: pointer;
+    }
 `;
 
 // 모달 Title부분
