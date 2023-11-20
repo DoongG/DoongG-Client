@@ -1,16 +1,26 @@
-import React, { ChangeEvent, PropsWithChildren, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import styled from 'styled-components';
 import { AiOutlineClose } from 'react-icons/ai';
-import { User, UserData } from './data/User';
+import { UserData } from './data/User';
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
+    children?: React.ReactNode;
 }
 
-function FindPWModal({ onClickToggleModal, children }: PropsWithChildren<ModalDefaultType>) {
-    const [isModalOpen, setModalOpen] = useState(true);
+enum ModalStep {
+    EmailInput,
+    Verification,
+    PasswordChange,
+}
 
-    // 모달을 닫는 함수
+function FindPWModal({ onClickToggleModal }: ModalDefaultType) {
+    const [isModalOpen, setModalOpen] = useState(true);
+    const [step, setStep] = useState(ModalStep.EmailInput);
+    const [email, setEmail] = useState('');
+    const [verificationCode, setVerificationCode] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+
     const modalClose = () => {
         setModalOpen(false);
 
@@ -18,6 +28,37 @@ function FindPWModal({ onClickToggleModal, children }: PropsWithChildren<ModalDe
             onClickToggleModal();
         }
     };
+
+    const handleEmailVerification = () => {
+        // 여기에서 이메일이 존재하는지 확인하고,
+        // 존재한다면 인증 단계로 이동
+        const user = UserData.find((u) => u.email === email);
+        if (user) {
+            setStep(ModalStep.Verification);
+            alert('인증번호가 전송되었습니다');
+        } else {
+            // 존재하지 않는 경우에 대한 처리
+            alert('존재하지 않는 이메일입니다.');
+        }
+    };
+
+    const handleVerificationCheck = () => {
+        // 여기에서 입력한 인증번호가 맞는지 확인하고,
+        // 맞다면 비밀번호 변경 단계로 이동
+        if (verificationCode === '1111') {
+            setStep(ModalStep.PasswordChange);
+        } else {
+            // 인증번호가 일치하지 않는 경우에 대한 처리
+            alert('인증번호가 일치하지 않습니다.');
+        }
+    };
+
+    const handlePasswordChange = () => {
+        // 여기에서 새로운 비밀번호로 변경하는 로직을 구현
+        alert('비밀번호가 성공적으로 변경되었습니다.');
+        modalClose();
+    };
+
     return (
         <ModalContainer>
             <DialogBox>
@@ -25,27 +66,66 @@ function FindPWModal({ onClickToggleModal, children }: PropsWithChildren<ModalDe
                     <AiOutlineClose onClick={modalClose} />
                 </_ModalClose>
                 <_Title>비밀번호 변경</_Title>
-                <_FindIDForm>
-                    <_FormTitle>이메일</_FormTitle>
-                    <_CertificationForm>
-                        <_FormInput type="id" placeholder="email@email.com" />
-                        <_VerifyButton style={{ width: '30%' }}>인증</_VerifyButton>
-                    </_CertificationForm>
-                </_FindIDForm>
+                {step === ModalStep.EmailInput && (
+                    <_FindIDForm>
+                        <_FormTitle>이메일</_FormTitle>
+                        <_CertificationForm>
+                            <_FormInput
+                                type="email"
+                                placeholder="email@email.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                            <_VerifyButton onClick={handleEmailVerification}>
+                                인증
+                            </_VerifyButton>
+                        </_CertificationForm>
+                    </_FindIDForm>
+                )}
+                {step === ModalStep.Verification && (
+                    <_FindIDForm>
+                        <_FormTitle>인증번호</_FormTitle>
+                        <_CertificationForm>
+                            <_FormInput
+                                type="text"
+                                placeholder="인증번호 입력"
+                                value={verificationCode}
+                                onChange={(e) =>
+                                    setVerificationCode(e.target.value)
+                                }
+                            />
+                            <_VerifyButton onClick={handleVerificationCheck}>
+                                확인
+                            </_VerifyButton>
+                        </_CertificationForm>
+                    </_FindIDForm>
+                )}
+                {step === ModalStep.PasswordChange && (
+                    <_FindIDForm>
+                        <_FormTitle>새로운 비밀번호</_FormTitle>
+                        <_CertificationForm>
+                            <_FormInput
+                                type="password"
+                                placeholder="새로운 비밀번호 입력"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                            />
+                            <_VerifyButton onClick={handlePasswordChange}>
+                                변경
+                            </_VerifyButton>
+                        </_CertificationForm>
+                    </_FindIDForm>
+                )}
             </DialogBox>
             <Backdrop
                 onClick={(e: React.MouseEvent) => {
                     e.preventDefault();
-
-                    if (onClickToggleModal) {
-                        onClickToggleModal();
-                    }
+                    modalClose();
                 }}
             />
         </ModalContainer>
     );
 }
-
 // 모달 닫기 부분
 const _ModalClose = styled.div`
     font-size: 20px;
@@ -58,7 +138,8 @@ const _ModalClose = styled.div`
 const _Title = styled.div`
     @font-face {
         font-family: 'MBC1961GulimM';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/MBC1961GulimM.woff2') format('woff2');
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/MBC1961GulimM.woff2')
+            format('woff2');
         font-weight: normal;
         font-style: normal;
     }

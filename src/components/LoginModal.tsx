@@ -12,7 +12,9 @@ interface ModalDefaultType {
     onClickToggleModal: () => void;
 }
 
-function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>) {
+function LoginModal({
+    onClickToggleModal,
+}: PropsWithChildren<ModalDefaultType>) {
     // 모달 열려 있나 없나 확인 스테이트
     const [isModalOpen, setModalOpen] = useState(true);
     const [isSignUpModalOpen, setSignUpModalOpen] = useState(false);
@@ -45,7 +47,9 @@ function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>)
 
     // 로그인 로직
     const handleLogin = () => {
-        const user = UserData.find((u) => u.email === email && u.password === password);
+        const user = UserData.find(
+            (u) => u.email === email && u.password === password,
+        );
 
         if (user) {
             setLoginError(null);
@@ -81,21 +85,51 @@ function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>)
 
                 <_LoginForm>
                     <_ID>이메일</_ID>
-                    <_IdInput placeholder="이메일을 입력해주세요." value={email} onChange={(e) => setEmail(e.target.value)} onKeyPress={handleOnKeyPress} />
+                    <_IdInput
+                        placeholder="이메일을 입력해주세요."
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        onKeyPress={handleOnKeyPress}
+                    />
                     <_PW>비밀번호</_PW>
-                    <_PwInput type="password" placeholder="비밀번호를 입력해주세요." value={password} onChange={(e) => setPassword(e.target.value)} onKeyPress={handleOnKeyPress} />
+                    <_PwInput
+                        type="password"
+                        placeholder="비밀번호를 입력해주세요."
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onKeyPress={handleOnKeyPress}
+                    />
                     {loginError && <_ErrorMessage>{loginError}</_ErrorMessage>}
                     <_LoginButton onClick={handleLogin}>로그인</_LoginButton>
                 </_LoginForm>
                 <_GoSignUp>
-                    {isFindIDModalOpen && <FindIDModal onClickToggleModal={toggleFindIDModal}>Modal</FindIDModal>}
-                    <_GoSignUpText onClick={toggleFindIDModal}>아이디 찾기</_GoSignUpText>
+                    {isFindIDModalOpen && (
+                        <FindIDModal onClickToggleModal={toggleFindIDModal}>
+                            Modal
+                        </FindIDModal>
+                    )}
+                    <_GoSignUpText onClick={toggleFindIDModal}>
+                        아이디 찾기
+                    </_GoSignUpText>
                     <_GoSignUpText>|</_GoSignUpText>
-                    {isFindPWModalOpen && <FindPWModal onClickToggleModal={toggleFindPWModal}>Modal</FindPWModal>}
-                    <_GoSignUpText onClick={toggleFindPWModal}>비밀번호 찾기</_GoSignUpText>
+                    {isFindPWModalOpen && (
+                        <FindPWModal onClickToggleModal={toggleFindPWModal}>
+                            Modal
+                        </FindPWModal>
+                    )}
+
+                    <_GoSignUpText onClick={toggleFindPWModal}>
+                        비밀번호 찾기
+                    </_GoSignUpText>
                     <_GoSignUpText>|</_GoSignUpText>
-                    {isSignUpModalOpen && <SignUpModal onClickToggleModal={toggleSignUpModal}>Modal</SignUpModal>}
-                    <_GoSignUpText onClick={toggleSignUpModal}>회원가입</_GoSignUpText>
+                    {isSignUpModalOpen && (
+                        <SignUpModal onClickToggleModal={toggleSignUpModal}>
+                            Modal
+                        </SignUpModal>
+                    )}
+                    <_GoSignUpText onClick={toggleSignUpModal}>
+                        회원가입
+                    </_GoSignUpText>
                 </_GoSignUp>
                 <_Line />
                 <_SocialLogin>
@@ -129,7 +163,8 @@ const _ModalClose = styled.div`
 const _Title = styled.div`
     @font-face {
         font-family: 'MBC1961GulimM';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/MBC1961GulimM.woff2') format('woff2');
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/MBC1961GulimM.woff2')
+            format('woff2');
         font-weight: normal;
         font-style: normal;
     }
