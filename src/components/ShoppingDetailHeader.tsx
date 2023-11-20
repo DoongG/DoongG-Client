@@ -6,13 +6,20 @@ import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import eyes from "../assets/eyes.png";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 // 카테고리 경로
 const _headerWrapper = styled.div`
   padding: 40px 80px 20px;
   color: #9c9a9a;
   font-size: 13px;
+  a {
+    text-decoration: none;
+    color: #9c9a9a;
+    cursor: default;
+  }
   ul {
+    cursor: default;
     display: flex;
     padding: 0px;
     margin: 0px;
@@ -39,6 +46,7 @@ const _imgBox = styled.div`
 `;
 
 const _productInfos = styled.div`
+  cursor: default;
   flex: 1;
   padding-left: 40px;
   position: relative;
@@ -188,9 +196,13 @@ const ShoppingDetailHeader = () => {
     <>
       <_headerWrapper className="HeaderWrapper">
         <ul>
-          <li>HOME</li>
+          <Link to={"/"}>
+            <li>HOME</li>
+          </Link>
           <div>{">"}</div>
-          <li>SHOP</li>
+          <Link to={"/shopping"}>
+            <li>SHOP</li>
+          </Link>
           <div>{">"}</div>
           <li>{decodedTitle}</li>
         </ul>
@@ -215,7 +227,7 @@ const ShoppingDetailHeader = () => {
           <_priceBox className="priceBox">
             <_beforePrice className="beforePrice">
               <_per className="per">27%</_per>
-              <_price className="price">{addCommas(afterPrice)}원</_price>
+              <_price className="price">{addCommas(beforePrice)}원</_price>
             </_beforePrice>
             <_afterPrice className="afterPrice">{addCommas(afterPrice)}원</_afterPrice>
           </_priceBox>
