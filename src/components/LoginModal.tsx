@@ -6,6 +6,7 @@ import Google from '../assets/Google.png';
 import { SignUpModal } from './SignUpModal';
 import { User, UserData } from './data/User';
 import { FindIDModal } from './FindIDModal';
+import { FindPWModal } from './FindPWModal';
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
@@ -16,6 +17,7 @@ function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>)
     const [isModalOpen, setModalOpen] = useState(true);
     const [isSignUpModalOpen, setSignUpModalOpen] = useState(false);
     const [isFindIDModalOpen, setFindIDModalOpen] = useState(false);
+    const [isFindPWModalOpen, setFindPWModalOpen] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loginError, setLoginError] = useState<string | null>(null);
@@ -35,6 +37,10 @@ function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>)
 
     const toggleFindIDModal = () => {
         setFindIDModalOpen(!isFindIDModalOpen);
+    };
+
+    const toggleFindPWModal = () => {
+        setFindPWModalOpen(!isFindPWModalOpen);
     };
 
     // 로그인 로직
@@ -85,7 +91,8 @@ function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>)
                     {isFindIDModalOpen && <FindIDModal onClickToggleModal={toggleFindIDModal}>Modal</FindIDModal>}
                     <_GoSignUpText onClick={toggleFindIDModal}>아이디 찾기</_GoSignUpText>
                     <_GoSignUpText>|</_GoSignUpText>
-                    <_GoSignUpText>비밀번호 찾기</_GoSignUpText>
+                    {isFindPWModalOpen && <FindPWModal onClickToggleModal={toggleFindPWModal}>Modal</FindPWModal>}
+                    <_GoSignUpText onClick={toggleFindPWModal}>비밀번호 찾기</_GoSignUpText>
                     <_GoSignUpText>|</_GoSignUpText>
                     {isSignUpModalOpen && <SignUpModal onClickToggleModal={toggleSignUpModal}>Modal</SignUpModal>}
                     <_GoSignUpText onClick={toggleSignUpModal}>회원가입</_GoSignUpText>
