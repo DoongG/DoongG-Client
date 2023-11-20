@@ -36,13 +36,14 @@ const Search = () => {
     };
     const EmptySearchBalloon = styled.div`
         position: absolute;
+        font-size: 10px;
         background-color: #ffe066;
         color: #333;
         padding: 8px;
         border-radius: 5px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        animation: fadeOut 5s linear;
-        top: -30px;
+        animation: fadeOut 4s linear;
+        top: -20px;
         right: 140px;
 
         @keyframes fadeOut {
@@ -240,7 +241,6 @@ const _SearchSection = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 10px;
 `;
 
 // 검색창 부분
@@ -278,7 +278,7 @@ const _InputHashTag = styled.input`
         font-weight: normal;
         font-style: normal;
     }
-    font-family: 'omyu_pretty';
+    /* font-family: 'omyu_pretty'; */
     width: 100%;
     padding: 10px;
     border: none;
