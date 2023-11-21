@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react';
 import { LoginModal } from '../components/LoginModal';
 import styled from 'styled-components';
 import { Search } from '../components/Search';
-import { SearchComponent } from '../components/SearchComponent';
 
 const Main = () => {
     const [isOpenModal, setOpemModal] = useState<Boolean>(false);
@@ -17,7 +16,6 @@ const Main = () => {
                 <Title>LoginModal</Title>
                 {isOpenModal && <LoginModal onClickToggleModal={onClickToggleModal}>Modal</LoginModal>}
                 <DialogButton onClick={onClickToggleModal}>Open Modal</DialogButton>
-                <SearchComponent />
             </TAG>
         </>
     );

@@ -1,19 +1,25 @@
 import React, { PropsWithChildren, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { AiOutlineClose } from 'react-icons/ai';
-import Kakao from '../assets/Kakao.png';
+import KakaoImg from '../assets/Kakao.png';
 import Google from '../assets/Google.png';
 import { SignUpModal } from './SignUpModal';
 import { User, UserData } from './data/User';
+import { FindIDModal } from './FindIDModal';
+import { FindPWModal } from './FindPWModal';
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
 }
 
-function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>) {
+function LoginModal({
+    onClickToggleModal,
+}: PropsWithChildren<ModalDefaultType>) {
     // 모달 열려 있나 없나 확인 스테이트
     const [isModalOpen, setModalOpen] = useState(true);
-    const [isOpenModal, setOpemModal] = useState<Boolean>(false);
+    const [isSignUpModalOpen, setSignUpModalOpen] = useState(false);
+    const [isFindIDModalOpen, setFindIDModalOpen] = useState(false);
+    const [isFindPWModalOpen, setFindPWModalOpen] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loginError, setLoginError] = useState<string | null>(null);
@@ -27,13 +33,23 @@ function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>)
         }
     };
 
-    const onClickToggleSignUp = useCallback(() => {
-        setOpemModal(!isOpenModal);
-    }, [isOpenModal]);
+    const toggleSignUpModal = () => {
+        setSignUpModalOpen(!isSignUpModalOpen);
+    };
+
+    const toggleFindIDModal = () => {
+        setFindIDModalOpen(!isFindIDModalOpen);
+    };
+
+    const toggleFindPWModal = () => {
+        setFindPWModalOpen(!isFindPWModalOpen);
+    };
 
     // 로그인 로직
     const handleLogin = () => {
-        const user = UserData.find((u) => u.email === email && u.password === password);
+        const user = UserData.find(
+            (u) => u.email === email && u.password === password,
+        );
 
         if (user) {
             setLoginError(null);
@@ -43,6 +59,7 @@ function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>)
             setLoginError('이메일 또는 비밀번호가 올바르지 않습니다.');
         }
     };
+
     // 엔터 눌러도 로그인 되는 로직
     const handleOnKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
@@ -68,23 +85,55 @@ function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>)
 
                 <_LoginForm>
                     <_ID>이메일</_ID>
-                    <_IdInput placeholder="이메일을 입력해주세요." value={email} onChange={(e) => setEmail(e.target.value)} onKeyPress={handleOnKeyPress} />
+                    <_IdInput
+                        placeholder="이메일을 입력해주세요."
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        onKeyPress={handleOnKeyPress}
+                    />
                     <_PW>비밀번호</_PW>
-                    <_PwInput type="password" placeholder="비밀번호를 입력해주세요." value={password} onChange={(e) => setPassword(e.target.value)} onKeyPress={handleOnKeyPress} />
+                    <_PwInput
+                        type="password"
+                        placeholder="비밀번호를 입력해주세요."
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onKeyPress={handleOnKeyPress}
+                    />
                     {loginError && <_ErrorMessage>{loginError}</_ErrorMessage>}
                     <_LoginButton onClick={handleLogin}>로그인</_LoginButton>
                 </_LoginForm>
                 <_GoSignUp>
-                    <_GoSignUpText>아이디 찾기</_GoSignUpText>
+                    {isFindIDModalOpen && (
+                        <FindIDModal onClickToggleModal={toggleFindIDModal}>
+                            Modal
+                        </FindIDModal>
+                    )}
+                    <_GoSignUpText onClick={toggleFindIDModal}>
+                        아이디 찾기
+                    </_GoSignUpText>
                     <_GoSignUpText>|</_GoSignUpText>
-                    <_GoSignUpText>비밀번호 찾기</_GoSignUpText>
+                    {isFindPWModalOpen && (
+                        <FindPWModal onClickToggleModal={toggleFindPWModal}>
+                            Modal
+                        </FindPWModal>
+                    )}
+
+                    <_GoSignUpText onClick={toggleFindPWModal}>
+                        비밀번호 찾기
+                    </_GoSignUpText>
                     <_GoSignUpText>|</_GoSignUpText>
-                    {isOpenModal && <SignUpModal onClickToggleModal={onClickToggleSignUp}>Modal</SignUpModal>}
-                    <_GoSignUpText onClick={onClickToggleSignUp}>회원가입</_GoSignUpText>
+                    {isSignUpModalOpen && (
+                        <SignUpModal onClickToggleModal={toggleSignUpModal}>
+                            Modal
+                        </SignUpModal>
+                    )}
+                    <_GoSignUpText onClick={toggleSignUpModal}>
+                        회원가입
+                    </_GoSignUpText>
                 </_GoSignUp>
                 <_Line />
                 <_SocialLogin>
-                    <_SocialImg src={Kakao} />
+                    <_SocialImg src={KakaoImg} />
                     <_SocialImg src={Google} />
                 </_SocialLogin>
             </_DialogBox>
@@ -105,13 +154,17 @@ function LoginModal({ onClickToggleModal }: PropsWithChildren<ModalDefaultType>)
 const _ModalClose = styled.div`
     font-size: 20px;
     margin-left: auto;
+    &:hover {
+        cursor: pointer;
+    }
 `;
 
 // 모달 Title부분
 const _Title = styled.div`
     @font-face {
         font-family: 'MBC1961GulimM';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/MBC1961GulimM.woff2') format('woff2');
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/MBC1961GulimM.woff2')
+            format('woff2');
         font-weight: normal;
         font-style: normal;
     }

@@ -18,4 +18,13 @@ export const UserData: User[] = [
         role: false,
         phone_number: '01037380591',
     },
+    {
+        pk: 2,
+        email: 'uhting2@naver.com',
+        password: '11111111',
+        nickname: 'gyu',
+        profileImg: '',
+        role: false,
+        phone_number: '01011111111',
+    },
 ];

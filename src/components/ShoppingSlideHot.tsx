@@ -51,6 +51,7 @@ const _customSwiperSlide = styled(SwiperSlide)`
 `;
 
 const _swiperWrapper = styled.div`
+  background-color: white;
   padding: 20px 80px 32px;
   position: relative;
   .swiper-wrapper {

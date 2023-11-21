@@ -32,6 +32,24 @@ function SignUpModal({ onClickToggleModal, children }: PropsWithChildren<ModalDe
 
     const [nicknameFormatError, setNicknameFormatError] = useState('');
 
+    const [formattedPhoneNumber, setFormattedPhoneNumber] = useState('');
+
+    const formatPhoneNumber = (phoneNumber: string): string => {
+        if (phoneNumber.length >= 4 && phoneNumber.length <= 7) {
+            return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3)}`;
+        } else if (phoneNumber.length >= 8 && phoneNumber.length <= 11) {
+            return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 7)}-${phoneNumber.slice(7)}`;
+        } else {
+            return phoneNumber;
+        }
+    };
+
+    const handlePhoneNumChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const rawPhoneNumber = e.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+        const formatted = formatPhoneNumber(rawPhoneNumber);
+        setFormattedPhoneNumber(formatted);
+    };
+
     // 모달을 닫는 함수
     const modalClose = () => {
         setModalOpen(false);
@@ -51,22 +69,24 @@ function SignUpModal({ onClickToggleModal, children }: PropsWithChildren<ModalDe
         const isValidEmail = validateEmail(email);
 
         if (!isValidEmail) {
-            // 이메일 형식이 잘못된 경우 에러 메시지 표시
+            // 이메일 형식이 잘못된 경우 에러 메시지
             alert('이메일 형식이 잘못되었습니다.');
             return; // 중복 검사를 진행하지 않고 함수 종료
         }
 
         // 중복 검사 로직 추가
         const isDuplicate = UserData.some((user) => user.email === email);
-        // setEmailAvailable(!isDuplicate);
+        setEmailAvailable(!isDuplicate);
+        setEmailChecked(true);
+
+        // 중복된 경우에만 input 태그를 활성화 상태로 변경
         if (isDuplicate) {
-            setEmailAvailable(false);
+            document.getElementById('emailInput')?.removeAttribute('disabled');
         } else {
             setEmailAvailable(true);
         }
-        setEmailChecked(true);
 
-        // 중복 검사 이후 input태그 비활성화
+        // 중복 검사 이후 input 태그 비활성화
         document.getElementById('emailInput')?.setAttribute('disabled', 'true');
     };
     // 이메일 형식 검사 함수
@@ -191,7 +211,7 @@ function SignUpModal({ onClickToggleModal, children }: PropsWithChildren<ModalDe
                         </_VerifyButton>
                     </_CertificationForm>
                     {/* 이메일 중복 검사 결과 표시 */}
-                    {isEmailChecked && !isEmailAvailable && <_ErrorText>이미 사용 중입니다.</_ErrorText>}
+                    {isEmailChecked && !isEmailAvailable && <_ErrorText>이미 사용 중입니다. {email !== '' && <span onClick={() => document.getElementById('emailInput')?.removeAttribute('disabled')}>수정하기</span>}</_ErrorText>}
                     {isEmailChecked && isEmailAvailable && email !== '' && <_Available>사용 가능한 이메일입니다.</_Available>}
 
                     {/* 닉네임 입력 폼 */}
@@ -210,7 +230,7 @@ function SignUpModal({ onClickToggleModal, children }: PropsWithChildren<ModalDe
 
                     <_FormTitle>전화번호</_FormTitle>
                     <_CertificationForm>
-                        <_PhoneNumInput placeholder="(예시) 01000000000" />
+                        <_PhoneNumInput placeholder="(예시) 01000000000" value={formattedPhoneNumber} onChange={handlePhoneNumChange} />
                         <_VerifyButton>인증번호 받기</_VerifyButton>
                     </_CertificationForm>
                     <_CertificationForm>
@@ -265,6 +285,9 @@ function SignUpModal({ onClickToggleModal, children }: PropsWithChildren<ModalDe
 const _ModalClose = styled.div`
     font-size: 20px;
     margin-left: auto;
+    &:hover {
+        cursor: pointer;
+    }
 `;
 
 // 모달 Title부분
