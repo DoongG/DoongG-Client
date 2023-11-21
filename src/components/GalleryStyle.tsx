@@ -10,6 +10,7 @@ import { useInView } from "react-intersection-observer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { BoardUpperPart } from "./BoardUpperPart";
+import { PostModal } from "./PostModal";
 
 const _allArea = styled.div`
   display: flex;
@@ -119,12 +120,15 @@ const _cardFooterSection = styled.div`
 `;
 
 const GalleryStyle = () => {
+  const { detailModalOn, setDetailModalOn, onePageData, setOnePageData } =
+    BoardStore();
   const [reference, inView] = useInView();
   const [loadedData, setLoadedData] = useState<any>([]);
   const [getCount, setGetCount] = useState(0);
   const [stop, setStop] = useState(false);
   const sampledb = [
     {
+      id: 1,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -135,6 +139,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 2,
       url: fox,
       profileImg: fox,
       writer: "여우",
@@ -144,6 +149,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 3,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -153,6 +159,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 4,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -162,6 +169,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 5,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -171,6 +179,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 6,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -180,6 +189,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 7,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -189,6 +199,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 8,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -198,6 +209,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 9,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -207,6 +219,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 10,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -216,6 +229,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 11,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -225,6 +239,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 12,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -234,6 +249,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 13,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -243,6 +259,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 14,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -252,6 +269,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 15,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -261,6 +279,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 16,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -270,6 +289,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 17,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -279,6 +299,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 18,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -288,6 +309,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 19,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -297,6 +319,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 20,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -306,6 +329,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 21,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -315,6 +339,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 22,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -324,6 +349,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 23,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -333,6 +359,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 24,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -342,6 +369,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 25,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -351,6 +379,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 26,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -360,6 +389,7 @@ const GalleryStyle = () => {
       visits: 121,
     },
     {
+      id: 27,
       url: ramen,
       profileImg: fox,
       writer: "여우",
@@ -394,6 +424,73 @@ const GalleryStyle = () => {
     }
   }, [inView]);
 
+  const getOnePost = async (id: number) => {
+    console.log(id);
+    const tempData: any = [
+      {
+        id: id,
+        profileImg: fox,
+        title:
+          "ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ",
+        writer: "여우여우여우여우여우여우여우여우여우",
+        date: "2023-11-21 02:23",
+        likes: 12,
+        views: 121,
+        content:
+          "일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다v",
+        comments: [
+          {
+            id: 1,
+            writer: "늑대",
+            date: "2023-11-21 02:25",
+            content: "뭐래씹",
+            childCommentsList: [
+              {
+                id: 1,
+                writer: "늑대",
+                date: "2023-11-21 02:25",
+                content: "뭐래씹",
+              },
+              {
+                id: 2,
+                writer: "늑대",
+                date: "2023-11-21 02:25",
+                content: "걍뒤져",
+              },
+            ],
+          },
+          {
+            id: 2,
+            writer: "늑대",
+            date: "2023-11-21 02:25",
+            content: "걍뒤져",
+            childCommentsList: [
+              {
+                id: 1,
+                writer: "늑대늑대늑대늑대늑대늑대늑대늑대",
+                date: "2023-11-21 02:25",
+                content: "뭐래씹",
+              },
+              {
+                id: 2,
+                writer: "늑대",
+                date: "2023-11-21 02:25",
+                content: "걍뒤져",
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    setOnePageData(tempData);
+  };
+
+  useEffect(() => {
+    if (onePageData.length > 0) {
+      setDetailModalOn(true);
+    }
+  }, [onePageData]);
+
   return (
     <_allArea>
       <BoardUpperPart></BoardUpperPart>
@@ -401,7 +498,11 @@ const GalleryStyle = () => {
         {loadedData?.map((x: any) => {
           return !x.status ? (
             <div>
-              <_cardBox>
+              <_cardBox
+                onClick={() => {
+                  getOnePost(x.id);
+                }}
+              >
                 <_cardLike>
                   <FontAwesomeIcon icon={faHeart} />
                   {x.likes}

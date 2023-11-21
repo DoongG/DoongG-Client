@@ -7,7 +7,7 @@ import G from "../assets/gallery-icon.png";
 import L from "../assets/list-icon.png";
 import { BoardStore } from "../store/storeT";
 import { PostModal } from "../components/PostModal";
-
+import { Modal } from "../components/PostingModal";
 import ramen from "../assets/ramen1.jpg";
 
 const _boardArea = styled.div`
@@ -49,8 +49,13 @@ const _galleryContainer = styled.div`
 `;
 
 const Board = () => {
+  const uploadCallback = () => {
+    console.log("이미지 업로드");
+  };
+
   const [styleSwitch, setStyleSwitch] = useState(true);
-  const { setCarousel, postModalOn } = BoardStore();
+  const { setCarousel, postModalOn, detailModalOn, setDetailModalOn } =
+    BoardStore();
   useEffect(() => {
     setCarousel([
       {
@@ -161,9 +166,14 @@ const Board = () => {
     ]);
   }, []);
 
+  useEffect(() => {
+    setDetailModalOn(false);
+  }, [styleSwitch]);
+
   return (
     <_boardArea>
-      {postModalOn && <PostModal />}
+      {postModalOn && <Modal />}
+      {detailModalOn == true && <PostModal />}
       <_boardHeader>
         <_innerBoardHeader>
           <h1>라면 게시판</h1>
