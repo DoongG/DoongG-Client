@@ -7,10 +7,12 @@ import shopping3 from "../assets/shopping3.jpg";
 import shopping4 from "../assets/shopping4.jpg";
 import shopping5 from "../assets/shopping5.jpg";
 import listbar from "../assets/listbar.png";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useModalStore } from "../store/shoppingHeaderSelectBarStore";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { ShoppingDetailHeader } from "./ShoppingDetailModal";
 
 const tempdb = [
   {
@@ -410,31 +412,53 @@ const _endPoint = styled.div`
   cursor: pointer;
 `;
 
+const _backdrop = styled.div`
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.2);
+`;
+
 interface ImgBarProps {
-  shouldAnimate: boolean;
+  shouldAnimate?: boolean;
   divHeigth?: any;
   calculateBottomValue?: (itemCount: number) => number;
   itemCount?: number;
   calculatedHeight?: any;
   customBottom?: number;
   shoulduse?: boolean;
+  onClickToggleModal?: () => void;
 }
+
 export default function ShoppingListTest() {
   const [shouldAnimate, setShouldAnimate] = useState(false);
   const [click, setClick] = useState(false);
   const [staticChange, setStaticChange] = useState(0);
   const [filteredItems, setFilteredItems] = useState<any>([]); //필터링 된 상품 리스트
   const [divHeigth, setDivHeigth] = useState(0); // 상품 목록 Div의 content 높이
+  const { isOpenModal, setOpenModal } = useModalStore(); // 모달 창 state
+
+  // 상품 리스트에서 클릭한 상품의 제목과 카테고리
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
 
   const categoryDiv = useRef<HTMLDivElement>(null);
   const listWrapper = useRef<HTMLDivElement>(null);
   const imgBar = useRef<HTMLImageElement>(null);
-  const navi = useNavigate();
   const [param, setParam] = useSearchParams();
   const names = param.get("name");
 
+  //상품 클릭시 모달창 open 함수
+  const onClickToggleModal = (changedCategory: string, changedTitle: string) => {
+    // 제목, 카테고리 state값 변경
+    setTitle(changedTitle);
+    setCategory(changedCategory);
+    setOpenModal(!isOpenModal);
+  };
+
   useEffect(() => {
-    console.log(names);
     if (filteredItems.length > 0 || click === true) {
       // 상품 목록 Div가 내려가는 조건
       if (shouldAnimate === false && imgBar.current && categoryDiv.current && listWrapper.current) {
@@ -445,7 +469,6 @@ export default function ShoppingListTest() {
         categoryDiv.current.style.bottom = `-${calculatedHeight}px !important`;
         // setShouldAnimate(true);
         // scrollIntoView가 작동하는 시간
-        console.log("d안영");
         setTimeout(() => {
           if (listWrapper.current) {
             listWrapper.current.scrollIntoView({ behavior: "smooth" });
@@ -456,7 +479,6 @@ export default function ShoppingListTest() {
         imgBar.current.style.animation = "slideUp 1s 1 forwards ";
         categoryDiv.current.style.animation = "listUp 1s  1 forwards ";
 
-        console.log("안영");
         setShouldAnimate(false);
         setClick(false);
       }
@@ -529,25 +551,25 @@ export default function ShoppingListTest() {
             {filteredItems.map((item: any) => {
               return (
                 <>
-                  <_productDivWrapper className="productDivWrapper">
-                    {/* encodeURLComponent로 주소 중간에 "/"가 있는것을 알아서 피해감 */}
-                    <Link to={`/shopping/${item.category}/${encodeURIComponent(item.title)}`}>
-                      <_productDiv className="productDiv">
-                        <_imgDiv className="imgDiv">
-                          <_img src={item.img}></_img>
-                        </_imgDiv>
-                        <_infosDiv className="infosDiv">
-                          <_title className="title">{item.title}</_title>
-                          <_price className="price">
-                            <_per className="per">14%</_per>
-                            <_priceDiv>
-                              <_initPriceDiv className="beforePrice">{item.realCost}</_initPriceDiv>
-                              <_realPriceDiv className="afterPrice">{item.discountCost}</_realPriceDiv>
-                            </_priceDiv>
-                          </_price>
-                        </_infosDiv>
-                      </_productDiv>
-                    </Link>
+                  <_productDivWrapper
+                    className="productDivWrapper"
+                    onClick={() => onClickToggleModal(item.category, item.title)}
+                  >
+                    <_productDiv className="productDiv">
+                      <_imgDiv className="imgDiv">
+                        <_img src={item.img}></_img>
+                      </_imgDiv>
+                      <_infosDiv className="infosDiv">
+                        <_title className="title">{item.title}</_title>
+                        <_price className="price">
+                          <_per className="per">14%</_per>
+                          <_priceDiv>
+                            <_initPriceDiv className="beforePrice">{item.realCost}</_initPriceDiv>
+                            <_realPriceDiv className="afterPrice">{item.discountCost}</_realPriceDiv>
+                          </_priceDiv>
+                        </_price>
+                      </_infosDiv>
+                    </_productDiv>
                   </_productDivWrapper>
                 </>
               );
@@ -559,6 +581,24 @@ export default function ShoppingListTest() {
           </_categoryDiv>
         </_productListWrapper1>
       </_productListWrapper>
+      {isOpenModal && (
+        <ShoppingDetailHeader
+          onClickToggleModal={(title, category) => console.log(title, category)}
+          category={category}
+          title={title}
+        ></ShoppingDetailHeader>
+      )}
+      {isOpenModal && (
+        <_backdrop
+          onClick={(e: React.MouseEvent) => {
+            e.preventDefault();
+
+            if (onClickToggleModal) {
+              onClickToggleModal(category, title);
+            }
+          }}
+        ></_backdrop>
+      )}
     </>
   );
 }
