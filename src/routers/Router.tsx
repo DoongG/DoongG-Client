@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Main } from '../pages/Main';
 import { Board } from '../pages/Board';
 import { Shopping } from '../pages/Shopping';
+import { BoardUnited } from '../pages/BoardUnited';
 import { ShoppingDetail } from '../pages/ShoppingDetail';
 
 const Router = () => {
@@ -10,9 +11,13 @@ const Router = () => {
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<Main />}></Route>
+                    <Route path="/board-all" element={<BoardUnited />}></Route>
                     <Route path="/board" element={<Board />}></Route>
                     <Route path="/shopping" element={<Shopping />}></Route>
-                    <Route path="/shopping/:category/:title" element={<ShoppingDetail />}></Route>
+                    <Route
+                        path="/shopping/:category/:title"
+                        element={<ShoppingDetail />}
+                    ></Route>
                 </Routes>
             </BrowserRouter>
         </>
