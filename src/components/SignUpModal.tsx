@@ -9,6 +9,8 @@ import { AiOutlineClose } from 'react-icons/ai';
 import { User, UserData } from './data/User';
 import axios from 'axios';
 
+let authNum: string | undefined;
+
 interface ModalDefaultType {
     onClickToggleModal: () => void;
 }
@@ -43,6 +45,9 @@ function SignUpModal({
     const [nicknameFormatError, setNicknameFormatError] = useState('');
 
     const [formattedPhoneNumber, setFormattedPhoneNumber] = useState('');
+
+    const [signupSuccess, setSignupSuccess] = useState(false);
+    const [enteredAuthNum, setEnteredAuthNum] = useState('');
 
     const formatPhoneNumber = (phoneNumber: string): string => {
         if (phoneNumber.length >= 4 && phoneNumber.length <= 7) {
@@ -195,10 +200,50 @@ function SignUpModal({
 
     // 핸드폰 인증번호 받기
     const getAccessKey = async () => {
-        const requestData = {
-            phoneNumber,
-        };
-        console.log(requestData);
+        const phoneNumber = formattedPhoneNumber.replace(/-/g, '');
+
+        if (phoneNumber.length == 11) {
+            const requestData = {
+                phoneNumber,
+            };
+
+            axios
+                .post('http://localhost:8080/user/smsAuth', requestData)
+                .then((response) => {
+                    const result = response.data;
+
+                    console.log(typeof result);
+
+                    if (!result) {
+                        alert('존재하는 번호입니다.');
+                    } else {
+                        authNum = result;
+                        alert('인증번호가 발송되었습니다.');
+                        console.log(authNum);
+                        document
+                            .getElementById('phonenumber')
+                            ?.setAttribute('disabled', 'true');
+                    }
+                });
+        } else {
+            alert('전화번호를 정확하게 입력해주세요');
+        }
+    };
+
+    const checkAccessKey = async () => {
+        // 입력값 가져오기
+        const enteredAuthNum = (
+            document.getElementById('accessKey') as HTMLInputElement
+        )?.value;
+
+        if (authNum == enteredAuthNum) {
+            alert('인증성공');
+            document
+                .getElementById('accessKey')
+                ?.setAttribute('disabled', 'true');
+        } else {
+            alert('인증번호가 옳바르지 않습니다.');
+        }
     };
 
     // 비밀번호 검사 영 대영 특문 포함 함수
@@ -255,6 +300,9 @@ function SignUpModal({
         setSecondChecked(isChecked);
         setThirdChecked(isChecked);
     };
+
+    const signup = () => {};
+
     // 뒤의 [] 값들이 바뀔때 발동하는 것
     useEffect(() => {
         if (
@@ -362,8 +410,13 @@ function SignUpModal({
                         </_VerifyButton>
                     </_CertificationForm>
                     <_CertificationForm>
-                        <_PhoneNumInput placeholder="인증번호를 입력해주세요" />
-                        <_VerifyButton>인증번호 확인</_VerifyButton>
+                        <_PhoneNumInput
+                            id="accessKey"
+                            placeholder="인증번호를 입력해주세요"
+                        />
+                        <_VerifyButton onClick={checkAccessKey}>
+                            인증번호 확인
+                        </_VerifyButton>
                     </_CertificationForm>
 
                     <_FormTitle>비밀번호</_FormTitle>
@@ -447,7 +500,7 @@ function SignUpModal({
                     </_Agree>
 
                     {/* 회원가입 버튼 */}
-                    <_SignupButton>회원가입</_SignupButton>
+                    <_SignupButton onClick={signup}>회원가입</_SignupButton>
                 </_SignUpForm>
             </DialogBox>
             <Backdrop
