@@ -46,6 +46,7 @@ function FindPWModal({ onClickToggleModal }: ModalDefaultType) {
         // 여기에서 입력한 인증번호가 맞는지 확인하고,
         // 맞다면 비밀번호 변경 단계로 이동
         if (verificationCode === '1111') {
+            alert('인증 성공');
             setStep(ModalStep.PasswordChange);
         } else {
             // 인증번호가 일치하지 않는 경우에 대한 처리
@@ -65,6 +66,8 @@ function FindPWModal({ onClickToggleModal }: ModalDefaultType) {
                 <_ModalClose>
                     <AiOutlineClose onClick={modalClose} />
                 </_ModalClose>
+                <_Title style={{ fontSize: '50px' }}>DoongG</_Title>
+                <br />
                 <_Title>비밀번호 변경</_Title>
                 {step === ModalStep.EmailInput && (
                     <_FindIDForm>
@@ -199,12 +202,12 @@ const _Line = styled.hr`
 const ModalContainer = styled.div`
     display: flex;
     justify-content: center;
-    margin-top: -400px;
+    margin-top: -350px;
 `;
 
 const DialogBox = styled.dialog`
     width: 400px;
-    height: 500px;
+    height: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;

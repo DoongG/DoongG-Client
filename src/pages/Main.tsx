@@ -1,25 +1,53 @@
 import { useCallback, useState } from 'react';
 import { LoginModal } from '../components/LoginModal';
 import styled from 'styled-components';
-import { Search } from '../components/Search';
+import { MyPageModal } from '../components/MyPageModal';
+import { UserData, User } from '../components/data/User';
 
 const Main = () => {
-    const [isOpenModal, setOpemModal] = useState<Boolean>(false);
+    const [isLoginModalOpen, setLoginModalOpen] = useState(false);
+    const [isMyPageModalOpen, setMyPageModalOpen] = useState(false);
 
-    const onClickToggleModal = useCallback(() => {
-        setOpemModal(!isOpenModal);
-    }, [isOpenModal]);
+    const onClickToggleLoginModal = useCallback(() => {
+        setLoginModalOpen(!isLoginModalOpen);
+    }, [isLoginModalOpen]);
+
+    const onClickToggleMyPageModal = useCallback(() => {
+        setMyPageModalOpen(!isMyPageModalOpen);
+    }, [isMyPageModalOpen]);
+
+    const user: User = UserData[0];
 
     return (
         <>
             <TAG>
                 <Title>LoginModal</Title>
-                {isOpenModal && <LoginModal onClickToggleModal={onClickToggleModal}>Modal</LoginModal>}
-                <DialogButton onClick={onClickToggleModal}>Open Modal</DialogButton>
+                {isLoginModalOpen && (
+                    <LoginModal onClickToggleModal={onClickToggleLoginModal}>
+                        Modal
+                    </LoginModal>
+                )}
+                <DialogButton onClick={onClickToggleLoginModal}>
+                    Login
+                </DialogButton>
+                <br />
+                <br />
+                {isMyPageModalOpen && (
+                    <MyPageModal
+                        onClickToggleModal={onClickToggleMyPageModal}
+                        user={user}
+                    >
+                        Modal
+                    </MyPageModal>
+                )}
+                <DialogButton onClick={onClickToggleMyPageModal}>
+                    MyPage
+                </DialogButton>
             </TAG>
         </>
     );
 };
+
 const TAG = styled.main`
     width: 100%;
     height: 100vh;
@@ -47,4 +75,5 @@ const DialogButton = styled.button`
         transform: translateY(-1px);
     }
 `;
+
 export { Main };
