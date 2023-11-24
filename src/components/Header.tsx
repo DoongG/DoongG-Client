@@ -7,7 +7,10 @@ import { FaUser } from 'react-icons/fa';
 const _headerArea = styled.div`
     width: 100%;
     height: 50px;
-    background-color: #96f296;
+    background-color: #daddb1;
+    /* background-color: #b3a492; */
+    /* background-color: #bfb29e; */
+    /* background-color: #d6c7ae; */
     font-size: 20px;
     display: flex;
     justify-content: space-between;
@@ -44,7 +47,11 @@ const _MenuSpecific = styled(Link)<{ isSelected: boolean }>`
     `}
 `;
 
-const _User = styled.div``;
+const _User = styled.div`
+    &:hover {
+        cursor: pointer;
+    }
+`;
 
 const Header = () => {
     // 로그인 모달
