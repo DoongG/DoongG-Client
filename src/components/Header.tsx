@@ -3,6 +3,7 @@ import { styled } from 'styled-components';
 import { LoginModal } from '../components/LoginModal';
 import { useCallback, useState } from 'react';
 import { FaUser, FaSignOutAlt } from 'react-icons/fa';
+import { IoLogInSharp } from 'react-icons/io5';
 
 const _headerArea = styled.div`
     width: 100%;
@@ -113,7 +114,7 @@ const Header = () => {
                 </>
             ) : (
                 <_User onClick={onClickToggleLoginModal}>
-                    <FaUser
+                    <IoLogInSharp
                         style={{
                             fontSize: '30px',
                             marginRight: '10px',
