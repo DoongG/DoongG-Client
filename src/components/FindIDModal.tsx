@@ -50,49 +50,39 @@ function FindIDModal({
 
     // 아이디 찾기
     const handleFindID = () => {
-        const user = UserData.find(
-            (u) =>
-                u.nickname === nickname &&
-                u.phone_number === formattedPhoneNumber.replace(/-/g, ''),
-        );
+        // const user = UserData.find(
+        //     (u) =>
+        //         u.nickname === nickname &&
+        //         u.phone_number === formattedPhoneNumber.replace(/-/g, ''),
+        // );
 
-        if (user) {
-            const maskedEmail = maskEmail(user.email);
-            setFoundEmail(maskedEmail);
-        } else {
-            setFoundEmail(null);
-        }
+        // if (user) {
+        //     const maskedEmail = maskEmail(user.email);
+        //     setFoundEmail(maskedEmail);
+        // } else {
+        //     setFoundEmail(null);
+        // }
 
+        // setFindIDClicked(true);
+
+        const requestData = {
+            nickname,
+            phoneNumber,
+        };
+
+        axios
+            .post('http://localhost:8080/user/findEmail', requestData)
+            .then((response) => {
+                const result = response.data;
+                if (!result) {
+                    setFoundEmail(null);
+                } else {
+                    const maskedEmail = maskEmail(result);
+                    setFoundEmail(maskedEmail);
+                }
+            });
         setFindIDClicked(true);
     };
-
-    // 백엔드 합칠때 코드
-    // const handleFindID = async () => {
-    //     try {
-    //         // API 요청을 보내고 응답을 받아옴
-    //         const response = await axios.post('/your-api-endpoint', {
-    //             nickname: nickname,
-    //             phoneNumber: formattedPhoneNumber.replace(/-/g, ''),
-    //         });
-
-    //         // 응답 데이터에서 이메일을 가져옴
-    //         const userEmail = response.data;
-
-    //         if (userEmail && userEmail !== 'false') {
-    //             // 이메일이 존재하면 결과를 표시
-    //             const maskedEmail = maskEmail(userEmail);
-    //             setFoundEmail(maskedEmail);
-    //         } else {
-    //             // 이메일이 존재하지 않으면 결과를 표시
-    //             setFoundEmail(null);
-    //         }
-
-    //         setFindIDClicked(true);
-    //     } catch (error) {
-    //         console.error('Error while fetching user information:', error);
-    //         // 에러 발생 시 예외처리
-    //     }
-    // };
 
     // 이메일 가리기
     const maskEmail = (email: string): string => {

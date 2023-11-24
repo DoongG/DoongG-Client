@@ -1,7 +1,9 @@
 import React, { ChangeEvent, useState } from 'react';
 import styled from 'styled-components';
 import { AiOutlineClose } from 'react-icons/ai';
-import { UserData } from './data/User';
+import axios from 'axios';
+let authNum: string;
+let Email: string;
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
@@ -32,20 +34,30 @@ function FindPWModal({ onClickToggleModal }: ModalDefaultType) {
     const handleEmailVerification = () => {
         // 여기에서 이메일이 존재하는지 확인하고,
         // 존재한다면 인증 단계로 이동
-        const user = UserData.find((u) => u.email === email);
-        if (user) {
-            setStep(ModalStep.Verification);
-            alert('인증번호가 전송되었습니다');
-        } else {
-            // 존재하지 않는 경우에 대한 처리
-            alert('존재하지 않는 이메일입니다.');
-        }
+        Email = email;
+        const requestData = {
+            email,
+        };
+        axios
+            .post('http://localhost:8080/user/emailAuth', requestData)
+            .then((response) => {
+                const result = response.data;
+                console.log(result);
+                if (!result) {
+                    alert('존재하지 않는 이메일입니다.');
+                } else {
+                    setStep(ModalStep.Verification);
+                    alert('인증번호가 전송되었습니다');
+                    authNum = result;
+                }
+            });
     };
 
     const handleVerificationCheck = () => {
         // 여기에서 입력한 인증번호가 맞는지 확인하고,
         // 맞다면 비밀번호 변경 단계로 이동
-        if (verificationCode === '1111') {
+        if (verificationCode == authNum) {
+            alert('인증 성공');
             setStep(ModalStep.PasswordChange);
         } else {
             // 인증번호가 일치하지 않는 경우에 대한 처리
@@ -55,7 +67,22 @@ function FindPWModal({ onClickToggleModal }: ModalDefaultType) {
 
     const handlePasswordChange = () => {
         // 여기에서 새로운 비밀번호로 변경하는 로직을 구현
-        alert('비밀번호가 성공적으로 변경되었습니다.');
+        const requestData = {
+            email: Email,
+            password: newPassword,
+        };
+
+        axios
+            .post('http://localhost:8080/user/resetPw', requestData)
+            .then((response) => {
+                const result = response.data;
+
+                if (result) {
+                    alert('비밀번호가 변경되었습니다.');
+                } else {
+                    alert('오류');
+                }
+            });
         modalClose();
     };
 
@@ -65,6 +92,8 @@ function FindPWModal({ onClickToggleModal }: ModalDefaultType) {
                 <_ModalClose>
                     <AiOutlineClose onClick={modalClose} />
                 </_ModalClose>
+                <_Title style={{ fontSize: '50px' }}>DoongG</_Title>
+                <br />
                 <_Title>비밀번호 변경</_Title>
                 {step === ModalStep.EmailInput && (
                     <_FindIDForm>
@@ -199,12 +228,12 @@ const _Line = styled.hr`
 const ModalContainer = styled.div`
     display: flex;
     justify-content: center;
-    margin-top: -400px;
+    margin-top: -350px;
 `;
 
 const DialogBox = styled.dialog`
     width: 400px;
-    height: 500px;
+    height: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;

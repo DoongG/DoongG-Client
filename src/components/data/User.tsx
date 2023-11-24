@@ -1,10 +1,10 @@
+import profileImg from '../../assets/shopping2.jpg';
 export interface User {
     pk: number;
     email: string;
     password: string;
     nickname: string;
     profileImg: string | null;
-    role: boolean;
     phone_number: string;
 }
 
@@ -14,8 +14,7 @@ export const UserData: User[] = [
         email: 'alenen0227@naver.com',
         password: '11111111',
         nickname: 'keeemhs',
-        profileImg: '',
-        role: false,
+        profileImg: profileImg,
         phone_number: '01037380591',
     },
     {
@@ -24,7 +23,6 @@ export const UserData: User[] = [
         password: '11111111',
         nickname: 'gyu',
         profileImg: '',
-        role: false,
         phone_number: '01011111111',
     },
 ];

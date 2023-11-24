@@ -4,9 +4,9 @@ import { AiOutlineClose } from 'react-icons/ai';
 import KakaoImg from '../assets/Kakao.png';
 import Google from '../assets/Google.png';
 import { SignUpModal } from './SignUpModal';
-import { User, UserData } from './data/User';
 import { FindIDModal } from './FindIDModal';
 import { FindPWModal } from './FindPWModal';
+import axios from 'axios';
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
@@ -46,18 +46,52 @@ function LoginModal({
     };
 
     // 로그인 로직
+    // const handleLogin = () => {
+    //     const user = UserData.find(
+    //         (u) => u.email === email && u.password === password,
+    //     );
+
+    //     if (user) {
+    //         setLoginError(null);
+
+    //         window.location.replace('/');
+    //     } else {
+    //         setLoginError('이메일 또는 비밀번호가 올바르지 않습니다.');
+    //     }
+    // };
+    // 로그인 로직
     const handleLogin = () => {
-        const user = UserData.find(
-            (u) => u.email === email && u.password === password,
-        );
+        // 사용자 입력값
+        const requestData = {
+            email,
+            password,
+        };
 
-        if (user) {
-            setLoginError(null);
+        console.log(requestData);
 
-            window.location.replace('/');
-        } else {
-            setLoginError('이메일 또는 비밀번호가 올바르지 않습니다.');
-        }
+        // axios를 사용하여 로그인 요청
+        axios
+            .post('http://localhost:8080/user/login', requestData)
+            .then((response) => {
+                const result = response.data;
+
+                if (result == '1') {
+                    setLoginError('비밀번호가 옳바르지 않습니다.');
+                } else if (result == '0') {
+                    setLoginError('존재하지 않는 사용자 입니다.');
+                } else {
+                    setLoginError(null);
+                    localStorage.setItem('token', result);
+                    localStorage.getItem('token');
+
+                    // 로그인 성공 시 처리
+                    window.location.replace('/');
+                }
+            })
+            .catch((error) => {
+                console.error('로그인 요청 에러:', error);
+                setLoginError('로그인 중 오류가 발생했습니다.');
+            });
     };
 
     // 엔터 눌러도 로그인 되는 로직
