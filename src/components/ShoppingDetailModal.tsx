@@ -21,6 +21,189 @@ import {
 import { ShoppingDetailSelectBar } from './ShoppingDetailSelectBar';
 import { ShoppingDetailBuy } from './ShoppingDetailBuy';
 
+interface ShoppingDetailModalProps {
+    category: string;
+    title: string;
+    onClickToggleModal: (title: string, category: string) => void;
+}
+interface ModalProps {
+    isModal: boolean;
+}
+
+const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
+    category,
+    title,
+    onClickToggleModal,
+}) => {
+    // 모달 상태
+    const { isOpenModal, setOpenModal } = useModalStore();
+    const { isOpenBuyModal, setIsOpenBuyModal } = useBuyModalStore();
+
+    // 수량과 가격 상태
+    const [count, setCount] = useState(1);
+    const [beforePrice, setbeforePrice] = useState(10000);
+    const [afterPrice, setAfterPrice] = useState(8000);
+
+    const onClickbuyModal = useCallback(() => {
+        setIsOpenBuyModal(!isOpenBuyModal);
+    }, [isOpenBuyModal]);
+
+    const shoppingDetailHeader = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        // isOpenModal 값이 변경될 때마다 애니메이션 클래스를 동적으로 추가 또는 제거
+        if (isOpenModal) {
+            shoppingDetailHeader.current!.style.animation =
+                'scale-in-center 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both';
+        } else {
+            shoppingDetailHeader.current!.style.animation =
+                'scale-out-center 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both';
+        }
+    }, [isOpenModal]);
+
+    // shoppingDetail 모달 생기면 뒷 배경 스크롤 막는 함수
+    useEffect(() => {
+        if (isOpenModal === true) {
+            document.body.style.cssText = `
+    position: fixed; 
+    top: -${window.scrollY}px;
+    overflow-y: scroll;
+    width: 100%;`;
+            return () => {
+                const scrollY = document.body.style.top;
+                document.body.style.cssText = '';
+                window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
+            };
+        }
+    }, [isOpenModal]);
+
+    // shoppingDetailBuy 모달 생기면 뒷 배경 스크롤 막는 함수
+    useEffect(() => {
+        if (isOpenBuyModal === true) {
+            shoppingDetailHeader.current!.style.overflow = `hidden`;
+        } else {
+            shoppingDetailHeader.current!.style.overflow = `scroll`;
+        }
+    }, [isOpenBuyModal]);
+
+    // title에 제대로된 타입을 넘겨줌
+    const decodedTitle = decodeURIComponent(title as string);
+
+    // 천 단위 쉼표 추가 함수
+    const addCommas = (num: number) => {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    };
+
+    // 마이너스 버튼
+    const handleMinusClick = () => {
+        if (count > 1) {
+            setCount(count - 1);
+            setAfterPrice(afterPrice - 8000);
+            setbeforePrice(beforePrice - 10000);
+        }
+    };
+
+    // 플러스 버튼
+    const handlePlusClick = () => {
+        setCount(count + 1);
+        setAfterPrice(afterPrice + 8000);
+        setbeforePrice(beforePrice + 10000);
+    };
+
+    // 모달 닫는 함수
+    const closeModal = () => {
+        console.log('모달 닫기');
+
+        setTimeout(() => {
+            isOpenModal && setOpenModal(!isOpenModal);
+        }, 200);
+        console.log(isOpenModal);
+    };
+
+    return (
+        <>
+            <_ShoppingDetailModal
+                ref={shoppingDetailHeader}
+                isModal={isOpenModal}
+            >
+                <_closeModal onClick={closeModal}>
+                    <AiOutlineClose />
+                </_closeModal>
+                <_headerWrapper className="HeaderWrapper">
+                    <ul>
+                        <Link to={'/'}>
+                            <li>HOME</li>
+                        </Link>
+                        <div>{'>'}</div>
+
+                        <li onClick={() => window.location.reload()}>SHOP</li>
+
+                        <div>{'>'}</div>
+                        <li>{decodedTitle}</li>
+                    </ul>
+                </_headerWrapper>
+                <_productInfoBox className="productInfoBox">
+                    <_imgBox className="imgBox">
+                        <img src={fox} alt="" />
+                    </_imgBox>
+                    <_productInfos className="productInfos">
+                        <_category className="category">{category}</_category>
+                        <_title className="title">{decodedTitle}</_title>
+                        <_heartAndViewBox className="heartAndViewBox">
+                            <_heartBox className="heartBox">
+                                <_customFontAwesome icon={faHeart} />
+                                <div className="heart">11</div>
+                            </_heartBox>
+                            <_viewBox className="viewBox">
+                                <img src={eyes} alt="" />
+                                <div className="view">214</div>
+                            </_viewBox>
+                        </_heartAndViewBox>
+                        <_priceBox className="priceBox">
+                            <_beforePrice className="beforePrice">
+                                <_per className="per">27%</_per>
+                                <_price className="price">
+                                    {addCommas(beforePrice)}원
+                                </_price>
+                            </_beforePrice>
+                            <_afterPrice className="afterPrice">
+                                {addCommas(afterPrice)}원
+                            </_afterPrice>
+                        </_priceBox>
+                        <_countBox className="countBox">
+                            <_minus
+                                className="minus"
+                                onClick={handleMinusClick}
+                            >
+                                <FontAwesomeIcon icon={faMinus} />
+                            </_minus>
+                            <_count>{count}</_count>
+                            <_plus className="plus" onClick={handlePlusClick}>
+                                <FontAwesomeIcon icon={faPlus} />
+                            </_plus>
+                        </_countBox>
+                        <_buyBox className="buyBox">
+                            <_cart className="cart">장바구니 담기</_cart>
+                            <_buy className="buy" onClick={onClickbuyModal}>
+                                구매하기
+                            </_buy>
+                        </_buyBox>
+                    </_productInfos>
+                </_productInfoBox>
+                <ShoppingDetailSelectBar></ShoppingDetailSelectBar>
+            </_ShoppingDetailModal>
+            {/* 결제 모달 */}
+            {isOpenBuyModal && (
+                <ShoppingDetailBuy
+                    onClickbuyModal={onClickbuyModal}
+                    cost={afterPrice}
+                    count={count}
+                ></ShoppingDetailBuy>
+            )}
+        </>
+    );
+};
+
 // 가장 밖 div
 const _ShoppingDetailModal = styled.div<ModalProps>`
     height: 90%;
@@ -225,192 +408,5 @@ const _buy = styled.button`
     border-radius: 10px;
     margin-right: 10px;
 `;
-
-interface ShoppingDetailModalProps {
-    category: string;
-    title: string;
-    onClickToggleModal: (title: string, category: string) => void;
-}
-interface ModalProps {
-    isModal: boolean;
-}
-
-const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
-    category,
-    title,
-    onClickToggleModal,
-}) => {
-    // 모달 상태
-    const { isOpenModal, setOpenModal } = useModalStore();
-    const { isOpenBuyModal, setIsOpenBuyModal } = useBuyModalStore();
-
-    // 수량과 가격 상태
-    const [count, setCount] = useState(1);
-    const [beforePrice, setbeforePrice] = useState(10000);
-    const [afterPrice, setAfterPrice] = useState(8000);
-
-    const onClickbuyModal = useCallback(() => {
-        setIsOpenBuyModal(!isOpenBuyModal);
-    }, [isOpenBuyModal]);
-
-    const shoppingDetailHeader = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        // isOpenModal 값이 변경될 때마다 애니메이션 클래스를 동적으로 추가 또는 제거
-        if (isOpenModal) {
-            shoppingDetailHeader.current!.style.animation =
-                'scale-in-center 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both';
-        } else {
-            shoppingDetailHeader.current!.style.animation =
-                'scale-out-center 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both';
-        }
-    }, [isOpenModal]);
-
-    // shoppingDetail 모달 생기면 뒷 배경 스크롤 막는 함수
-    useEffect(() => {
-        if (isOpenModal === true) {
-            document.body.style.cssText = `
-    position: fixed; 
-    top: -${window.scrollY}px;
-    overflow-y: scroll;
-    width: 100%;`;
-            return () => {
-                const scrollY = document.body.style.top;
-                document.body.style.cssText = '';
-                window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
-            };
-        }
-    }, [isOpenModal]);
-
-    // shoppingDetailBuy 모달 생기면 뒷 배경 스크롤 막는 함수
-    useEffect(() => {
-        if (isOpenBuyModal === true) {
-            shoppingDetailHeader.current!.style.overflow = `hidden`;
-        } else {
-            shoppingDetailHeader.current!.style.overflow = `scroll`;
-        }
-    }, [isOpenBuyModal]);
-
-    // title에 제대로된 타입을 넘겨줌
-    const decodedTitle = decodeURIComponent(title as string);
-
-    // 천 단위 쉼표 추가 함수
-    const addCommas = (num: number) => {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    };
-
-    // 마이너스 버튼
-    const handleMinusClick = () => {
-        if (count > 1) {
-            setCount(count - 1);
-            setAfterPrice(afterPrice - 8000);
-            setbeforePrice(beforePrice - 10000);
-        }
-    };
-
-    // 플러스 버튼
-    const handlePlusClick = () => {
-        setCount(count + 1);
-        setAfterPrice(afterPrice + 8000);
-        setbeforePrice(beforePrice + 10000);
-    };
-
-    // 모달 닫는 함수
-    const closeModal = () => {
-        console.log('모달 닫기');
-
-        setTimeout(() => {
-            isOpenModal && setOpenModal(!isOpenModal);
-        }, 200);
-
-        // setOpenModal(bool);
-        console.log(isOpenModal);
-    };
-
-    // useEffect(() => {
-    //   if (isOpenModal === true) {
-    //     shoppingDetailHeader.current!.style.animation =
-    //       "scale-in-center 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both";
-    //   } else {
-    //     shoppingDetailHeader.current!.style.animation =
-    //       "scale-out-center 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both";
-    //   }
-    // }, [isOpenModal]);
-
-    return (
-        <>
-            <_ShoppingDetailModal
-                ref={shoppingDetailHeader}
-                isModal={isOpenModal}
-            >
-                <_closeModal onClick={closeModal}>
-                    <AiOutlineClose />
-                </_closeModal>
-                <_headerWrapper className="HeaderWrapper">
-                    <ul>
-                        <Link to={'/'}>
-                            <li>HOME</li>
-                        </Link>
-                        <div>{'>'}</div>
-
-                        <li onClick={() => window.location.reload()}>SHOP</li>
-
-                        <div>{'>'}</div>
-                        <li>{decodedTitle}</li>
-                    </ul>
-                </_headerWrapper>
-                <_productInfoBox className="productInfoBox">
-                    <_imgBox className="imgBox">
-                        <img src={fox} alt="" />
-                    </_imgBox>
-                    <_productInfos className="productInfos">
-                        <_category className="category">{category}</_category>
-                        <_title className="title">{decodedTitle}</_title>
-                        <_heartAndViewBox className="heartAndViewBox">
-                            <_heartBox className="heartBox">
-                                <_customFontAwesome icon={faHeart} />
-                                <div className="heart">11</div>
-                            </_heartBox>
-                            <_viewBox className="viewBox">
-                                <img src={eyes} alt="" />
-                                <div className="view">214</div>
-                            </_viewBox>
-                        </_heartAndViewBox>
-                        <_priceBox className="priceBox">
-                            <_beforePrice className="beforePrice">
-                                <_per className="per">27%</_per>
-                                <_price className="price">
-                                    {addCommas(beforePrice)}원
-                                </_price>
-                            </_beforePrice>
-                            <_afterPrice className="afterPrice">
-                                {addCommas(afterPrice)}원
-                            </_afterPrice>
-                        </_priceBox>
-                        <_countBox className="countBox">
-                            <_minus
-                                className="minus"
-                                onClick={handleMinusClick}
-                            >
-                                <FontAwesomeIcon icon={faMinus} />
-                            </_minus>
-                            <_count>{count}</_count>
-                            <_plus className="plus" onClick={handlePlusClick}>
-                                <FontAwesomeIcon icon={faPlus} />
-                            </_plus>
-                        </_countBox>
-                        <_buyBox className="buyBox">
-                            <_cart className="cart">장바구니 담기</_cart>
-                            <_buy className="buy" onClick={onClickbuyModal}>
-                                구매하기
-                            </_buy>
-                        </_buyBox>
-                    </_productInfos>
-                </_productInfoBox>
-                <ShoppingDetailSelectBar></ShoppingDetailSelectBar>
-            </_ShoppingDetailModal>
-        </>
-    );
-};
 
 export { ShoppingDetailHeader };

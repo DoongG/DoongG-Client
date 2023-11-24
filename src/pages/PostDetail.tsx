@@ -1,48 +1,53 @@
-import { BoardStore } from '../store/storeT';
 import { styled } from 'styled-components';
-import { useState } from 'react';
-import { MdSubdirectoryArrowRight } from 'react-icons/md';
 import { CiShare2 } from 'react-icons/ci';
 import { IoIosHeart } from 'react-icons/io';
+import { MdSubdirectoryArrowRight } from 'react-icons/md';
 import { TbHeart } from 'react-icons/tb';
-import { IoCopyOutline } from 'react-icons/io5';
 import { TbHeartBroken } from 'react-icons/tb';
+import { IoCopyOutline } from 'react-icons/io5';
+import { BoardStore } from '../store/storeT';
+import { useEffect, useState, useRef } from 'react';
+import { useLocation } from 'react-router';
 import eyes from '../assets/eyes.png';
+import axios from 'axios';
 
-const _modalArea = styled.div`
-    position: absolute;
-    width: 100%;
-    height: 400px;
-    background-color: transparent;
-    display: flex;
-    justify-content: center;
-    z-index: 9999;
-`;
-
-const _modal = styled.div`
-    width: 70%;
-    height: 400px;
-    background-color: red;
-`;
-
-const PostModal = () => {
-    const { detailModalOn, setDetailModalOn, onePageData } = BoardStore();
+const PostDetail = () => {
+    const location = useLocation();
+    const { detailModalOn, setDetailModalOn, onePageData, setOnePageData } =
+        BoardStore();
     const [recommentOn, setRecommentOn] = useState(false);
     const [targetComment, setTargerComment] = useState(-1);
     const [shareBalloon, setShareBalloon] = useState(false);
     const [copiedCheck, setCopiedCheck] = useState(false);
+    const iscopied = useRef<any>(null);
+    const getOnePage = async () => {
+        console.log(location.pathname);
+        let pathKey = location.pathname.split('/')[2];
+        console.log(pathKey);
+        let res = await axios({
+            method: 'get',
+            url: `http://localhost:8080/boards/${pathKey}`,
+        });
+        let page = res.data;
+        console.log(res.data);
+        setOnePageData([page]);
+        return res.data;
+    };
+    useEffect(() => {
+        getOnePage();
+    }, []);
+
     const share = (id: number) => {
         setShareBalloon(!shareBalloon);
     };
     return (
-        <ModalContainer>
-            <DialogBox>
-                {/* <div>{onePageData[0].id}</div> */}
+        <_allArea>
+            {onePageData.length > 0 && (
                 <_content>
-                    <_postTitle>{onePageData[0].title}</_postTitle>
+                    <_postTitle>{onePageData[0]?.title}</_postTitle>
                     <_rightSide>
                         <_writer>
-                            <h4>{onePageData[0].writer}</h4>
+                            <h4>{onePageData[0]?.user?.nickname}</h4>
                             <div style={{ marginLeft: '5px' }}>
                                 <img
                                     style={{
@@ -50,24 +55,24 @@ const PostModal = () => {
                                         width: '30px',
                                         height: '30px',
                                     }}
-                                    src={onePageData[0].profileImg}
+                                    src={onePageData[0]?.user?.profileImg}
                                 ></img>
                             </div>
                         </_writer>
                     </_rightSide>
                     <_dateLine>
-                        <_date>{onePageData[0].date}</_date>
+                        <_date>{onePageData[0]?.createdAt}</_date>
                         <_view>
                             <img
                                 style={{ width: '15px', marginRight: '4px' }}
                                 src={eyes}
                             ></img>
-                            {onePageData[0].views}
+                            {onePageData[0]?.views}
                         </_view>
                         <_like>
                             <span style={{ color: 'red' }}>
                                 <IoIosHeart style={{ fontSize: '14px' }} />
-                                {onePageData[0].likes}
+                                {/* {onePageData[0].likes} */}
                             </span>{' '}
                         </_like>
                         <_share
@@ -114,7 +119,11 @@ const PostModal = () => {
                         </_share>
                     </_dateLine>
                     <br></br>
-                    <_realContent>{onePageData[0].content}</_realContent>
+                    <_realContent
+                        dangerouslySetInnerHTML={{
+                            __html: onePageData[0]?.content,
+                        }}
+                    ></_realContent>
                     <_likeLine>
                         <_likeBox>
                             <TbHeart
@@ -127,10 +136,10 @@ const PostModal = () => {
                             싫어요
                         </_likeBox>
                     </_likeLine>
-                    <h4>댓글 {onePageData[0].comments.length}</h4>
+                    <h4>댓글 {onePageData[0]?.comments?.length}</h4>
                     <_commentsList>
                         <hr></hr>
-                        {onePageData[0].comments.map(
+                        {onePageData[0]?.comments?.map(
                             (x: any, index: number) => {
                                 return (
                                     <div>
@@ -172,7 +181,11 @@ const PostModal = () => {
                                                                             y.writer
                                                                         }
                                                                     </_eachCommentWriter>
-                                                                    {/* 로그인기능완성되면 이 버튼은 댓글작성자 본인에게만 보임 */}
+                                                                    로그인기능완성되면
+                                                                    이 버튼은
+                                                                    댓글작성자
+                                                                    본인에게만
+                                                                    보임
                                                                     <_recomment>
                                                                         삭제
                                                                     </_recomment>
@@ -220,13 +233,8 @@ const PostModal = () => {
                         <_commentContents></_commentContents>
                     </_commentArea>
                 </_content>
-            </DialogBox>
-            <Backdrop
-                onClick={() => {
-                    setDetailModalOn(false);
-                }}
-            />
-        </ModalContainer>
+            )}
+        </_allArea>
     );
 };
 
@@ -249,9 +257,9 @@ const _copiedAlert = styled.div`
 
 const _emptySearchBalloon = styled.div`
     position: absolute;
-    display: flex;
     flex-direction: column;
     /* margin-top: 50px; */
+    display: flex;
     font-size: 10px;
     background-color: #ffe066;
     color: #333;
@@ -262,37 +270,10 @@ const _emptySearchBalloon = styled.div`
     right: 1px;
 `;
 
-const ModalContainer = styled.div`
+const _allArea = styled.div`
     width: 100%;
-    height: 100%;
     display: flex;
-    align-items: center;
     justify-content: center;
-    position: fixed;
-    z-index: 10000;
-`;
-
-const DialogBox = styled.dialog`
-    width: 80%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: none;
-    border-radius: 3px;
-    box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
-    box-sizing: border-box;
-    background-color: white;
-    z-index: 10001;
-`;
-
-const Backdrop = styled.div`
-    width: 100vw;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    z-index: 9999;
-    background-color: rgba(0, 0, 0, 0.2);
 `;
 
 const _title = styled.div`
@@ -345,6 +326,9 @@ const _share = styled.div`
 `;
 
 const _content = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     width: 90%;
     padding: 10px;
     text-align: start;
@@ -460,4 +444,4 @@ const _likeBox = styled.div`
     cursor: pointer;
 `;
 
-export { PostModal };
+export { PostDetail };

@@ -1,5 +1,9 @@
 import { Header } from '../components/Header';
 import { styled } from 'styled-components';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { BoardStore } from '../store/storeT';
 
 const _hr = styled.hr`
     /* width: 100%; */
@@ -38,6 +42,7 @@ const _boardTitleArea = styled.div`
     width: 100%;
     border: 2px solid #cbffd3;
     border-radius: 20px;
+    cursor: pointer;
 `;
 
 const _eachPost = styled.div`
@@ -48,6 +53,29 @@ const _eachPost = styled.div`
 `;
 
 const BoardUnited = () => {
+    const { currentBoardName, setCurrentBoardName } = BoardStore();
+    const navigate = useNavigate();
+    const [allBoard, setAllBoard] = useState([]);
+    const getBoard = async () => {
+        let res = await axios({
+            method: 'get',
+            url: `http://localhost:8080/boards`,
+        });
+
+        console.log(res);
+        setAllBoard(res.data);
+    };
+
+    useEffect(() => {
+        getBoard();
+    }, []);
+
+    const enterEachBoard = (e: any) => {
+        // console.log(e.currentTarget.innerText);
+        setCurrentBoardName(e.currentTarget.innerText);
+        navigate(`/board/${e.currentTarget.innerText}`);
+    };
+
     const sampleDB = [
         {
             name: '라면 게시판',
@@ -140,19 +168,24 @@ const BoardUnited = () => {
             <Header></Header>
             <_backArea>
                 <_allBoardArea>
-                    {sampleDB.map((x) => {
+                    {allBoard.map((x: any) => {
                         return (
                             <_eachBoardArea>
-                                <_boardTitleArea>{x.name}</_boardTitleArea>
-                                {x.recentPost.map((y, index) => {
+                                <_boardTitleArea
+                                    onClick={(e) => {
+                                        enterEachBoard(e);
+                                    }}
+                                >
+                                    {x.boardName}
+                                </_boardTitleArea>
+                                {x.posts.map((y: any, index: number) => {
                                     return (
                                         <>
                                             <_eachPost>
                                                 <div>{y.title}</div>
-                                                <div>{y.date}</div>
+                                                <div>{y.createdAt}</div>
                                             </_eachPost>
-                                            {x.recentPost.length !==
-                                            index + 1 ? (
+                                            {x.posts.length !== index + 1 ? (
                                                 <_hr></_hr>
                                             ) : null}
                                         </>
