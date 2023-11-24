@@ -8,11 +8,17 @@ import fox from '../assets/fox.jpg';
 
 interface ModalDefaultType {
     onClickbuyModal: () => void;
+    cost: number;
+    count: number;
+}
+interface ValidProps {
+    valid: boolean;
 }
 
 const ShoppingDetailBuy = ({
     onClickbuyModal,
-    children,
+    cost,
+    count,
 }: PropsWithChildren<ModalDefaultType>) => {
     const { isOpenBuyModal, setIsOpenBuyModal } = useBuyModalStore();
     // 주소 찾는 모달 상태
@@ -55,10 +61,18 @@ const ShoppingDetailBuy = ({
         watch,
     } = useForm({ mode: 'onChange' });
 
-    const [nameWatch, restAddress] = watch(['name', 'restAddress']);
+    const [nameWatch, restAddressWatch] = watch(['name', 'restAddress']);
 
-    const onSubmit = () => {};
+    console.log(errors.name, errors.restAddress);
 
+    const onSubmit = () => {
+        console.log();
+    };
+
+    // 천 단위 쉼표 추가 함수
+    const addCommas = (num: number) => {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    };
     return (
         <>
             <_shoppingDetailBuy>
@@ -68,7 +82,7 @@ const ShoppingDetailBuy = ({
                         <AiOutlineClose />
                     </_closeModal>
                 </_titleBox>
-                <form>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <_contentBox className="contentBox">
                         <_nameBox className="nameBox">
                             <_nameLabel htmlFor="name">주문자명</_nameLabel>
@@ -85,6 +99,13 @@ const ShoppingDetailBuy = ({
                                         },
                                     })}
                                 />
+                                {nameWatch === undefined || nameWatch === '' ? (
+                                    ''
+                                ) : errors.name ? (
+                                    <_inValidIcon></_inValidIcon>
+                                ) : (
+                                    <_VliadIcon></_VliadIcon>
+                                )}
                             </_nameInputBox>
                         </_nameBox>
                         <_addressBox className="addressBox">
@@ -117,6 +138,14 @@ const ShoppingDetailBuy = ({
                                         },
                                     })}
                                 />
+                                {restAddressWatch === undefined ||
+                                restAddressWatch === '' ? (
+                                    ''
+                                ) : errors.restAddress ? (
+                                    <_inValidIcon></_inValidIcon>
+                                ) : (
+                                    <_VliadIcon></_VliadIcon>
+                                )}
                             </_restAddressBox>
                         </_addressBox>
                     </_contentBox>
@@ -137,12 +166,58 @@ const ShoppingDetailBuy = ({
                                     사막여우
                                 </_productTitle>
                                 <_producCostBox className="productCostBox">
-                                    <div className="productCost">8,700원</div>
-                                    <div className="productCount">| 1개</div>
+                                    <div className="productCost">
+                                        {addCommas(cost)}원
+                                    </div>
+                                    <div className="productCount">
+                                        | {addCommas(count)}개
+                                    </div>
                                 </_producCostBox>
                             </_productContent>
                         </_productBoxWrapper>
                     </_productBox>
+                    <_paymentBox className="paymentBox">
+                        <_paymentBoxName className="paymentBoxName">
+                            결제 금액
+                        </_paymentBoxName>
+                        <_paymentBoxContentBox className="paymentContentBox">
+                            <_productCostBox className="productCostBox">
+                                <_productCostTitle className="productCostTitle">
+                                    상품금액
+                                </_productCostTitle>
+                                <_productCost className="productCost">
+                                    {addCommas(cost)}원
+                                </_productCost>
+                            </_productCostBox>
+                            <_deliveryCostBox className="deliveryCostBox">
+                                <_deliveryCostTitle className="deliveryCostTitle">
+                                    배송비
+                                </_deliveryCostTitle>
+                                <_deliveryCost className="deliveryCost">
+                                    0원
+                                </_deliveryCost>
+                            </_deliveryCostBox>
+                            <_totalCostBox className="totalCostBox">
+                                <_totalCostTitle className="totalCostTitle">
+                                    총 결제금액
+                                </_totalCostTitle>
+                                <_totalCost className="totalCost">
+                                    {addCommas(cost)}원
+                                </_totalCost>
+                            </_totalCostBox>
+                        </_paymentBoxContentBox>
+                    </_paymentBox>
+                    <_payButtonBox
+                        className="payButtonBox"
+                        valid={
+                            nameWatch &&
+                            errors.name === undefined &&
+                            restAddressWatch &&
+                            errors.restAddress === undefined
+                        }
+                    >
+                        <button type="button">결제하기</button>
+                    </_payButtonBox>
                 </form>
             </_shoppingDetailBuy>
             {openPostModal && (
@@ -172,8 +247,8 @@ const _closeModal = styled.div`
 `;
 
 const _shoppingDetailBuy = styled.div`
-    height: 90%;
-    width: 40%;
+    height: 88%;
+    width: 400px;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -227,11 +302,10 @@ const _contentBox = styled.div`
     margin-top: 10px;
     border: 1px solid grey;
     border-radius: 10px;
-    padding: 10px;
+    padding: 20px 10px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding-top: 20px;
 `;
 
 const _nameBox = styled.div`
@@ -243,6 +317,7 @@ const _nameLabel = styled.label`
     font-size: 12px;
 `;
 const _nameInputBox = styled.div`
+    position: relative;
     margin-top: 5px;
     border-bottom: 1px solid grey;
     display: flex;
@@ -289,7 +364,7 @@ const _DaumPostcode = styled(DaumPostcode)`
     top: 50%;
     left: 50%;
     height: 90% !important;
-    width: 40% !important;
+    width: 400px !important;
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;
     background-color: white;
@@ -327,6 +402,7 @@ const _addressInputDetail = styled.input`
 `;
 
 const _restAddressBox = styled.div`
+    position: relative;
     margin-top: 5px;
     border-bottom: 1px solid grey;
     display: flex;
@@ -381,6 +457,110 @@ const _producCostBox = styled.div`
     display: flex;
 `;
 
-const _productCost = styled.div``;
-const _prodictCount = styled.div``;
+const _paymentBox = styled.div`
+    margin-top: 10px;
+    border: 1px solid grey;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 20px;
+`;
+
+const _paymentBoxName = styled.div`
+    font-weight: 700;
+    font-size: 12px;
+`;
+
+const _paymentBoxContentBox = styled.div`
+    margin-top: 10px;
+    font-size: 13px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+`;
+const _productCostBox = styled.div`
+    display: flex;
+    justify-content: space-between;
+`;
+const _productCostTitle = styled.div`
+    color: grey;
+`;
+const _productCost = styled.div`
+    font-weight: 700;
+`;
+const _deliveryCostBox = styled.div`
+    margin-top: 5px;
+    display: flex;
+    justify-content: space-between;
+`;
+const _deliveryCostTitle = styled.div`
+    color: grey;
+`;
+const _deliveryCost = styled.div`
+    font-weight: 700;
+`;
+const _totalCostBox = styled.div`
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+`;
+const _totalCostTitle = styled.div`
+    font-size: 15px;
+    font-weight: 700;
+`;
+const _totalCost = styled.div`
+    font-size: 15px;
+    font-weight: 700;
+    color: red;
+`;
+
+const _payButtonBox = styled.div<ValidProps>`
+    background-color: #e5e5e5 !important;
+    margin-top: 10px;
+    border: ${(props) => (props.valid ? '1px solid black' : '1px solid grey')};
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    button {
+        border: none;
+        color: ${(props) => (props.valid ? 'black' : 'grey')};
+        background-color: #e5e5e5;
+        width: 100%;
+        text-align: center;
+        border-radius: 3px;
+        font-size: 17px;
+        font-weight: 700;
+        width: 100%;
+        cursor: ${(props) => (props.valid ? 'pointer' : 'not-allowed')};
+    }
+`;
+const _inValidIcon = styled.div`
+    content: '';
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    bottom: auto;
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjBweCIgaGVpZ2h0PSIyMHB4IiB2aWV3Qm94PSIwIDAgMjAgMjAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDU1LjIgKDc4MTgxKSAtIGh0dHBzOi8vc2tldGNoYXBwLmNvbSAtLT4KICAgIDx0aXRsZT5JY29ucyAvIFNldHRpbmdzIC8gSW52YWxpZDwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxnIGlkPSJJY29ucy0vLVNldHRpbmdzLS8tSW52YWxpZCIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9IngtY2lyY2xlLWYiIGZpbGw9IiNEQjQyNDEiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xNy4wNzA1NTU2LDE3LjA3IEMxMy4xODE2NjY3LDIwLjk1ODg4ODkgNi44MTgzMzMzMywyMC45NTg4ODg5IDIuOTI5NDQ0NDQsMTcuMDcgQy0wLjk1ODg4ODg4OSwxMy4xODE2NjY3IC0wLjk1ODg4ODg4OSw2LjgxODMzMzMzIDIuOTI5NDQ0NDQsMi45Mjk0NDQ0NCBDNi44MTgzMzMzMywtMC45NTg4ODg4ODkgMTMuMTgxNjY2NywtMC45NTg4ODg4ODkgMTcuMDcsMi45Mjk0NDQ0NCBDMjAuOTU4ODg4OSw2LjgxODMzMzMzIDIwLjk1ODg4ODksMTMuMTgxNjY2NyAxNy4wNzA1NTU2LDE3LjA3IEwxNy4wNzA1NTU2LDE3LjA3IFogTTEzLjg5Mzg4ODksNy42NjM4ODg4OSBMMTIuMzM2MTExMSw2LjEwNjExMTExIEwxMCw4LjQ0Mjc3Nzc4IEw3LjY2Mzg4ODg5LDYuMTA2MTExMTEgTDYuMTA2NjY2NjcsNy42NjM4ODg4OSBMOC40NDI3Nzc3OCwxMCBMNi4xMDY2NjY2NywxMi4zMzYxMTExIEw3LjY2Mzg4ODg5LDEzLjg5Mzg4ODkgTDEwLDExLjU1NzIyMjIgTDEyLjMzNjExMTEsMTMuODkzODg4OSBMMTMuODkzODg4OSwxMi4zMzYxMTExIEwxMS41NTcyMjIyLDEwIEwxMy44OTM4ODg5LDcuNjYzODg4ODkgTDEzLjg5Mzg4ODksNy42NjM4ODg4OSBaIiBpZD0iU2hhcGUiPjwvcGF0aD4KICAgICAgICA8L2c+CiAgICA8L2c+Cjwvc3ZnPg==)
+        no-repeat;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+`;
+const _VliadIcon = styled.div`
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    bottom: auto;
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjBweCIgaGVpZ2h0PSIyMHB4IiB2aWV3Qm94PSIwIDAgMjAgMjAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDU1LjIgKDc4MTgxKSAtIGh0dHBzOi8vc2tldGNoYXBwLmNvbSAtLT4KICAgIDx0aXRsZT5JY29ucyAvIFNldHRpbmdzIC8gVmFsaWQ8L3RpdGxlPgogICAgPGRlc2M+Q3JlYXRlZCB3aXRoIFNrZXRjaC48L2Rlc2M+CiAgICA8ZyBpZD0iSWNvbnMtLy1TZXR0aW5ncy0vLVZhbGlkIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgICAgICA8ZyBpZD0iY2hlY2stY2lyY2xlLWYiIGZpbGw9IiMzQ0FBRkYiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMCwxOS45OTg4ODg5IEM0LjUwMDU1NTU2LDE5Ljk5ODg4ODkgMC4wMDExMTExMTExMSwxNS40OTg4ODg5IDAuMDAxMTExMTExMTEsOS45OTk0NDQ0NCBDMC4wMDExMTExMTExMSw0LjUwMTExMTExIDQuNTAwNTU1NTYsMC4wMDExMTExMTExMSAxMCwwLjAwMTExMTExMTExIEMxNS40OTk0NDQ0LDAuMDAxMTExMTExMTEgMTkuOTk4ODg4OSw0LjUwMTExMTExIDE5Ljk5ODg4ODksOS45OTk0NDQ0NCBDMTkuOTk4ODg4OSwxNS40OTg4ODg5IDE1LjQ5OTQ0NDQsMTkuOTk4ODg4OSAxMCwxOS45OTg4ODg5IEwxMCwxOS45OTg4ODg5IFogTTEzLjM5Nzc3NzgsNi4xMTA1NTU1NiBMOC4xMTk0NDQ0NCwxMS4yOTYxMTExIEw2LjA0NjY2NjY3LDkuMjYgTDQuNDQzODg4ODksMTAuODM0NDQ0NCBMOC4xMTk0NDQ0NCwxNC40NDUgTDkuNzIyMjIyMjIsMTIuODcwNTU1NiBMMTUuMDAwNTU1Niw3LjY4NTU1NTU2IEwxMy4zOTc3Nzc4LDYuMTEwNTU1NTYgTDEzLjM5Nzc3NzgsNi4xMTA1NTU1NiBaIE04LjExOTQ0NDQ0LDExLjI5NjExMTEgTDguMTE5NDQ0NDQsMTEuMjk2MTExMSBMOS43MjIyMjIyMiwxMi44NzA1NTU2IEw4LjExOTQ0NDQ0LDExLjI5NjExMTEgTDguMTE5NDQ0NDQsMTEuMjk2MTExMSBaIiBpZD0iU2hhcGUiPjwvcGF0aD4KICAgICAgICA8L2c+CiAgICA8L2c+Cjwvc3ZnPg==)
+        no-repeat;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+`;
 export { ShoppingDetailBuy };
