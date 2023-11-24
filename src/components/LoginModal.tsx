@@ -81,6 +81,8 @@ function LoginModal({
                     setLoginError('존재하지 않는 사용자 입니다.');
                 } else {
                     setLoginError(null);
+                    localStorage.setItem('token', result);
+                    localStorage.getItem('token');
 
                     // 로그인 성공 시 처리
                     window.location.replace('/');
