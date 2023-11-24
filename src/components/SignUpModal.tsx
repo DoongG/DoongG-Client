@@ -6,7 +6,6 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import { AiOutlineClose } from 'react-icons/ai';
-import { User, UserData } from './data/User';
 import axios from 'axios';
 
 let authNum: string | undefined;
