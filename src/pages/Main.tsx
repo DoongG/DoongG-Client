@@ -6,12 +6,11 @@ import { UserData, User } from '../components/data/User';
 
 const Main = () => {
     const [isLoginModalOpen, setLoginModalOpen] = useState(false);
-    const [isMyPageModalOpen, setMyPageModalOpen] = useState(false);
-
     const onClickToggleLoginModal = useCallback(() => {
         setLoginModalOpen(!isLoginModalOpen);
     }, [isLoginModalOpen]);
 
+    const [isMyPageModalOpen, setMyPageModalOpen] = useState(false);
     const onClickToggleMyPageModal = useCallback(() => {
         setMyPageModalOpen(!isMyPageModalOpen);
     }, [isMyPageModalOpen]);
@@ -22,14 +21,7 @@ const Main = () => {
         <>
             <TAG>
                 <Title>LoginModal</Title>
-                {isLoginModalOpen && (
-                    <LoginModal onClickToggleModal={onClickToggleLoginModal}>
-                        Modal
-                    </LoginModal>
-                )}
-                <DialogButton onClick={onClickToggleLoginModal}>
-                    Login
-                </DialogButton>
+
                 <br />
                 <br />
                 {isMyPageModalOpen && (

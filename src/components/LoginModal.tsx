@@ -323,6 +323,7 @@ const _DialogBox = styled.dialog`
     box-sizing: border-box;
     background-color: white;
     z-index: 10000 !important;
+    margin-top: 800px;
 `;
 
 const _Backdrop = styled.div`
