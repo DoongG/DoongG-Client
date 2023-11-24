@@ -648,12 +648,7 @@ export default function ShoppingListTest() {
                     title={title}
                 ></ShoppingDetailHeader>
             )}
-            {/* 결제 모달 */}
-            {isOpenBuyModal && (
-                <ShoppingDetailBuy onClickbuyModal={onClickbuyModal}>
-                    이곳에 children이 들어갑니다.
-                </ShoppingDetailBuy>
-            )}
+
             {isOpenModal && (
                 <_backdrop
                     onClick={(e: React.MouseEvent) => {
