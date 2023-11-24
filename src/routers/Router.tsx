@@ -1,23 +1,24 @@
-
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Main } from "../pages/Main";
-import { Board } from "../pages/Board";
-import { Shopping } from "../pages/Shopping";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Main } from '../pages/Main';
+import { Board } from '../pages/Board';
+import { Shopping } from '../pages/Shopping';
 import { BoardUnited } from '../pages/BoardUnited';
+import { PostDetail } from '../pages/PostDetail';
 
 const Router = () => {
-  return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Main />}></Route>
-          <Route path="/board-all" element={<BoardUnited />}></Route>
-          <Route path="/board" element={<Board />}></Route>
-          <Route path="/shopping" element={<Shopping />}></Route>
-        </Routes>
-      </BrowserRouter>
-    </>
-  );
+    return (
+        <>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<Main />}></Route>
+                    <Route path="/board" element={<BoardUnited />}></Route>
+                    <Route path="/board/:boardName" element={<Board />}></Route>
+                    <Route path="/post/:id" element={<PostDetail />}></Route>
+                    <Route path="/shopping" element={<Shopping />}></Route>
+                </Routes>
+            </BrowserRouter>
+        </>
+    );
 };
 
 export { Router };
