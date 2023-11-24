@@ -2,15 +2,12 @@ import { Link, useLocation } from 'react-router-dom';
 import { styled } from 'styled-components';
 import { LoginModal } from '../components/LoginModal';
 import { useCallback, useState } from 'react';
-import { FaUser } from 'react-icons/fa';
+import { FaUser, FaSignOutAlt } from 'react-icons/fa';
 
 const _headerArea = styled.div`
     width: 100%;
     height: 50px;
     background-color: #daddb1;
-    /* background-color: #b3a492; */
-    /* background-color: #bfb29e; */
-    /* background-color: #d6c7ae; */
     font-size: 20px;
     display: flex;
     justify-content: space-between;
@@ -53,6 +50,13 @@ const _User = styled.div`
     }
 `;
 
+const LogoutButton = styled.div`
+    &:hover {
+        cursor: pointer;
+        color: red;
+    }
+`;
+
 const Header = () => {
     // 로그인 모달
     const [isLoginModalOpen, setLoginModalOpen] = useState(false);
@@ -61,6 +65,11 @@ const Header = () => {
     }, [isLoginModalOpen]);
 
     const location = useLocation();
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        window.location.replace('/');
+    };
 
     return (
         <_headerArea>
@@ -90,20 +99,34 @@ const Header = () => {
                     RoomReview
                 </_MenuSpecific>
             </_Menu>
+            {localStorage.getItem('token') ? (
+                <>
+                    <LogoutButton onClick={handleLogout}>
+                        <FaSignOutAlt
+                            style={{
+                                fontSize: '20px',
+                                marginRight: '5px',
+                                color: 'red',
+                            }}
+                        />
+                    </LogoutButton>
+                </>
+            ) : (
+                <_User onClick={onClickToggleLoginModal}>
+                    <FaUser
+                        style={{
+                            fontSize: '30px',
+                            marginRight: '10px',
+                            color: 'purple',
+                        }}
+                    />
+                </_User>
+            )}
             {isLoginModalOpen && (
                 <LoginModal onClickToggleModal={onClickToggleLoginModal}>
                     Modal
                 </LoginModal>
             )}
-            <_User onClick={onClickToggleLoginModal}>
-                <FaUser
-                    style={{
-                        fontSize: '30px',
-                        marginRight: '10px',
-                        color: 'purple',
-                    }}
-                />
-            </_User>
         </_headerArea>
     );
 };
