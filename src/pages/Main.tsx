@@ -1,15 +1,9 @@
 import { useCallback, useState } from 'react';
-import { LoginModal } from '../components/LoginModal';
 import styled from 'styled-components';
 import { MyPageModal } from '../components/MyPageModal';
 import { UserData, User } from '../components/data/User';
 
 const Main = () => {
-    const [isLoginModalOpen, setLoginModalOpen] = useState(false);
-    const onClickToggleLoginModal = useCallback(() => {
-        setLoginModalOpen(!isLoginModalOpen);
-    }, [isLoginModalOpen]);
-
     const [isMyPageModalOpen, setMyPageModalOpen] = useState(false);
     const onClickToggleMyPageModal = useCallback(() => {
         setMyPageModalOpen(!isMyPageModalOpen);
@@ -20,9 +14,6 @@ const Main = () => {
     return (
         <>
             <TAG>
-                <Title>LoginModal</Title>
-
-                <br />
                 <br />
                 {isMyPageModalOpen && (
                     <MyPageModal
