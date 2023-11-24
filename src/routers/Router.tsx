@@ -3,12 +3,14 @@ import { Main } from '../pages/Main';
 import { Board } from '../pages/Board';
 import { Shopping } from '../pages/Shopping';
 import { BoardUnited } from '../pages/BoardUnited';
+import { Header } from '../components/Header';
 import { PostDetail } from '../pages/PostDetail';
 
 const Router = () => {
     return (
         <>
             <BrowserRouter>
+                <Header />
                 <Routes>
                     <Route path="/" element={<Main />}></Route>
                     <Route path="/board" element={<BoardUnited />}></Route>
