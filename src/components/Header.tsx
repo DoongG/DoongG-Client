@@ -118,6 +118,7 @@ const Header = () => {
                         style={{
                             fontSize: '30px',
                             marginRight: '10px',
+
                             color: 'purple',
                         }}
                     />
