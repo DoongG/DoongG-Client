@@ -5,6 +5,7 @@ import { Shopping } from '../pages/Shopping';
 import { BoardUnited } from '../pages/BoardUnited';
 import { Header } from '../components/Header';
 import { PostDetail } from '../pages/PostDetail';
+import { RoomreView } from '../pages/RoomReview';
 
 const Router = () => {
     return (
@@ -17,6 +18,7 @@ const Router = () => {
                     <Route path="/board/:boardName" element={<Board />}></Route>
                     <Route path="/post/:id" element={<PostDetail />}></Route>
                     <Route path="/shopping" element={<Shopping />}></Route>
+                    <Route path="/roomreview" element={<RoomreView />}></Route>
                 </Routes>
             </BrowserRouter>
         </>
