@@ -8,13 +8,13 @@ import Modal from 'react-bootstrap/Modal';
 
 interface Props {
     address: string;
-    latitude: number;
-    longitude: number;
+    mylat: number;
+    mylng: number;
 }
-const RoomReviewBox: React.FC<Props> = ({ address, latitude, longitude }) => {
+const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
     const [content, setContent] = useState('');
     const [modalShow, setModalShow] = useState(false);
-    // console.log(latitude, longitude);
+    console.log(mylat, mylng);
 
     // content 변경함수
     const onChangeContent: React.ChangeEventHandler<HTMLTextAreaElement> = (
@@ -60,6 +60,8 @@ const RoomReviewBox: React.FC<Props> = ({ address, latitude, longitude }) => {
             .post(' http://localhost:8080/review', {
                 address: address,
                 content: content,
+                latitude: mylat,
+                longitude: mylng,
             })
             .then(function (response) {
                 console.log(response);
@@ -208,4 +210,4 @@ const _ButtonBox = styled.div`
         cursor: pointer;
     }
 `;
-export { RoomReviewBox };
+export { RoomReviewWrite };
