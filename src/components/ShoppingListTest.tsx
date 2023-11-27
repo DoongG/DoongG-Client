@@ -55,6 +55,7 @@ export default function ShoppingListTest() {
     // 상품 리스트에서 클릭한 상품의 제목과 카테고리
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('');
+    const [productId, setProductId] = useState(0);
 
     const categoryDiv = useRef<HTMLDivElement>(null);
     const listWrapper = useRef<HTMLDivElement>(null);
@@ -65,10 +66,12 @@ export default function ShoppingListTest() {
     const onClickToggleModal = (
         changedCategory: string,
         changedTitle: string,
+        changedId: number,
     ) => {
         // 제목, 카테고리 state값 변경
         setTitle(changedTitle);
         setCategory(changedCategory);
+        setProductId(changedId);
         setOpenModal(!isOpenModal);
     };
 
@@ -105,7 +108,7 @@ export default function ShoppingListTest() {
     }, []);
 
     useEffect(() => {
-        if (filteredItems.length > 0 || click === true) {
+        if (allProductList.length || click === true) {
             // 상품 목록 Div가 내려가는 조건
             if (
                 shouldAnimate === false &&
@@ -140,7 +143,7 @@ export default function ShoppingListTest() {
                 setClick(false);
             }
         }
-    }, [filteredItems]);
+    }, [allProductList]);
 
     useEffect(() => {
         setClick(true);
@@ -153,7 +156,7 @@ export default function ShoppingListTest() {
         const getResentProduct = async () => {
             try {
                 const res = await axios.get<ApiResponse, any>(
-                    `http://localhost:8080/shop/getAll/${category}`,
+                    `http://localhost:8080/beauty`,
                 );
                 console.log(res.data);
                 setAllProductList(res.data);
@@ -230,6 +233,7 @@ export default function ShoppingListTest() {
                                             onClickToggleModal(
                                                 item.category,
                                                 item.productName,
+                                                item.productID,
                                             )
                                         }
                                     >
@@ -280,11 +284,12 @@ export default function ShoppingListTest() {
             </_productListWrapper>
             {isOpenModal && (
                 <ShoppingDetailHeader
-                    onClickToggleModal={(title, category) =>
-                        console.log(title, category)
+                    onClickToggleModal={(title, category, productId) =>
+                        console.log(title, category, productId)
                     }
                     category={category}
                     title={title}
+                    productId={productId}
                 ></ShoppingDetailHeader>
             )}
 
@@ -295,7 +300,7 @@ export default function ShoppingListTest() {
                         setOpenModal(false);
                         setIsOpenBuyModal(false);
                         if (onClickToggleModal) {
-                            onClickToggleModal(category, title);
+                            onClickToggleModal(category, title, productId);
                         }
                     }}
                 ></_backdrop>

@@ -4,6 +4,8 @@ import fox from '../assets/fox.jpg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
+
 import eyes from '../assets/eyes.png';
 import {
     PropsWithChildren,
@@ -24,31 +26,93 @@ import { ShoppingDetailBuy } from './ShoppingDetailBuy';
 interface ShoppingDetailModalProps {
     category: string;
     title: string;
-    onClickToggleModal: (title: string, category: string) => void;
+    productId: number;
+    onClickToggleModal: (
+        title: string,
+        category: string,
+        productId: number,
+    ) => void;
 }
 interface ModalProps {
     isModal: boolean;
 }
 
+interface ApiResponse {
+    discountedPrice: number;
+    price: number;
+    productID: number;
+    productImage: string;
+    productName: string;
+    stock: number;
+    viewCount: number;
+    category: string;
+}
+
+// detailInfos의 타입 정의
+interface Review {
+    nickname: string;
+    content: string;
+    createdAt: string;
+}
+
+interface DetailInfos {
+    productID: number;
+    productName: string;
+    productImage: string;
+    productDescription?: string;
+    category: string;
+    stock: number;
+    price: number;
+    discountedPrice: number;
+    viewCount: number;
+    createAt: string;
+    reviews: Review[];
+}
+
 const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
     category,
     title,
+    productId,
     onClickToggleModal,
 }) => {
     // 모달 상태
     const { isOpenModal, setOpenModal } = useModalStore();
     const { isOpenBuyModal, setIsOpenBuyModal } = useBuyModalStore();
 
+    console.log(category, title, productId);
+
     // 수량과 가격 상태
     const [count, setCount] = useState(1);
-    const [beforePrice, setbeforePrice] = useState(10000);
-    const [afterPrice, setAfterPrice] = useState(8000);
+    const [beforePrice, setbeforePrice] = useState(0);
+    const [afterPrice, setAfterPrice] = useState(0);
 
+    // 제품 상세 정보 상태
+    const [detailInfos, setDetailInfos] = useState<DetailInfos | null>(null);
+
+    // 결제 모달 on/off 함수
     const onClickbuyModal = useCallback(() => {
         setIsOpenBuyModal(!isOpenBuyModal);
     }, [isOpenBuyModal]);
 
     const shoppingDetailHeader = useRef<HTMLDivElement>(null);
+
+    // 상품 정보 가져오는 함수
+    useEffect(() => {
+        const getDetailInfos = async () => {
+            try {
+                const res = await axios.get<DetailInfos, any>(
+                    `http://localhost:8080/${productId}`,
+                );
+                console.log(res.data);
+                setDetailInfos(res.data);
+                setbeforePrice(res.data.price);
+                setAfterPrice(res.data.discountedPrice);
+            } catch (error) {
+                console.error('데이터를 가져오는 중 오류 발생:', error);
+            }
+        };
+        getDetailInfos();
+    }, []);
 
     useEffect(() => {
         // isOpenModal 값이 변경될 때마다 애니메이션 클래스를 동적으로 추가 또는 제거
@@ -90,24 +154,56 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
     const decodedTitle = decodeURIComponent(title as string);
 
     // 천 단위 쉼표 추가 함수
-    const addCommas = (num: number) => {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const addCommas = (num: number | undefined) => {
+        if (num !== undefined) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        } else {
+            // handle the case where num is undefined
+            return '';
+        }
     };
 
+    // 할인률 구하는 함수
+    function calculateDiscountRate(
+        originalPrice: number | undefined,
+        discountedPrice: number | undefined,
+    ) {
+        if (originalPrice !== undefined && discountedPrice !== undefined) {
+            // 원래 가격과 할인된 가격을 이용하여 할인률을 계산합니다.
+            const discountAmount = originalPrice - discountedPrice;
+            const discountRate = (discountAmount / originalPrice) * 100;
+
+            return discountRate.toFixed(0);
+        } else {
+            return '';
+        }
+    }
+
     // 마이너스 버튼
-    const handleMinusClick = () => {
-        if (count > 1) {
-            setCount(count - 1);
-            setAfterPrice(afterPrice - 8000);
-            setbeforePrice(beforePrice - 10000);
+    const handleMinusClick = (
+        before: number | undefined,
+        after: number | undefined,
+    ) => {
+        if (before !== undefined && after !== undefined) {
+            if (count > 1) {
+                setCount(count - 1);
+                setAfterPrice(afterPrice - after);
+                setbeforePrice(beforePrice - before);
+            }
         }
     };
 
     // 플러스 버튼
-    const handlePlusClick = () => {
-        setCount(count + 1);
-        setAfterPrice(afterPrice + 8000);
-        setbeforePrice(beforePrice + 10000);
+    const handlePlusClick = (
+        before: number | undefined,
+        after: number | undefined,
+    ) => {
+        if (before !== undefined && after !== undefined) {
+            console.log('a');
+            setCount(count + 1);
+            setAfterPrice(afterPrice + after);
+            setbeforePrice(beforePrice + before);
+        }
     };
 
     // 모달 닫는 함수
@@ -119,6 +215,8 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
         }, 200);
         console.log(isOpenModal);
     };
+
+    console.log(detailInfos?.viewCount);
 
     return (
         <>
@@ -150,18 +248,22 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
                         <_category className="category">{category}</_category>
                         <_title className="title">{decodedTitle}</_title>
                         <_heartAndViewBox className="heartAndViewBox">
-                            <_heartBox className="heartBox">
-                                <_customFontAwesome icon={faHeart} />
-                                <div className="heart">11</div>
-                            </_heartBox>
                             <_viewBox className="viewBox">
                                 <img src={eyes} alt="" />
-                                <div className="view">214</div>
+                                <div className="view">
+                                    {detailInfos?.viewCount}
+                                </div>
                             </_viewBox>
                         </_heartAndViewBox>
                         <_priceBox className="priceBox">
                             <_beforePrice className="beforePrice">
-                                <_per className="per">27%</_per>
+                                <_per className="per">
+                                    {calculateDiscountRate(
+                                        detailInfos?.price,
+                                        detailInfos?.discountedPrice,
+                                    )}
+                                    %
+                                </_per>
                                 <_price className="price">
                                     {addCommas(beforePrice)}원
                                 </_price>
@@ -173,12 +275,25 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
                         <_countBox className="countBox">
                             <_minus
                                 className="minus"
-                                onClick={handleMinusClick}
+                                onClick={() =>
+                                    handleMinusClick(
+                                        detailInfos?.price,
+                                        detailInfos?.discountedPrice,
+                                    )
+                                }
                             >
                                 <FontAwesomeIcon icon={faMinus} />
                             </_minus>
                             <_count>{count}</_count>
-                            <_plus className="plus" onClick={handlePlusClick}>
+                            <_plus
+                                className="plus"
+                                onClick={() =>
+                                    handlePlusClick(
+                                        detailInfos?.price,
+                                        detailInfos?.discountedPrice,
+                                    )
+                                }
+                            >
                                 <FontAwesomeIcon icon={faPlus} />
                             </_plus>
                         </_countBox>
@@ -190,7 +305,18 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
                         </_buyBox>
                     </_productInfos>
                 </_productInfoBox>
-                <ShoppingDetailSelectBar></ShoppingDetailSelectBar>
+                <ShoppingDetailSelectBar
+                    description={detailInfos?.productDescription || ''}
+                    review={
+                        detailInfos?.reviews.map(
+                            ({ nickname, createdAt, content }) => ({
+                                name: nickname,
+                                createAt: createdAt,
+                                content,
+                            }),
+                        ) || []
+                    }
+                ></ShoppingDetailSelectBar>
             </_ShoppingDetailModal>
             {/* 결제 모달 */}
             {isOpenBuyModal && (
