@@ -24,6 +24,7 @@ const _orderKind = styled.div`
 
 const _orderEach = styled.span`
     margin: 0px 5px 0px 5px;
+    min-width: 60px;
     font-weight: 600;
     cursor: pointer;
 `;
@@ -40,22 +41,27 @@ const _postButton = styled.button`
 `;
 
 const BoardUpperPart = () => {
-    const [whichOrder, setWhichOrder] = useState(false);
-    const { postModalOn, setPostModalOn } = BoardStore();
+    const [keyword, setKeyword] = useState('');
+    const { postModalOn, setPostModalOn, orderKind, setOrderKind } =
+        BoardStore();
 
     const orderNew = () => {
         // 데이터 새로 받아와서 최신순정렬
-        setWhichOrder(false);
+        setOrderKind(false);
     };
 
     const orderHot = () => {
         // 데이터 새로 받아와서 인기순정렬
-        setWhichOrder(true);
+        setOrderKind(true);
+    };
+
+    const handleSearchKeyword = (e: any) => {
+        setKeyword(e.target.value);
     };
     return (
         <_listUpperPart>
             <_orderKind>
-                {!whichOrder ? (
+                {!orderKind ? (
                     <>
                         <_orderEach onClick={orderNew}>최근순</_orderEach>
                         <span>
