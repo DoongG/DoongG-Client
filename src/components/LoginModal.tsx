@@ -313,7 +313,7 @@ const _ModalContainer = styled.div`
 
 const _DialogBox = styled.dialog`
     width: 400px;
-    height: 600px;
+    height: 650px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -323,6 +323,7 @@ const _DialogBox = styled.dialog`
     box-sizing: border-box;
     background-color: white;
     z-index: 10000 !important;
+    margin-top: 700px;
 `;
 
 const _Backdrop = styled.div`

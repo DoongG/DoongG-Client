@@ -23,8 +23,19 @@ const tempDB = [
 interface Props {
     isSelect: string;
 }
+interface DefaultProps {
+    description: string; // 추가
+    review: Array<{
+        name: string;
+        createAt: string;
+        content: string;
+    }>; // 추가
+}
 
-const ShoppingDetailSelectBar = () => {
+const ShoppingDetailSelectBar: React.FC<DefaultProps> = ({
+    description,
+    review,
+}) => {
     // selectBar 상태
     const { isSelect, setIsSelect } = useShoppingDetailSelectBarStore();
 
@@ -32,6 +43,7 @@ const ShoppingDetailSelectBar = () => {
     const handleButtonClick = (button: string) => {
         setIsSelect(button);
     };
+    console.log(description, review);
 
     return (
         <>
@@ -49,19 +61,14 @@ const ShoppingDetailSelectBar = () => {
                         onClick={() => handleButtonClick('리뷰')}
                         isSelect={isSelect}
                     >
-                        Review ({tempDB.length})
+                        Review ({review.length})
                     </_reviewSelectBox>
                 </_selectTitleBar>
                 <_descriptionBox className="descriptionBox" isSelect={isSelect}>
-                    Privact Filter는 우리 눈에 해로운 자외선 등 외부 광원을
-                    차단합니다. 또한 hard coation이 되어 있어 외부의 스크래치 및
-                    충격을 방지하며 모니터를 보다 안전하게 지켜줍니다.기존
-                    필름의 경우 양면테이프 또는 커치탭을 이용하여야 하는 불편한
-                    수고는 이제 안녕! 본재품의 경우 간편하게 모니터에 걸치기만
-                    하면 설치가 완료되어 빠르고 손쉽게 사용할 수 있습니다.
+                    {description}
                 </_descriptionBox>
                 <_reviewBox className="reviewBox" isSelect={isSelect}>
-                    {tempDB.map((item) => {
+                    {review.map((item) => {
                         return (
                             <>
                                 <_privateContentBox className="privateContentBox">

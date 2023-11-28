@@ -65,6 +65,7 @@ const ShoppingDetailBuy = ({
 
     console.log(errors.name, errors.restAddress);
 
+    // DB로 보내는 함수
     const onSubmit = () => {
         console.log();
     };
@@ -255,7 +256,7 @@ const _shoppingDetailBuy = styled.div`
     overflow: auto;
     padding: 20px 20px;
     border: none;
-    border-radius: 3px;
+    border-radius: 10px;
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;
     background-color: #f5f5f5;
