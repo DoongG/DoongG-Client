@@ -1,4 +1,10 @@
-import React, { useRef, useState, PropsWithChildren, useMemo } from 'react';
+import React, {
+    useRef,
+    useState,
+    PropsWithChildren,
+    useMemo,
+    useEffect,
+} from 'react';
 import { BoardStore } from '../store/storeT';
 import styled from 'styled-components';
 import ReactQuill from 'react-quill';
@@ -6,12 +12,21 @@ import AWS from 'aws-sdk';
 import ReactS3Client from 'react-aws-s3-typescript';
 import axios from 'axios';
 
-function Modal() {
+function UpdateModal() {
     let myRef = useRef<ReactQuill>(null);
     let tagRef = useRef<any>(null);
-    const { postModalOn, setPostModalOn, setSignal, signal } = BoardStore();
+    const {
+        onePageData,
+        postModalOn,
+        setPostModalOn,
+        setSignal,
+        signal,
+        updateModal,
+        setUpdateModal,
+        updatePostId,
+    } = BoardStore();
     const [content, setContent] = useState('');
-    const [title, setTitle] = useState(' ');
+    const [title, setTitle] = useState('');
     const [commentAllowed, setCommentAllowed] = useState(true);
     const [currentTag, setCurrentTag] = useState('');
     const [tagExsist, setTagExsist] = useState(false);
@@ -100,6 +115,30 @@ function Modal() {
         };
     }, []);
 
+    const postUpdatePost = async () => {
+        let data = {
+            title: title,
+            content: content,
+            views: 0,
+            board: {
+                boardId: 1,
+            },
+            user: {
+                id: 1,
+            },
+            commentAllowed: commentAllowed ? 'true' : 'false',
+            commentCount: 0,
+        };
+        let res = await axios({
+            method: 'post',
+            url: `http://localhost:8080/boardsAuth/updatePost/${updatePostId}`,
+            data: data,
+        });
+        console.log(res);
+        alert('글 수정 성공!');
+        setUpdateModal(!updateModal);
+    };
+
     const postComplete = async () => {
         let data = {
             title: title,
@@ -119,16 +158,19 @@ function Modal() {
             url: `http://localhost:8080/boardsAuth/createPost`,
             data: data,
         });
-        if (res.status == 201) {
-            alert('글 작성 성공!');
-            setSignal(!signal);
-            setPostModalOn(!postModalOn);
-        }
+        alert('글 작성 성공!');
+        setSignal(!signal);
+        setPostModalOn(!postModalOn);
         setTitle('');
         setContent('');
         setTags([]);
         setCommentAllowed(true);
     };
+
+    useEffect(() => {
+        setTitle(onePageData[0].title);
+        setContent(onePageData[0].content);
+    }, [updateModal]);
 
     return (
         <_modalContainer>
@@ -137,6 +179,7 @@ function Modal() {
                     placeholder=" 제목을 입력하세요"
                     id="title"
                     type="text"
+                    value={title}
                     onChange={handleTitleChange}
                     spellCheck={false}
                 />
@@ -149,6 +192,7 @@ function Modal() {
                         height: '500px',
                         marginBottom: '80px',
                     }}
+                    value={content}
                     modules={modules}
                     onChange={setContent}
                 />
@@ -212,10 +256,10 @@ function Modal() {
                             '창을 끄면 작성중인 내용이 삭제됩니다. 창을 끄시겠습니까?',
                         );
                         if (confirmNotice) {
-                            setPostModalOn(!postModalOn);
+                            setUpdateModal(!updateModal);
                         }
                     } else {
-                        setPostModalOn(!postModalOn);
+                        setUpdateModal(!updateModal);
                     }
                 }}
             />
@@ -255,9 +299,6 @@ const _tagBox = styled.div`
 
 const _buttonPlace = styled.div`
     display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 200px;
 `;
 
 const _titleInput = styled.input`
@@ -304,4 +345,4 @@ const _backdrop = styled.div`
     background-color: rgba(0, 0, 0, 0.2);
 `;
 
-export { Modal };
+export { UpdateModal };
