@@ -103,12 +103,25 @@ function PasswordChangeModal({
     );
 }
 const _ChangeButton = styled.button`
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
     width: 100%;
     height: 35px;
     margin-top: 20px;
-    background-color: white;
-    border: 2px solid #daddb1;
+    background-color: rgb(28, 57, 61);
+    border: 2px solid rgb(28, 57, 61);
+    color: white;
     border-radius: 5px;
+    &:hover {
+        color: rgb(255, 202, 29);
+        cursor: pointer;
+    }
 `;
 
 const _PasswordChangeForm = styled.div`
@@ -159,7 +172,7 @@ const DialogBox = styled.dialog`
     flex-direction: column;
     align-items: center;
     border: none;
-    border-radius: 3px;
+    border-radius: 10px;
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;
     background-color: white;
@@ -177,14 +190,14 @@ const Backdrop = styled.div`
 
 const _FormTitle = styled.div`
     margin-bottom: 5px;
-    color: gray;
+    color: rgb(28, 57, 61);
     font-weight: bold;
     margin-top: 10px;
 `;
 const _FormInput = styled.input`
     width: 100%;
     height: 35px;
-    border: 2px solid #daddb1;
+    border: 2px solid rgb(28, 57, 61);
     border-radius: 5px;
     padding: 0 0 0 2%;
 `;

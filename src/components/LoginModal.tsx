@@ -209,14 +209,21 @@ const _Title = styled.div`
 
 // Title 아래 SubTitle부분
 const _SubTitle = styled.div`
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
     margin-top: -10px;
     font-size: 20px;
-    font-weight: bold;
 `;
 
 // 서비스 설명 부분
 const _ExplainService = styled.div`
-    margin-top: 30px;
+    margin-top: 10px;
     font-weight: bold;
     color: gray;
 `;
@@ -231,7 +238,7 @@ const _LoginForm = styled.div`
 // ID Title
 const _ID = styled.div`
     margin-bottom: 5px;
-    color: gray;
+    color: rgb(28, 57, 61);
     font-weight: bold;
 `;
 
@@ -239,7 +246,7 @@ const _ID = styled.div`
 const _PW = styled.div`
     margin-top: 20px;
     margin-bottom: 5px;
-    color: gray;
+    color: rgb(28, 57, 61);
     font-weight: bold;
 `;
 
@@ -247,27 +254,45 @@ const _PW = styled.div`
 const _IdInput = styled.input`
     width: 100%;
     height: 35px;
-    border: 2px solid #daddb1;
+    border: 2px solid rgb(28, 57, 61);
     border-radius: 5px;
     padding: 0 0 0 2%;
+    &:focus {
+        border: 2px solid rgb(28, 57, 61);
+    }
 `;
 // 비밀번호 입력
 const _PwInput = styled.input`
     width: 100%;
     height: 35px;
-    border: 2px solid #daddb1;
+    border: 2px solid rgb(28, 57, 61);
     border-radius: 5px;
     padding: 0 0 0 2%;
+    &:focus {
+        border: 2px solid rgb(28, 57, 61);
+    }
 `;
 
 // 로그인 버튼
 const _LoginButton = styled.button`
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
+    color: white;
     width: 100%;
     height: 35px;
     margin-top: 20px;
-    background-color: white;
-    border: 2px solid #daddb1;
+    background-color: rgb(28, 57, 61);
+    border: 2px solid rgb(28, 57, 61);
     border-radius: 5px;
+    &:hover {
+        color: rgb(255, 202, 29);
+    }
 `;
 
 const _GoSignUp = styled.div`
@@ -323,7 +348,7 @@ const _DialogBox = styled.dialog`
     box-sizing: border-box;
     background-color: white;
     z-index: 10000 !important;
-    margin-top: 700px;
+    margin-top: 900px;
 `;
 
 const _Backdrop = styled.div`
