@@ -1,24 +1,33 @@
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { AiOutlineClose } from 'react-icons/ai';
 import { User } from './data/User';
 import { PasswordChangeModal } from './PasswordChangeModal';
+import originalImg from '../assets/Mascot.jpg';
+import axios from 'axios';
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
 }
 
 interface MyPageModalProps extends PropsWithChildren<ModalDefaultType> {
-    user: User;
+    user?: User;
 }
 
 function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
+    const [token, setToken] = useState<string | null>(null);
+
+    useEffect(() => {
+        // 이 부분에서 로컬 스토리지에서 토큰을 가져와 상태로 관리합니다.
+        const storedToken = localStorage.getItem('token');
+        setToken(storedToken);
+    }, []);
     const [isModalOpen, setModalOpen] = useState(true);
     const [isPasswordChangeModalOpen, setPasswordChangeModalOpen] =
         useState(false);
 
     const [isEditingNickname, setEditingNickname] = useState(false);
-    const [editedNickname, setEditedNickname] = useState(user.nickname);
+    const [editedNickname, setEditedNickname] = useState(user?.nickname || '');
 
     const modalClose = () => {
         setModalOpen(false);
@@ -27,9 +36,13 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
             onClickToggleModal();
         }
     };
+    // user가 undefined인 경우를 고려하여 코드 수정
+    const _ProfileImgSrc = user ? user.profileImg || originalImg : '';
+    const _ProfileEmailText = user ? user.email : '';
+
+    // s3 업로드후 로딩 하는 로직
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // 이미지 업로드 로직을 처리합니다.
-        // 필요한 경우 FileReader를 사용하여 선택한 이미지를 미리보기할 수 있습니다.
+        const requestData = {};
     };
 
     const handleNicknameClick = () => {
@@ -42,10 +55,36 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
 
     const handleNicknameBlur = () => {
         setEditingNickname(false);
-        // 여기에서 수정된 닉네임을 저장
     };
-    const handleNicknameSubmit = () => {
-        // 여기에서 수정된 닉네임을 처리
+
+    const handleNicknameSubmit = async () => {
+        console.log('수정 눌림');
+        setEditingNickname(false);
+
+        const requestData = {
+            nickname: editedNickname,
+        };
+
+        try {
+            const response = await axios.post(
+                'http://localhost:8080/userAuth/chNick',
+                requestData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            );
+
+            const result = response.data;
+
+            if (result) {
+                alert('success');
+                setEditedNickname(requestData.nickname);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const openPasswordChangeModal = () => {
@@ -67,8 +106,8 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
                     <_ProfileSection>
                         <_ImgSection>
                             <_ProfileImg
-                                src={user.profileImg || ''}
-                                alt={user.nickname}
+                                src={_ProfileImgSrc}
+                                alt={user ? user.nickname : ''}
                             />
                             <ImageUploadButton>
                                 <label htmlFor="imageUpload">편집</label>
@@ -82,7 +121,7 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
                             </ImageUploadButton>
                         </_ImgSection>
                         <_ProfileSpesific>
-                            <_ProfileEmail>{user.email}</_ProfileEmail>
+                            <_ProfileEmail>{_ProfileEmailText}</_ProfileEmail>
                             {isEditingNickname ? (
                                 <_ChangeSection>
                                     <_NewNicknameInput
@@ -209,6 +248,7 @@ const _Title = styled.div`
 const _ProfileImg = styled.img`
     margin-top: 10px;
     width: 150px;
+    border: 2px black solid;
     border-radius: 100%;
 `;
 const _ProfileSection = styled.div`
@@ -261,7 +301,7 @@ const ImageUploadButton = styled.div`
 const ModalContainer = styled.div`
     width: 100%;
     height: 100%;
-    margin-top: -100px;
+    margin-top: 600px;
     display: flex;
     align-items: center;
     justify-content: center;
