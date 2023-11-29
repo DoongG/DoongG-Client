@@ -245,7 +245,7 @@ const _PW = styled.div`
 
 // ID input
 const _IdInput = styled.input`
-    width: 96.5%;
+    width: 100%;
     height: 35px;
     border: 2px solid #daddb1;
     border-radius: 5px;
@@ -253,7 +253,7 @@ const _IdInput = styled.input`
 `;
 // 비밀번호 입력
 const _PwInput = styled.input`
-    width: 96.5%;
+    width: 100%;
     height: 35px;
     border: 2px solid #daddb1;
     border-radius: 5px;
