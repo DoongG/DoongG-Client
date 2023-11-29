@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BoardStore } from '../store/storeT';
 import { TodayFoodModal } from '../components/TodayFoodModal';
+import { useLocation } from 'react-router';
 
 const _hr = styled.hr`
     /* width: 100%; */
@@ -51,6 +52,7 @@ const _eachPost = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
 `;
 
 const BoardUnited = () => {
@@ -59,6 +61,8 @@ const BoardUnited = () => {
         setCurrentBoardName,
         gameModalOn,
         setGameModalOn,
+        modalSignal,
+        setModalSignal,
     } = BoardStore();
     const navigate = useNavigate();
     const [allBoard, setAllBoard] = useState([]);
@@ -82,96 +86,13 @@ const BoardUnited = () => {
         navigate(`/board/${e.currentTarget.innerText}`);
     };
 
-    const sampleDB = [
-        {
-            name: '라면 게시판',
-            recentPost: [
-                {
-                    title: '아오이거뭐냐',
-                    date: '23-11-22 11/22',
-                },
-                {
-                    title: '아오이거뭐냐',
-                    date: '23-11-22 11/22',
-                },
-                {
-                    title: '아오이거뭐냐',
-                    date: '23-11-22 11/22',
-                },
-            ],
-        },
-        {
-            name: '냉면 게시판',
-            recentPost: [
-                {
-                    title: '아오이거뭐냐',
-                    date: '23-11-22 11/22',
-                },
-                {
-                    title: '아오이거뭐냐',
-                    date: '23-11-22 11/22',
-                },
-                {
-                    title: '아오이거뭐냐',
-                    date: '23-11-22 11/22',
-                },
-            ],
-        },
-        {
-            name: '짬뽕 게시판',
-            recentPost: [
-                {
-                    title: '아오이거뭐냐',
-                    date: '23-11-22 11/22',
-                },
-                {
-                    title: '아오이거뭐냐',
-                    date: '23-11-22 11/22',
-                },
-                {
-                    title: '아오이거뭐냐',
-                    date: '23-11-22 11/22',
-                },
-            ],
-        },
-        {
-            name: '쫄면 게시판',
-            recentPost: [
-                {
-                    title: '아오이거뭐냐',
-                    date: '23-11-22 11/22',
-                },
-                {
-                    title: '아오이거뭐냐',
-                    date: '23-11-22 11/22',
-                },
-                {
-                    title: '아오이거뭐냐',
-                    date: '23-11-22 11/22',
-                },
-            ],
-        },
-        {
-            name: '우동 게시판',
-            recentPost: [
-                {
-                    title: '아오이거뭐냐',
-                    date: '23-11-22 11/22',
-                },
-                {
-                    title: '아오이거뭐냐',
-                    date: '23-11-22 11/22',
-                },
-                {
-                    title: '아오이거뭐냐',
-                    date: '23-11-22 11/22',
-                },
-            ],
-        },
-    ];
+    const goToOnePage = async (id: any, postId: any) => {
+        // navigate(`/posts/${postId}`);
+        setModalSignal(postId);
+        navigate(`/board/${id}`);
+    };
     return (
         <>
-            <Header></Header>
             <_backArea>
                 {gameModalOn && <TodayFoodModal></TodayFoodModal>}
                 <_allBoardArea>
@@ -186,11 +107,22 @@ const BoardUnited = () => {
                                     {x.boardName}
                                 </_boardTitleArea>
                                 {x.posts.map((y: any, index: number) => {
+                                    console.log(y);
                                     return (
                                         <>
-                                            <_eachPost>
+                                            <_eachPost
+                                                onClick={(e) => {
+                                                    goToOnePage(
+                                                        x.boardName,
+                                                        y.postId,
+                                                    );
+                                                }}
+                                            >
                                                 <div>{y.title}</div>
-                                                <div>{y.createdAt}</div>
+                                                <div>
+                                                    {y.createdAt.slice(0, 10)}{' '}
+                                                    {y.createdAt.slice(11, 16)}{' '}
+                                                </div>
                                             </_eachPost>
                                             {x.posts.length !== index + 1 ? (
                                                 <_hr></_hr>

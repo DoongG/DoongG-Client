@@ -62,6 +62,21 @@ const Board = () => {
     const [data, setData] = useState(); // db에서 가져온 데이터들을 담는 state
     console.log(location.pathname);
     const judgement = location.pathname.split('/')[2];
+    const {
+        onePageData,
+        setOnePageData,
+        setCarousel,
+        postModalOn,
+        detailModalOn,
+        setCurrentBoardName,
+        setDetailModalOn,
+        currentBoardName,
+        updateModal,
+        setUpdateModal,
+        modalSignal,
+        boardPostCount,
+        setBoardPostCount,
+    } = BoardStore();
     const getBoardData = async () => {
         console.log(`http://localhost:8080/boards/${judgement}`);
         let res = await axios({
@@ -71,6 +86,7 @@ const Board = () => {
         console.log(res.data);
         setGalleryName(res.data.boardName);
         setGalleryType(res.data.boardDefaultType);
+        setBoardPostCount(res.data.postCount);
         // return res.data.boardDefaultType;
         // setOnePageData([res.data]);
     };
@@ -92,18 +108,6 @@ const Board = () => {
     };
 
     const [styleSwitch, setStyleSwitch] = useState(true);
-    const {
-        onePageData,
-        setOnePageData,
-        setCarousel,
-        postModalOn,
-        detailModalOn,
-        setDetailModalOn,
-        setCurrentBoardName,
-        currentBoardName,
-        updateModal,
-        setUpdateModal,
-    } = BoardStore();
     useEffect(() => {
         getBoardData();
         if (location.search) {
@@ -231,6 +235,22 @@ const Board = () => {
     useEffect(() => {
         setDetailModalOn(false);
     }, [styleSwitch]);
+
+    const getOnePageData = async () => {
+        let res = await axios({
+            method: 'get',
+            url: `http://localhost:8080/boards/posts/${modalSignal}`,
+        });
+        setOnePageData([res.data]);
+        setDetailModalOn(true);
+    };
+
+    useEffect(() => {
+        if (modalSignal !== 0) {
+            console.log('헤헤헤이');
+            getOnePageData();
+        }
+    }, [modalSignal]);
 
     return (
         <_boardArea>

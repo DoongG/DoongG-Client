@@ -1,10 +1,18 @@
-import React, { useRef, useState, PropsWithChildren, useMemo } from 'react';
+import React, {
+    useRef,
+    useState,
+    PropsWithChildren,
+    useMemo,
+    useEffect,
+} from 'react';
 import { BoardStore } from '../store/storeT';
 import styled from 'styled-components';
 import ReactQuill from 'react-quill';
 import AWS from 'aws-sdk';
 import ReactS3Client from 'react-aws-s3-typescript';
 import axios from 'axios';
+
+// profile / thumbnail / contents
 
 function Modal() {
     let myRef = useRef<ReactQuill>(null);
@@ -16,6 +24,7 @@ function Modal() {
     const [currentTag, setCurrentTag] = useState('');
     const [tagExsist, setTagExsist] = useState(false);
     const [tags, setTags] = useState<any>([]);
+    const [images, setImages] = useState<any>([]);
 
     const handleTitleChange = (e: any) => {
         setTitle(e.currentTarget.value);
@@ -79,6 +88,21 @@ function Modal() {
                     const editor = myRef.current.getEditor();
                     const range: any = editor.getSelection();
                     editor.insertEmbed(range.index, 'image', res.location);
+                    // editor.insertEmbed(
+                    //     range.index,
+                    //     'variable',
+                    //     <div>안녕</div>,
+                    // );
+                    editor.setSelection(range.index + 1);
+                    console.log(editor);
+                    const eachImage = {
+                        url: res.location,
+                        imageType: images.length > 0 ? 'contents' : 'thumbnail',
+                        description: Date.now(),
+                    };
+                    let tempImage = images;
+                    tempImage.push(eachImage);
+                    setImages(tempImage);
                 }
             } catch (error) {
                 console.log(error);
@@ -91,7 +115,14 @@ function Modal() {
                 container: [
                     ['image'],
                     [{ header: [1, 2, 3, 4, 5, false] }],
-                    ['bold', 'underline'],
+                    [
+                        { list: 'ordered' },
+                        { list: 'bullet' },
+                        { indent: '-1' },
+                        { indent: '+1' },
+                        { align: [] },
+                    ],
+                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
                 ],
                 handlers: {
                     image: imageHandler,
@@ -101,6 +132,13 @@ function Modal() {
     }, []);
 
     const postComplete = async () => {
+        let tagTempArr = [];
+        for (let i = 0; i < tags.length; i++) {
+            let newTag = {
+                hashtagName: tags[i],
+            };
+            tagTempArr.push(newTag);
+        }
         let data = {
             title: title,
             content: content,
@@ -113,12 +151,16 @@ function Modal() {
             },
             commentAllowed: commentAllowed ? 'true' : 'false',
             commentCount: 0,
+            hashtags: tagTempArr,
+            postImages: images,
         };
+        console.log(data);
         let res = await axios({
             method: 'post',
             url: `http://localhost:8080/boardsAuth/createPost`,
             data: data,
         });
+        console.log(res);
         if (res.status == 201) {
             alert('글 작성 성공!');
             setSignal(!signal);
@@ -127,8 +169,31 @@ function Modal() {
         setTitle('');
         setContent('');
         setTags([]);
+        setImages([]);
         setCommentAllowed(true);
     };
+
+    const chooseThumbnail = (type: any, id: any) => {
+        if (type == 'contents') {
+            let confirmer = window.confirm(
+                '해당 이미지를 대표이미지로 선택하시겠습니까?',
+            );
+            if (confirmer) {
+                let copy = images.slice(0);
+                for (let i = 0; i < copy.length; i++) {
+                    if (copy[i].imageType == 'thumbnail')
+                        copy[i].imageType = 'contents';
+                    else if (copy[i].description == id) {
+                        copy[i].imageType = 'thumbnail';
+                    }
+                }
+                setImages(copy);
+            }
+        }
+    };
+    useEffect(() => {
+        console.log(content);
+    }, [content]);
 
     return (
         <_modalContainer>
@@ -146,14 +211,58 @@ function Modal() {
                     style={{
                         padding: 0,
                         width: '100%',
-                        height: '500px',
+                        height: '400px',
                         marginBottom: '80px',
                     }}
                     modules={modules}
                     onChange={setContent}
                 />
+                <div
+                    style={{
+                        width: '100%',
+                        minHeight: '80px',
+                        border: '1px solid #ccc',
+                        margin: '5px',
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                    }}
+                >
+                    {images.map((x: any) => {
+                        return (
+                            <div
+                                style={{
+                                    width: '80px',
+                                    height: '80px',
+                                    margin: '5px',
+                                }}
+                                onClick={() => {
+                                    chooseThumbnail(x.imageType, x.description);
+                                }}
+                            >
+                                <img
+                                    style={{
+                                        width: '90%',
+                                        height: '90%',
+                                        border:
+                                            x.imageType == 'thumbnail'
+                                                ? '1px solid blue'
+                                                : '1px solid black',
+                                    }}
+                                    src={x.url}
+                                ></img>
+                            </div>
+                        );
+                    })}
+                </div>
                 <_belowPlace>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div
+                        style={{
+                            width: '60%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                        }}
+                    >
                         <_tagBox ref={tagRef}>
                             {tags.map((tagContent: any) => {
                                 return (
@@ -162,13 +271,15 @@ function Modal() {
                                             tagSubtracter(tagContent)
                                         }
                                     >
-                                        {tagContent}
+                                        <b style={{ margin: 0 }}>
+                                            #{tagContent}
+                                        </b>
                                     </_eachTag>
                                 );
                             })}
                         </_tagBox>
                         <_tagInput
-                            placeholder="태그입력후 enter키를 눌러주세요"
+                            placeholder="태그입력후 enter키를 눌러주세요 (태그 클릭시 삭제됩니다)"
                             onKeyDown={tagAdder}
                             onChange={(e) => {
                                 setCurrentTag(e.currentTarget.value);
@@ -189,7 +300,7 @@ function Modal() {
                                         type="radio"
                                         onChange={handleCommentAllow}
                                     ></input>
-                                </span>
+                                </span>{' '}
                                 <span>
                                     비허용
                                     <input
@@ -225,32 +336,36 @@ function Modal() {
 
 const _belowPlace = styled.div`
     display: flex;
+    justify-content: space-between;
+    width: 100%;
 `;
 
 const _tagInput = styled.input`
-    width: 60%;
+    width: 100%;
     padding: 10px;
-    border: 1px solid black;
-`;
-
-const _eachTag = styled.div`
-    height: 20px;
-    margin: 5px;
-    padding: 2px;
-    border-radius: 5px;
-    background-color: red;
-    cursor: pointer;
+    border: 1px solid #ccc;
 `;
 
 const _tagBox = styled.div`
-    border: 1px solid black;
+    border: 1px solid #ccc;
     padding: 10px;
-    width: 60%;
+    width: 100%;
     min-height: 20px;
     max-height: 60px;
     overflow: auto;
     display: flex;
     flex-wrap: wrap;
+`;
+
+const _eachTag = styled.div`
+    height: 25px;
+    margin: 5px;
+    padding: 2px;
+    border-radius: 5px;
+    background-color: #daddb1;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
 `;
 
 const _buttonPlace = styled.div`
@@ -293,6 +408,7 @@ const _dialogBox = styled.dialog`
     background-color: white;
     z-index: 10000;
     overflow: hidden;
+    margin-top: -100px;
 `;
 
 const _backdrop = styled.div`

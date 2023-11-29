@@ -60,6 +60,8 @@ const ListStyle = () => {
         setOnePageData,
         orderKind,
         setOrderKind,
+        boardPostCount,
+        setBoardPostCount,
     } = BoardStore();
     const navigate = useNavigate();
     const [postNum, setPostNum] = useState(0);
@@ -70,17 +72,27 @@ const ListStyle = () => {
     const path = useLocation();
 
     const getListData = async () => {
-        let whichType = '';
+        let whichType = 'latest';
         if (orderKind === false) whichType = 'latest';
         else whichType = 'views';
-        let res = await axios({
-            method: 'get',
-            url: `http://localhost:8080/boards/${
-                path.pathname.split('/')[2]
-            }?page=${getCount}&order=${whichType}`,
-        });
-        console.log(res.data);
-        setListData(res.data.posts);
+        let res;
+        if (path.search) {
+            res = await axios({
+                method: 'get',
+                url: `http://localhost:8080/boards/${
+                    path.pathname.split('/')[2]
+                }?page=${path.search.split('=')[1]}&order=${whichType}`,
+            });
+        } else {
+            res = await axios({
+                method: 'get',
+                url: `http://localhost:8080/boards/${
+                    path.pathname.split('/')[2]
+                }`,
+            });
+        }
+
+        setListData(res?.data.posts);
     };
 
     const getListDataAfterPosting = async () => {
@@ -103,8 +115,9 @@ const ListStyle = () => {
     }, [signal]);
 
     const pagination = (num: number) => {
+        let pages = Math.ceil(num / 12);
         let data = [];
-        for (let i = 1; i <= num; i++) {
+        for (let i = 1; i <= pages; i++) {
             data.push(i);
         }
 
@@ -114,19 +127,23 @@ const ListStyle = () => {
                     margin: '10px',
                     width: '60%',
                     display: 'flex',
-                    justifyContent: 'space-between',
+                    justifyContent: 'center',
                 }}
             >
                 {data.map((x) => {
                     return (
                         <span
-                            style={{ cursor: 'pointer' }}
+                            style={{
+                                cursor: 'pointer',
+                                margin: '0px 10px 0px 10px',
+                            }}
                             onClick={(e) => {
                                 navigate(
                                     `/board/${
                                         path.pathname.split('/')[2]
                                     }?page=${e.currentTarget.innerText}`,
                                 );
+                                getListData();
                             }}
                         >
                             {x}
@@ -360,21 +377,6 @@ const ListStyle = () => {
         },
     ];
 
-    const generatePage = (e: number) => {
-        let addArr: any = [];
-        for (let i = 12 * (e - 1); i < 12 * e; i++) {
-            if (sampledb[i]) {
-                addArr.push(sampledb[i]);
-            }
-        }
-        setListData(addArr);
-    };
-
-    useEffect(() => {
-        generatePage(1);
-        setPostNum(10); // 여기에 숫자받은거 계산하는 로직짜기
-    }, []);
-
     const getOnePost = async (id: number) => {
         console.log(id);
 
@@ -442,6 +444,7 @@ const ListStyle = () => {
     };
 
     useEffect(() => {
+        console.log(onePageData);
         if (onePageData.length > 0) {
             setDetailModalOn(true);
         }
@@ -479,13 +482,13 @@ const ListStyle = () => {
                                     </div>
                                 </_titleTd>
                                 <_td>{x.views}</_td>
-                                {/* <_td>{x.likes}</_td> */}
+                                <_td>{x.likeCount}</_td>
                             </tr>
                         </>
                     );
                 })}
             </_listRow>
-            {pagination(postNum)}
+            {pagination(boardPostCount !== 0 ? boardPostCount : 1)}
         </_listContainer>
     );
 };

@@ -49,6 +49,7 @@ const PostModal = () => {
     const [recommentContent, setRecommentContent] = useState('');
     const [commentUpdate, setCommentUpdate] = useState(false);
     const [commentUpdateContent, setCommentUpdateContent] = useState('');
+    const [liked, setLiked] = useState(false);
     const share = (id: number) => {
         setShareBalloon(!shareBalloon);
     };
@@ -195,6 +196,8 @@ const PostModal = () => {
             },
         });
         console.log(res);
+        if (res.data.liked == false) {
+        }
     };
 
     const clickHate = async () => {
@@ -331,6 +334,17 @@ const PostModal = () => {
                             __html: onePageData[0]?.content,
                         }}
                     ></_realContent>
+                    <div
+                        style={{
+                            width: '100%',
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                        }}
+                    >
+                        {onePageData[0].hashtags.map((tag: any) => {
+                            return <_eachTag>#{tag.hashtagName}</_eachTag>;
+                        })}
+                    </div>
                     <_likeLine>
                         <_likeBox
                             onClick={() => {
@@ -341,7 +355,7 @@ const PostModal = () => {
                                 style={{ color: 'red', fontSize: '36px' }}
                             />
                             <div style={{ color: 'red' }}>
-                                {onePageData[0]?.likeCount}
+                                {onePageData[0]?.likeCount + 1}
                             </div>
                             <p style={{ margin: 0, padding: 0 }}>좋아요</p>
                         </_likeBox>
@@ -351,6 +365,7 @@ const PostModal = () => {
                             }}
                         >
                             <TbHeartBroken style={{ fontSize: '36px' }} />
+                            <div>{onePageData[0]?.dislikeCount - 1}</div>
                             <p style={{ margin: 0, padding: 0 }}>싫어요</p>
                             <div></div>
                         </_likeBox>
@@ -671,6 +686,7 @@ const DialogBox = styled.dialog`
     box-sizing: border-box;
     background-color: white;
     z-index: 10001;
+    margin-top: -100px;
 `;
 
 const Backdrop = styled.div`
@@ -711,6 +727,10 @@ const _date = styled.div`
     display: flex;
     align-items: center;
     margin: 0px 5px 0px 5px;
+`;
+
+const _eachTag = styled.p`
+    color: #ccc;
 `;
 
 const _date2 = styled.div`
@@ -761,7 +781,7 @@ const _commentArea = styled.div`
 const _commentWriter = styled.div`
     width: 95%;
     padding: 5px;
-    height: 25px;
+    /* height: 25px; */
     display: flex;
     justify-content: space-between;
 `;
