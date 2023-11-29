@@ -3,7 +3,7 @@ import { styled } from 'styled-components';
 import { LoginModal } from '../components/LoginModal';
 import { useCallback, useEffect, useState } from 'react';
 import { FaUser, FaSignOutAlt } from 'react-icons/fa';
-import { IoLogInSharp } from 'react-icons/io5';
+import { FiLogIn } from 'react-icons/fi';
 import { MyPageModal } from '../components/MyPageModal';
 import { User } from './data/User';
 import profileImg from '../assets/Mascot.jpg';
@@ -173,7 +173,7 @@ const Header = () => {
                 </div>
             ) : (
                 <_User onClick={onClickToggleLoginModal}>
-                    <IoLogInSharp
+                    <FiLogIn
                         style={{
                             fontSize: '30px',
                             marginRight: '10px',
