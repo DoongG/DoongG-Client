@@ -27,6 +27,10 @@ interface BoardStore {
     setUpdatePostId: (text: any) => void;
     orderKind: boolean;
     setOrderKind: (text: any) => void;
+    modalSignal: number;
+    setModalSignal: (text: any) => void;
+    boardPostCount: number;
+    setBoardPostCount: (text: any) => void;
 }
 
 // Zustand 스토어 생성 및 초기 상태 정의
@@ -57,6 +61,10 @@ const BoardStore: any = create<BoardStore>((set) => ({
     setUpdatePostId: (input: any) => set({ updatePostId: input }),
     orderKind: false,
     setOrderKind: (input: any) => set({ orderKind: input }),
+    modalSignal: 0,
+    setModalSignal: (input: any) => set({ modalSignal: input }),
+    boardPostCount: -1,
+    setBoardPostCount: (input: any) => set({ boardPostCount: input }),
 }));
 
 export { BoardStore };

@@ -31,6 +31,7 @@ function UpdateModal() {
     const [currentTag, setCurrentTag] = useState('');
     const [tagExsist, setTagExsist] = useState(false);
     const [tags, setTags] = useState<any>([]);
+    const [images, setImages] = useState<any>([]);
 
     const handleTitleChange = (e: any) => {
         setTitle(e.currentTarget.value);
@@ -94,6 +95,14 @@ function UpdateModal() {
                     const editor = myRef.current.getEditor();
                     const range: any = editor.getSelection();
                     editor.insertEmbed(range.index, 'image', res.location);
+                    const eachImage = {
+                        url: res.location,
+                        imageType: images.length > 0 ? 'contents' : 'thumbnail',
+                        description: Date.now(),
+                    };
+                    let tempImage = images;
+                    tempImage.push(eachImage);
+                    setImages(tempImage);
                 }
             } catch (error) {
                 console.log(error);
@@ -106,7 +115,14 @@ function UpdateModal() {
                 container: [
                     ['image'],
                     [{ header: [1, 2, 3, 4, 5, false] }],
-                    ['bold', 'underline'],
+                    [
+                        { list: 'ordered' },
+                        { list: 'bullet' },
+                        { indent: '-1' },
+                        { indent: '+1' },
+                        { align: [] },
+                    ],
+                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
                 ],
                 handlers: {
                     image: imageHandler,
@@ -116,6 +132,13 @@ function UpdateModal() {
     }, []);
 
     const postUpdatePost = async () => {
+        let tagTempArr = [];
+        for (let i = 0; i < tags.length; i++) {
+            let newTag = {
+                hashtagName: tags[i],
+            };
+            tagTempArr.push(newTag);
+        }
         let data = {
             title: title,
             content: content,
@@ -128,6 +151,8 @@ function UpdateModal() {
             },
             commentAllowed: commentAllowed ? 'true' : 'false',
             commentCount: 0,
+            hashtags: tagTempArr,
+            postImages: images,
         };
         let res = await axios({
             method: 'post',
@@ -136,41 +161,42 @@ function UpdateModal() {
         });
         console.log(res);
         alert('글 수정 성공!');
-        setUpdateModal(!updateModal);
-    };
-
-    const postComplete = async () => {
-        let data = {
-            title: title,
-            content: content,
-            views: 0,
-            board: {
-                boardId: 1,
-            },
-            user: {
-                id: 1,
-            },
-            commentAllowed: commentAllowed ? 'true' : 'false',
-            commentCount: 0,
-        };
-        let res = await axios({
-            method: 'post',
-            url: `http://localhost:8080/boardsAuth/createPost`,
-            data: data,
-        });
-        alert('글 작성 성공!');
         setSignal(!signal);
-        setPostModalOn(!postModalOn);
         setTitle('');
         setContent('');
         setTags([]);
-        setCommentAllowed(true);
+        setUpdateModal(!updateModal);
     };
 
     useEffect(() => {
         setTitle(onePageData[0].title);
         setContent(onePageData[0].content);
+        let tagTemps = [];
+        for (let i = 0; i < onePageData[0].hashtags.length; i++) {
+            tagTemps.push(onePageData[0].hashtags[i].hashtagName);
+        }
+        setTags(tagTemps);
+        setImages(onePageData[0].postImages);
     }, [updateModal]);
+
+    const chooseThumbnail = (type: any, id: any) => {
+        if (type == 'contents') {
+            let confirmer = window.confirm(
+                '해당 이미지를 대표이미지로 선택하시겠습니까?',
+            );
+            if (confirmer) {
+                let copy = images.slice(0);
+                for (let i = 0; i < copy.length; i++) {
+                    if (copy[i].imageType == 'thumbnail')
+                        copy[i].imageType = 'contents';
+                    else if (copy[i].description == id) {
+                        copy[i].imageType = 'thumbnail';
+                    }
+                }
+                setImages(copy);
+            }
+        }
+    };
 
     return (
         <_modalContainer>
@@ -196,8 +222,51 @@ function UpdateModal() {
                     modules={modules}
                     onChange={setContent}
                 />
+                <div
+                    style={{
+                        width: '100%',
+                        minHeight: '80px',
+                        border: '1px solid #ccc',
+                        margin: '5px',
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                    }}
+                >
+                    {images.map((x: any) => {
+                        return (
+                            <div
+                                style={{
+                                    width: '80px',
+                                    height: '80px',
+                                    margin: '5px',
+                                }}
+                                onClick={() => {
+                                    chooseThumbnail(x.imageType, x.description);
+                                }}
+                            >
+                                <img
+                                    style={{
+                                        width: '90%',
+                                        height: '90%',
+                                        border:
+                                            x.imageType == 'thumbnail'
+                                                ? '1px solid blue'
+                                                : '1px solid black',
+                                    }}
+                                    src={x.url}
+                                ></img>
+                            </div>
+                        );
+                    })}
+                </div>
                 <_belowPlace>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            width: '60%',
+                        }}
+                    >
                         <_tagBox ref={tagRef}>
                             {tags.map((tagContent: any) => {
                                 return (
@@ -206,7 +275,7 @@ function UpdateModal() {
                                             tagSubtracter(tagContent)
                                         }
                                     >
-                                        {tagContent}
+                                        <b>#{tagContent}</b>
                                     </_eachTag>
                                 );
                             })}
@@ -246,7 +315,7 @@ function UpdateModal() {
                             </div>
                         </div>
                     </_buttonPlace>
-                    <button onClick={postComplete}>작성</button>
+                    <button onClick={postUpdatePost}>수정</button>
                 </_belowPlace>
             </_dialogBox>
             <_backdrop
@@ -269,32 +338,35 @@ function UpdateModal() {
 
 const _belowPlace = styled.div`
     display: flex;
+    justify-content: space-between;
+    width: 100%;
 `;
 
 const _tagInput = styled.input`
-    width: 60%;
+    width: 100%;
     padding: 10px;
-    border: 1px solid black;
-`;
-
-const _eachTag = styled.div`
-    height: 20px;
-    margin: 5px;
-    padding: 2px;
-    border-radius: 5px;
-    background-color: red;
-    cursor: pointer;
+    border: 1px solid #ccc;
 `;
 
 const _tagBox = styled.div`
-    border: 1px solid black;
+    border: 1px solid #ccc;
     padding: 10px;
-    width: 60%;
+    width: 100%;
     min-height: 20px;
     max-height: 60px;
     overflow: auto;
     display: flex;
     flex-wrap: wrap;
+`;
+const _eachTag = styled.div`
+    height: 25px;
+    margin: 5px;
+    padding: 2px;
+    border-radius: 5px;
+    background-color: #daddb1;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
 `;
 
 const _buttonPlace = styled.div`
@@ -334,6 +406,7 @@ const _dialogBox = styled.dialog`
     background-color: white;
     z-index: 10000;
     overflow: hidden;
+    margin-top: -100px;
 `;
 
 const _backdrop = styled.div`

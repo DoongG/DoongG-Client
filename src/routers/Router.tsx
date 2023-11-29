@@ -6,6 +6,7 @@ import { BoardUnited } from '../pages/BoardUnited';
 import { Header } from '../components/Header';
 import { PostDetail } from '../pages/PostDetail';
 import { RoomreView } from '../pages/RoomReview';
+import { PageNotFound } from '../pages/404';
 
 const Router = () => {
     return (
@@ -23,6 +24,7 @@ const Router = () => {
                     <Route path="/posts/:id" element={<PostDetail />}></Route>
                     <Route path="/shopping" element={<Shopping />}></Route>
                     <Route path="/roomreview" element={<RoomreView />}></Route>
+                    <Route path="/*" element={<PageNotFound />}></Route>
                 </Routes>
             </BrowserRouter>
         </>

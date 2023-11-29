@@ -98,7 +98,9 @@ const _cardLeft = styled.div`
     padding: 10px;
 `;
 
-const _cardRight = styled.div``;
+const _cardRight = styled.div`
+    width: 100%;
+`;
 
 const _cardWriter = styled.div`
     width: 100%;
@@ -168,6 +170,7 @@ const GalleryStyle = () => {
                 path.pathname.split('/')[2]
             }?page=1&order=${whichType}`,
         });
+        console.log(res);
         setGalleryData([res.data]);
         setGetCount(getCount + 1);
     };
@@ -307,7 +310,16 @@ const GalleryStyle = () => {
                                 <_cardInst>
                                     <_cardLeft>
                                         <_cardProfileImg
-                                            src={x.profileImg}
+                                            src={
+                                                x.postImages.map((img: any) => {
+                                                    if (
+                                                        img.imageType ==
+                                                        'thumbnail'
+                                                    ) {
+                                                        return img.url;
+                                                    }
+                                                })[0]
+                                            }
                                         ></_cardProfileImg>
                                     </_cardLeft>
                                     <_cardRight>

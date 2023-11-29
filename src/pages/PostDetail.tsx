@@ -159,10 +159,14 @@ const PostDetail = () => {
                             <TbHeart
                                 style={{ color: 'red', fontSize: '36px' }}
                             />
+                            <div style={{ color: 'red' }}>
+                                {onePageData[0]?.dislikeCount}
+                            </div>
                             좋아요
                         </_likeBox>
                         <_likeBox>
                             <TbHeartBroken style={{ fontSize: '36px' }} />
+                            <div>{onePageData[0]?.dislikeCount}</div>
                             싫어요
                         </_likeBox>
                     </_likeLine>
@@ -224,6 +228,24 @@ const PostDetail = () => {
                             }
                         })}
                     </_commentsList>
+                    {/* <_commentArea>
+                        <_commentWriter>
+                            여우님
+                            <_comment
+                                onClick={() => {
+                                    postComment(onePageData[0]?.postId);
+                                }}
+                            >
+                                작성
+                            </_comment>
+                        </_commentWriter>
+                        <_commentContents
+                            value={commentContent}
+                            onChange={(e) => {
+                                setCommentContent(e.target.value);
+                            }}
+                        ></_commentContents>
+                    </_commentArea> */}
                 </_content>
             )}
         </_allArea>
