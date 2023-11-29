@@ -44,6 +44,7 @@ const RoomreView = () => {
 };
 const _WrapperBox = styled.div`
     display: flex;
+    height: calc(100vh - 50px);
 `;
 
 export { RoomreView };

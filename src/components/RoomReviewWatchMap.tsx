@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useButtonStore } from '../store/shoppingHeaderSelectBarStore';
+import {
+    useButtonStore,
+    useMarkerOnOff,
+    useVisibleMarker,
+} from '../store/shoppingHeaderSelectBarStore';
+import axios from 'axios';
 
 const { kakao } = window;
 declare global {
@@ -12,8 +17,19 @@ const RoomReviewWatchMap = () => {
     const { button, setButton } = useButtonStore();
     const [lat, setLat] = useState(0);
     const [lng, setlng] = useState(0);
-    const [map, setMap] = useState(null);
-    const [marker, setMarker] = useState<any>();
+    const [map, setMap] = useState<any>();
+    // 모든 마커
+    const [markers, setMarkers] = useState<any>();
+    // 지도에 보이는 마커
+    const { visibleMarker, setVisibleMarker } = useVisibleMarker();
+
+    const {
+        markerOnOff,
+        setClickedAddress,
+        setClickedDate,
+        setClickedContent,
+        setMarkerOnOff,
+    } = useMarkerOnOff();
 
     const handleChangeReview = (write: string) => {
         if (write === '리뷰쓰기') {
@@ -22,6 +38,25 @@ const RoomReviewWatchMap = () => {
             setButton(false);
         }
     };
+
+    // 모든 마커 가져오기
+    useEffect(() => {
+        // 지정된 ID를 가진 유저에 대한 요청
+        axios
+            .get('http://localhost:8080/review')
+            .then(function (response) {
+                // 성공 핸들링
+                setMarkers(response.data);
+            })
+            .catch(function (error) {
+                // 에러 핸들링
+                console.log(error);
+            })
+            .finally(function () {
+                // 항상 실행되는 영역
+            });
+    }, []);
+
     useEffect(() => {
         // 현재 위치를 가져오는 함수
         const getCurrentLocation = () => {
@@ -42,17 +77,135 @@ const RoomReviewWatchMap = () => {
                     center: new kakao.maps.LatLng(lat, lng),
                     level: 4,
                 };
-
                 const kakaoMap = new kakao.maps.Map(container, option);
                 setMap(kakaoMap);
-                console.log(lat, lng);
+
+                // 마커 이미지의 이미지 주소입니다
+                let imageSrc =
+                    'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png';
+                // 모든 마커 띄우기
+                if (markers) {
+                    const markerList = markers.map((markerData: any) => {
+                        // 마커 이미지의 이미지 크기 입니다
+                        let imageSize = new kakao.maps.Size(24, 35);
+
+                        // 마커 이미지를 생성합니다
+                        let markerImage = new kakao.maps.MarkerImage(
+                            imageSrc,
+                            imageSize,
+                        );
+                        const marker = new kakao.maps.Marker({
+                            position: new kakao.maps.LatLng(
+                                markerData.latitude,
+                                markerData.longitude,
+                            ),
+                            map: kakaoMap,
+                            title: markerData.content,
+                            image: markerImage, // 마커 이미지
+                        });
+                        marker.address = markerData.address;
+                        marker.createdAt = markerData.createdAt;
+
+                        // 마커 클릭 이벤트 등록
+                        kakao.maps.event.addListener(
+                            marker,
+                            'click',
+                            function () {
+                                // 클릭한 마커의 정보 가져오기
+                                const clickedMarkerContent = marker.getTitle();
+                                const clickedMarkerPosition =
+                                    marker.getPosition();
+
+                                // TODO: 클릭한 마커에 대한 정보를 활용하여 필요한 동작 수행
+                                console.log(
+                                    'Clicked Marker Content:',
+                                    clickedMarkerContent,
+                                );
+                                console.log(
+                                    'Clicked Marker Position:',
+                                    clickedMarkerPosition,
+                                );
+                                console.log(marker.address);
+                                console.log(marker.createdAt.split(' ')[0]);
+                                setClickedAddress(marker.address);
+                                setClickedDate(marker.createdAt.split(' ')[0]);
+                                setClickedContent(clickedMarkerContent);
+                                setMarkerOnOff(true);
+                            },
+                        );
+
+                        return marker;
+                    });
+                    // Create a clusterer and set the map
+                    const clusterer = new kakao.maps.MarkerClusterer({
+                        map: kakaoMap,
+                        averageCenter: true,
+                        minLevel: 1,
+                    });
+                    // 클러스터 추가
+                    clusterer.addMarkers(markerList);
+
+                    // 컴포넌트가 열렸을 때 현재위치의 방 리뷰들을 볼 수 있는 코드
+                    // 지도 영역정보를 얻어옵니다
+                    let bounds = map.getBounds();
+                    // 영역정보의 남서쪽 정보를 얻어옵니다
+                    let sw = bounds.getSouthWest();
+                    // 영역정보의 북동쪽 정보를 얻어옵니다
+                    let ne = bounds.getNorthEast();
+                    // 지도영역 마커만 filter
+                    const selectedMarker = markers.filter((item: any) => {
+                        // 현재 지도 영역의 남서쪽, 북동쪽 좌표
+                        let lb = new kakao.maps.LatLngBounds(sw, ne);
+                        let l1 = new kakao.maps.LatLng(
+                            item.latitude,
+                            item.longitude,
+                        );
+                        // true -> 출력O
+                        // false -> 출력X
+                        return lb.contain(l1);
+                    });
+                    // console.log(selectedMarker);
+                    setVisibleMarker(selectedMarker);
+                }
             } else {
                 console.error('Geolocation is not supported by this browser.');
             }
         };
 
         getCurrentLocation();
-    }, [lat, lng]);
+    }, [lat, lng, markers]);
+
+    // 지도 영역에 포함된 마커만 추출하기
+    useEffect(() => {
+        if (map) {
+            kakao.maps.event.addListener(map, 'bounds_changed', function () {
+                // 지도 영역정보를 얻어옵니다
+                let bounds = map.getBounds();
+
+                // 영역정보의 남서쪽 정보를 얻어옵니다
+                let sw = bounds.getSouthWest();
+
+                // 영역정보의 북동쪽 정보를 얻어옵니다
+                let ne = bounds.getNorthEast();
+
+                // 지도영역 마커만 filter
+                const selectedMarker = markers.filter((item: any) => {
+                    // 현재 지도 영역의 남서쪽, 북동쪽 좌표
+                    let lb = new kakao.maps.LatLngBounds(sw, ne);
+                    let l1 = new kakao.maps.LatLng(
+                        item.latitude,
+                        item.longitude,
+                    );
+                    // true -> 출력O
+                    // false -> 출력X
+                    return lb.contain(l1);
+                });
+                // console.log(selectedMarker);
+                setVisibleMarker(selectedMarker);
+            });
+        }
+    }, [map]);
+    // console.log(visibleMarker);
 
     return (
         <>

@@ -99,9 +99,10 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
     // 상품 정보 가져오는 함수
     useEffect(() => {
         const getDetailInfos = async () => {
+            console.log(productId);
             try {
                 const res = await axios.get<DetailInfos, any>(
-                    `http://localhost:8080/${productId}`,
+                    `http://localhost:8080/shop/get/${productId}`,
                 );
                 console.log(res.data);
                 setDetailInfos(res.data);
