@@ -14,7 +14,6 @@ interface Props {
 const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
     const [content, setContent] = useState('');
     const [modalShow, setModalShow] = useState(false);
-    console.log(mylat, mylng);
 
     // content 변경함수
     const onChangeContent: React.ChangeEventHandler<HTMLTextAreaElement> = (
@@ -22,6 +21,16 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
     ) => {
         setContent(e.target.value);
     };
+
+    const [token, setToken] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchToken = async () => {
+            const storedToken = localStorage.getItem('token');
+            setToken(storedToken);
+        };
+        fetchToken();
+    }, []);
 
     //모달 창
     function MyVerticallyCenteredModal(props: any) {
@@ -56,13 +65,22 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
 
     // 주소,리뷰 post 함수
     const submitAddress = () => {
+        console.log(token);
         axios
-            .post(' http://localhost:8080/review', {
-                address: address,
-                content: content,
-                latitude: mylat,
-                longitude: mylng,
-            })
+            .post(
+                'http://localhost:8080/review',
+                {
+                    address: address,
+                    content: content,
+                    latitude: mylat,
+                    longitude: mylng,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            )
             .then(function (response) {
                 console.log(response);
                 setContent('');
@@ -131,23 +149,46 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
     );
 };
 const _reviewComponent = styled.div`
-    background-color: #daddb1;
+    background-color: white;
     width: 20%;
 `;
 const _reviewBox = styled.div`
+    margin-top: 10px;
     padding: 0px 10px;
 
     > div {
         border-radius: 5px;
-        background-color: white;
     }
 `;
 const _title = styled.div`
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
+    background-color: rgb(28, 57, 61);
+    border-radius: 5px;
+    color: white;
     padding: 10px 0px;
 `;
 const _infosBox = styled.div`
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
     margin-top: 5px;
     padding: 10px 0px;
+    border-radius: 5px;
+    border: 2px solid rgb(28, 57, 61);
+    font-weight: 300;
+
     > div {
         font-size: 13px;
         display: flex;
@@ -189,6 +230,17 @@ const _content = styled.textarea`
     font-weight: 700;
 `;
 const _ButtonBox = styled.div`
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
+    background-color: rgb(28, 57, 61);
+    border-radius: 5px;
+    color: white;
     /* background-color: #b3a492 !important; */
     margin-top: 10px;
     /* border: 1px solid grey; */
@@ -197,15 +249,15 @@ const _ButtonBox = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    border: 1px solid black;
     button {
         border: none;
-        color: black;
-        background-color: white;
+        color: white;
+        background-color: rgb(28, 57, 61);
         width: 100%;
         text-align: center;
         border-radius: 3px;
         font-size: 17px;
-        font-weight: 700;
         width: 100%;
         cursor: pointer;
     }

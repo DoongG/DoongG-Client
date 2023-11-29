@@ -156,7 +156,7 @@ export default function ShoppingListTest() {
         const getResentProduct = async () => {
             try {
                 const res = await axios.get<ApiResponse, any>(
-                    `http://localhost:8080/beauty`,
+                    `http://localhost:8080/shop/getAll/${category}`,
                 );
                 console.log(res.data);
                 setAllProductList(res.data);

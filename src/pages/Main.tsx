@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { MyPageModal } from '../components/MyPageModal';
-import { UserData, User } from '../components/data/User';
 
 const Main = () => {
     const [isMyPageModalOpen, setMyPageModalOpen] = useState(false);
@@ -9,13 +8,13 @@ const Main = () => {
         setMyPageModalOpen(!isMyPageModalOpen);
     }, [isMyPageModalOpen]);
 
-    const user: User = UserData[0];
+    // const user: User = UserData[0];
 
     return (
         <>
             <TAG>
                 <br />
-                {isMyPageModalOpen && (
+                {/* {isMyPageModalOpen && (
                     <MyPageModal
                         onClickToggleModal={onClickToggleMyPageModal}
                         user={user}
@@ -25,7 +24,7 @@ const Main = () => {
                 )}
                 <DialogButton onClick={onClickToggleMyPageModal}>
                     MyPage
-                </DialogButton>
+                </DialogButton> */}
             </TAG>
         </>
     );
