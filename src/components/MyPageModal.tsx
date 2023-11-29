@@ -1,24 +1,33 @@
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { AiOutlineClose } from 'react-icons/ai';
 import { User } from './data/User';
 import { PasswordChangeModal } from './PasswordChangeModal';
+import originalImg from '../assets/Mascot.jpg';
+import axios from 'axios';
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
 }
 
 interface MyPageModalProps extends PropsWithChildren<ModalDefaultType> {
-    user: User;
+    user?: User;
 }
 
 function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
+    const [token, setToken] = useState<string | null>(null);
+
+    useEffect(() => {
+        // 이 부분에서 로컬 스토리지에서 토큰을 가져와 상태로 관리합니다.
+        const storedToken = localStorage.getItem('token');
+        setToken(storedToken);
+    }, []);
     const [isModalOpen, setModalOpen] = useState(true);
     const [isPasswordChangeModalOpen, setPasswordChangeModalOpen] =
         useState(false);
 
     const [isEditingNickname, setEditingNickname] = useState(false);
-    const [editedNickname, setEditedNickname] = useState(user.nickname);
+    const [editedNickname, setEditedNickname] = useState(user?.nickname || '');
 
     const modalClose = () => {
         setModalOpen(false);
@@ -27,9 +36,13 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
             onClickToggleModal();
         }
     };
+    // user가 undefined인 경우를 고려하여 코드 수정
+    const _ProfileImgSrc = user ? user.profileImg || originalImg : '';
+    const _ProfileEmailText = user ? user.email : '';
+
+    // s3 업로드후 로딩 하는 로직
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // 이미지 업로드 로직을 처리합니다.
-        // 필요한 경우 FileReader를 사용하여 선택한 이미지를 미리보기할 수 있습니다.
+        const requestData = {};
     };
 
     const handleNicknameClick = () => {
@@ -40,12 +53,33 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
         setEditedNickname(e.target.value);
     };
 
-    const handleNicknameBlur = () => {
+    const handleNicknameSubmit = async () => {
         setEditingNickname(false);
-        // 여기에서 수정된 닉네임을 저장
-    };
-    const handleNicknameSubmit = () => {
-        // 여기에서 수정된 닉네임을 처리
+
+        const requestData = {
+            nickname: editedNickname,
+        };
+
+        try {
+            const response = await axios.post(
+                'http://localhost:8080/userAuth/chNick',
+                requestData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            );
+
+            const result = response.data;
+
+            if (result) {
+                alert('성공적으로 닉네임이 변경되었습니다~^^');
+                setEditedNickname(requestData.nickname);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const openPasswordChangeModal = () => {
@@ -67,8 +101,8 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
                     <_ProfileSection>
                         <_ImgSection>
                             <_ProfileImg
-                                src={user.profileImg || ''}
-                                alt={user.nickname}
+                                src={_ProfileImgSrc}
+                                alt={user ? user.nickname : ''}
                             />
                             <ImageUploadButton>
                                 <label htmlFor="imageUpload">편집</label>
@@ -82,18 +116,17 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
                             </ImageUploadButton>
                         </_ImgSection>
                         <_ProfileSpesific>
-                            <_ProfileEmail>{user.email}</_ProfileEmail>
+                            <_ProfileEmail>{_ProfileEmailText}</_ProfileEmail>
                             {isEditingNickname ? (
                                 <_ChangeSection>
-                                    <_NewNicknameInput
-                                        type="text"
-                                        value={editedNickname}
-                                        onChange={handleNicknameChange}
-                                        onBlur={handleNicknameBlur}
-                                    />
-                                    <EditButton onClick={handleNicknameSubmit}>
-                                        수정
-                                    </EditButton>
+                                    <form onSubmit={handleNicknameSubmit}>
+                                        <_NewNicknameInput
+                                            type="text"
+                                            value={editedNickname}
+                                            onChange={handleNicknameChange}
+                                        />
+                                        <EditButton>수정</EditButton>
+                                    </form>
                                 </_ChangeSection>
                             ) : (
                                 <_ProfileName onClick={handleNicknameClick}>
@@ -106,6 +139,13 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
                             </_StyledButton>
                         </_ProfileSpesific>
                     </_ProfileSection>
+                    <_ButtonHouse>
+                        <_StyledButton2>내가 쓴 게시물</_StyledButton2>
+                        <_StyledButton2>좋아요</_StyledButton2>
+                        <_StyledButton2>자취방 리뷰</_StyledButton2>
+                        <_StyledButton2>장바구니</_StyledButton2>
+                        <_StyledButton2>주문내역</_StyledButton2>
+                    </_ButtonHouse>
                 </_SecondDialogBox>
             </DialogBox>
             <Backdrop
@@ -125,6 +165,12 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
         </ModalContainer>
     );
 }
+const _ButtonHouse = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    height: 200px;
+    justify-content: center;
+`;
 const _SecondDialogBox = styled.div`
     width: 460px;
     height: 600px;
@@ -144,6 +190,36 @@ const _StyledButton = styled.a`
     padding: 5px 15px;
     color: white;
     border-radius: 6px;
+    text-align: center;
+    transition: top 0.01s linear;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+    background-color: #82c8a0;
+    text-decoration: none;
+    box-shadow: 0 0 0 1px #82c8a0 inset,
+        0 0 0 2px rgba(255, 255, 255, 0.15) inset,
+        0 8px 0 0 rgba(126, 194, 155, 0.7), 0 8px 0 1px rgba(0, 0, 0, 0.4),
+        0 8px 8px 1px rgba(0, 0, 0, 0.5);
+
+    &:hover {
+        background-color: #80c49d;
+        cursor: pointer;
+    }
+
+    &:active {
+        top: 9px;
+        box-shadow: 0 0 0 1px #82c8a0 inset,
+            0 0 0 2px rgba(255, 255, 255, 0.15) inset,
+            0 0 0 1px rgba(0, 0, 0, 0.4);
+    }
+`;
+const _StyledButton2 = styled.a`
+    position: relative;
+    display: inline-block;
+    font-size: 18px;
+    margin: 20px;
+    padding: 5px 15px;
+    color: white;
+    border-radius: 100%;
     text-align: center;
     transition: top 0.01s linear;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
@@ -209,6 +285,7 @@ const _Title = styled.div`
 const _ProfileImg = styled.img`
     margin-top: 10px;
     width: 150px;
+    border: 2px black solid;
     border-radius: 100%;
 `;
 const _ProfileSection = styled.div`
@@ -261,7 +338,7 @@ const ImageUploadButton = styled.div`
 const ModalContainer = styled.div`
     width: 100%;
     height: 100%;
-    margin-top: -100px;
+    margin-top: 600px;
     display: flex;
     align-items: center;
     justify-content: center;

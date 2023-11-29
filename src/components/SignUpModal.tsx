@@ -550,7 +550,7 @@ const _FormTitle = styled.div`
     margin-top: 10px;
 `;
 const _FormInput = styled.input`
-    width: 96.5%;
+    width: 100%;
     height: 35px;
     border: 2px solid #daddb1;
     border-radius: 5px;

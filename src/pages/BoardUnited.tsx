@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BoardStore } from '../store/storeT';
+import { TodayFoodModal } from '../components/TodayFoodModal';
 
 const _hr = styled.hr`
     /* width: 100%; */
@@ -53,7 +54,12 @@ const _eachPost = styled.div`
 `;
 
 const BoardUnited = () => {
-    const { currentBoardName, setCurrentBoardName } = BoardStore();
+    const {
+        currentBoardName,
+        setCurrentBoardName,
+        gameModalOn,
+        setGameModalOn,
+    } = BoardStore();
     const navigate = useNavigate();
     const [allBoard, setAllBoard] = useState([]);
     const getBoard = async () => {
@@ -167,6 +173,7 @@ const BoardUnited = () => {
         <>
             <Header></Header>
             <_backArea>
+                {gameModalOn && <TodayFoodModal></TodayFoodModal>}
                 <_allBoardArea>
                     {allBoard.map((x: any) => {
                         return (
@@ -195,7 +202,11 @@ const BoardUnited = () => {
                         );
                     })}
                 </_allBoardArea>
-                <_rightSection></_rightSection>
+                <_rightSection
+                    onClick={() => {
+                        setGameModalOn(true);
+                    }}
+                ></_rightSection>
             </_backArea>
         </>
     );
