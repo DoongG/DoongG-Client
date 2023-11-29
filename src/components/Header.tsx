@@ -7,6 +7,7 @@ import { FiLogIn } from 'react-icons/fi';
 import { MyPageModal } from '../components/MyPageModal';
 import { User } from './data/User';
 import profileImg from '../assets/Mascot.jpg';
+import { useSpring, animated } from 'react-spring';
 import axios from 'axios';
 
 const _headerArea = styled.div`
