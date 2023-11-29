@@ -13,12 +13,10 @@ import axios from 'axios';
 
 const PostDetail = () => {
     const location = useLocation();
-    const { detailModalOn, setDetailModalOn, onePageData, setOnePageData } =
-        BoardStore();
-    const [recommentOn, setRecommentOn] = useState(false);
-    const [targetComment, setTargerComment] = useState(-1);
+    const { onePageData, setOnePageData } = BoardStore();
     const [shareBalloon, setShareBalloon] = useState(false);
     const [copiedCheck, setCopiedCheck] = useState(false);
+    const [commentsList, setCommentsList] = useState([]);
     const iscopied = useRef<any>(null);
     const getOnePage = async () => {
         console.log(location.pathname);
@@ -26,23 +24,52 @@ const PostDetail = () => {
         console.log(pathKey);
         let res = await axios({
             method: 'get',
-            url: `http://localhost:8080/boards/${pathKey}`,
+            url: `http://localhost:8080/boards/posts/${pathKey}`,
         });
         let page = res.data;
         console.log(res.data);
         setOnePageData([page]);
-        return res.data;
+        // return res.data;
     };
     useEffect(() => {
         getOnePage();
     }, []);
 
+    useEffect(() => {
+        if (onePageData[0]) {
+            console.log(onePageData[0].comments);
+            let newData = onePageData[0];
+
+            for (let i = 0; i < newData.comments.length; i++) {
+                newData.comments[i].childCommentsList = [];
+            }
+            for (let i = 0; i < newData.comments.length; i++) {
+                if (newData.comments[i].parentCommentId) {
+                    for (let j = 0; j < newData.comments.length; j++) {
+                        console.log();
+                        if (
+                            newData.comments[j].commentId ==
+                            newData.comments[i].parentCommentId
+                        ) {
+                            newData.comments[j].childCommentsList.push(
+                                newData.comments[i],
+                            );
+                        }
+                    }
+                }
+            }
+            console.log(newData.comments);
+            setCommentsList(newData.comments);
+        }
+    }, [onePageData]);
+
     const share = (id: number) => {
         setShareBalloon(!shareBalloon);
     };
+
     return (
         <_allArea>
-            {onePageData.length > 0 && (
+            {onePageData && onePageData.length > 0 && (
                 <_content>
                     <_postTitle>{onePageData[0]?.title}</_postTitle>
                     <_rightSide>
@@ -61,7 +88,10 @@ const PostDetail = () => {
                         </_writer>
                     </_rightSide>
                     <_dateLine>
-                        <_date>{onePageData[0]?.createdAt}</_date>
+                        <_date>
+                            {onePageData[0].createdAt.slice(0, 10)}{' '}
+                            {onePageData[0].createdAt.slice(11, 16)}{' '}
+                        </_date>
                         <_view>
                             <img
                                 style={{ width: '15px', marginRight: '4px' }}
@@ -86,7 +116,7 @@ const PostDetail = () => {
                                     onClick={async (e) => {
                                         e.stopPropagation();
                                         await navigator.clipboard.writeText(
-                                            `http://localhost:3000/board/${onePageData[0]?.postId}`,
+                                            `http://localhost:3000/posts/${onePageData[0]?.postId}`,
                                         );
                                         setCopiedCheck(true);
                                         setTimeout(() => {
@@ -96,7 +126,7 @@ const PostDetail = () => {
                                 >
                                     <div style={{ display: 'flex' }}>
                                         <p style={{ margin: '5px' }}>
-                                            http://localhost:3000/board/
+                                            http://localhost:3000/posts/
                                             {onePageData[0]?.postId}
                                         </p>
                                         <div
@@ -139,99 +169,61 @@ const PostDetail = () => {
                     <h4>댓글 {onePageData[0]?.comments?.length}</h4>
                     <_commentsList>
                         <hr></hr>
-                        {onePageData[0]?.comments?.map(
-                            (x: any, index: number) => {
+                        {commentsList.map((x: any, index: number) => {
+                            if (!x.parentCommentId) {
                                 return (
                                     <div>
                                         <_oneComment>
                                             <_commentWriterLine>
                                                 <_eachCommentWriter>
-                                                    {x.writer}
+                                                    {x.commenter.nickname}
                                                 </_eachCommentWriter>
-                                                <_option>
-                                                    <_recomment
-                                                        onClick={() => {
-                                                            setTargerComment(
-                                                                index,
-                                                            );
-                                                            setRecommentOn(
-                                                                true,
-                                                            );
-                                                        }}
-                                                    >
-                                                        답글
-                                                    </_recomment>
-                                                    {/* 로그인기능완성되면 이 버튼은 댓글작성자 본인에게만 보임 */}
-                                                    <_recomment>
-                                                        삭제
-                                                    </_recomment>
-                                                </_option>
                                             </_commentWriterLine>
-                                            <div>{x.content}</div>
-                                            <div>{x.date}</div>
+                                            <div>{x?.content}</div>
+                                            <div>
+                                                {x.createdAt.slice(0, 10)}{' '}
+                                                {x.createdAt.slice(11, 16)}{' '}
+                                            </div>
                                             {x.childCommentsList.map(
                                                 (y: any) => {
                                                     return (
                                                         <_recommentList>
                                                             <MdSubdirectoryArrowRight />
                                                             <div>
-                                                                <_commentWriterLine>
+                                                                <_commentWriterLine2>
                                                                     <_eachCommentWriter>
                                                                         {
-                                                                            y.writer
+                                                                            y
+                                                                                .commenter
+                                                                                .nickname
                                                                         }
                                                                     </_eachCommentWriter>
-                                                                    로그인기능완성되면
-                                                                    이 버튼은
-                                                                    댓글작성자
-                                                                    본인에게만
-                                                                    보임
-                                                                    <_recomment>
-                                                                        삭제
-                                                                    </_recomment>
-                                                                </_commentWriterLine>
+                                                                </_commentWriterLine2>
                                                                 <div>
                                                                     {y.content}
                                                                 </div>
-                                                                <div>
-                                                                    {y.date}
-                                                                </div>
+                                                                <_date>
+                                                                    {y.createdAt.slice(
+                                                                        0,
+                                                                        10,
+                                                                    )}{' '}
+                                                                    {y.createdAt.slice(
+                                                                        11,
+                                                                        16,
+                                                                    )}{' '}
+                                                                </_date>
                                                             </div>
                                                         </_recommentList>
                                                     );
                                                 },
                                             )}
-                                            {recommentOn &&
-                                            index == targetComment ? (
-                                                <_recommentSet>
-                                                    <MdSubdirectoryArrowRight />
-                                                    <_recommentBox placeholder="답글쓰기"></_recommentBox>
-                                                    <button>작성</button>
-                                                    <button
-                                                        onClick={() => {
-                                                            setRecommentOn(
-                                                                !recommentOn,
-                                                            );
-                                                        }}
-                                                    >
-                                                        취소
-                                                    </button>
-                                                </_recommentSet>
-                                            ) : null}
                                         </_oneComment>
                                         <hr></hr>
                                     </div>
                                 );
-                            },
-                        )}
+                            }
+                        })}
                     </_commentsList>
-                    <_commentArea>
-                        <_commentWriter>
-                            여우님
-                            <_comment>작성</_comment>
-                        </_commentWriter>
-                        <_commentContents></_commentContents>
-                    </_commentArea>
                 </_content>
             )}
         </_allArea>
@@ -306,6 +298,13 @@ const _date = styled.div`
     align-items: center;
     margin: 0px 5px 0px 5px;
 `;
+
+const _date2 = styled.div`
+    display: flex;
+    align-items: center;
+    margin: 0px 5px 0px 5px;
+`;
+
 const _view = styled.div`
     display: flex;
     align-items: center;
@@ -386,6 +385,11 @@ const _eachCommentWriter = styled.div`
 const _commentWriterLine = styled.div`
     display: flex;
     justify-content: space-between;
+`;
+
+const _commentWriterLine2 = styled.div`
+    display: flex;
+    justify-content: start;
 `;
 
 const _recomment = styled.button`

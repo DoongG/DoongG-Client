@@ -9,8 +9,9 @@ import { BoardStore } from '../store/storeT';
 import { PostModal } from '../components/PostModal';
 import { Modal } from '../components/PostingModal';
 import ramen from '../assets/ramen1.jpg';
-import { useLocation } from 'react-router';
+import { useLocation, useParams, useNavigate } from 'react-router';
 import axios from 'axios';
+import { UpdateModal } from '../components/UpdateModal';
 
 const _boardArea = styled.div`
     width: 100%;
@@ -51,15 +52,40 @@ const _galleryContainer = styled.div`
 `;
 
 const Board = () => {
+    // const param = useParams();
+    // console.log(param);
+    const navigate = useNavigate();
     const location = useLocation();
+    console.log(location);
+    const [galleryName, setGalleryName] = useState('');
+    const [galleryType, setGalleryType] = useState('');
+    const [data, setData] = useState(); // db에서 가져온 데이터들을 담는 state
     console.log(location.pathname);
-    const getBoardData = async (where: any) => {
-        console.log(`http://localhost:8080/${where}`);
+    const judgement = location.pathname.split('/')[2];
+    const getBoardData = async () => {
+        console.log(`http://localhost:8080/boards/${judgement}`);
         let res = await axios({
             method: 'get',
-            url: `http://localhost:8080/${where}`,
+            url: `http://localhost:8080/boards/${judgement}`,
         });
+        console.log(res.data);
+        setGalleryName(res.data.boardName);
+        setGalleryType(res.data.boardDefaultType);
+        // return res.data.boardDefaultType;
+        // setOnePageData([res.data]);
     };
+
+    // useEffect(() => {
+    //     const request = async () => {
+    //         const res = await axios({
+    //             method: 'GET',
+    //             url: `http://localhost:8080/${where}/${param.page}`
+    //         });
+    //         setData(res.data);
+    //     };
+
+    //     request();
+    // },[param.page]);
 
     const uploadCallback = () => {
         console.log('이미지 업로드');
@@ -67,16 +93,22 @@ const Board = () => {
 
     const [styleSwitch, setStyleSwitch] = useState(true);
     const {
+        onePageData,
+        setOnePageData,
         setCarousel,
         postModalOn,
         detailModalOn,
         setDetailModalOn,
         setCurrentBoardName,
         currentBoardName,
+        updateModal,
+        setUpdateModal,
     } = BoardStore();
     useEffect(() => {
-        let where = location.pathname.split('/')[1];
-        getBoardData(where);
+        getBoardData();
+        if (location.search) {
+            setStyleSwitch(false);
+        }
         setCarousel([
             {
                 url: ramen,
@@ -187,6 +219,16 @@ const Board = () => {
     }, []);
 
     useEffect(() => {
+        if (galleryType == 'list') {
+            setStyleSwitch(false);
+        } else {
+            if (!location.search) {
+                setStyleSwitch(true);
+            }
+        }
+    }, [galleryType]);
+
+    useEffect(() => {
         setDetailModalOn(false);
     }, [styleSwitch]);
 
@@ -194,12 +236,16 @@ const Board = () => {
         <_boardArea>
             {postModalOn && <Modal />}
             {detailModalOn == true && <PostModal />}
+            {updateModal && <UpdateModal></UpdateModal>}
             <_boardHeader>
                 <_innerBoardHeader>
-                    <h1>라면 게시판</h1>
+                    <h1>{galleryName}</h1>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <_switchButton
                             onClick={() => {
+                                navigate(
+                                    `/board/${location.pathname.split('/')[2]}`,
+                                );
                                 setStyleSwitch(true);
                             }}
                         >

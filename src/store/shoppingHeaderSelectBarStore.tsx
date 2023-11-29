@@ -61,3 +61,38 @@ const useBuyModalStore = create<ModalBuyStore>((set) => ({
 }));
 
 export { useBuyModalStore };
+
+//_______________________________________________________________________________________________
+// 방 리뷰 페이지 리뷰달기, 전체 리뷰 보기 버튼 상태
+interface buttonStroe {
+    button: boolean;
+    setButton: (isButton: boolean) => void;
+}
+
+const useButtonStore = create<buttonStroe>((set) => ({
+    button: true,
+    setButton: (isButton) => set({ button: isButton }),
+}));
+
+export { useButtonStore };
+
+//____________________________________________________________________________________________________-
+// DB로 보낼 주소, 위도, 경도
+interface ReviewDateStore {
+    address: string;
+    mylat: number;
+    mylng: number;
+    setAddress: (state: string) => void;
+    setMylat: (state: number) => void;
+    setMylng: (state: number) => void;
+}
+const useReviewDateStore = create<ReviewDateStore>((set) => ({
+    address: '',
+    mylat: 0,
+    mylng: 0,
+    setAddress: (state) => set({ address: state }),
+    setMylat: (state) => set({ mylat: state }),
+    setMylng: (state) => set({ mylng: state }),
+}));
+
+export { useReviewDateStore };
