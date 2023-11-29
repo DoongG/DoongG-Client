@@ -96,3 +96,38 @@ const useReviewDateStore = create<ReviewDateStore>((set) => ({
 }));
 
 export { useReviewDateStore };
+//________________________________________________________________________________________________________-
+// 마커 클릭 했나 안했나
+interface MarkerOnOff {
+    markerOnOff: boolean;
+    clickedAddress: string;
+    clickedDate: string;
+    clickedContent: string;
+    setMarkerOnOff: (state: boolean) => void;
+    setClickedAddress: (state: string) => void;
+    setClickedDate: (state: string) => void;
+    setClickedContent: (state: string) => void;
+}
+const useMarkerOnOff = create<MarkerOnOff>((set) => ({
+    markerOnOff: false,
+    clickedAddress: '',
+    clickedDate: '',
+    clickedContent: '',
+    setMarkerOnOff: (state) => set({ markerOnOff: state }),
+    setClickedAddress: (state) => set({ clickedAddress: state }),
+    setClickedDate: (state) => set({ clickedDate: state }),
+    setClickedContent: (state) => set({ clickedContent: state }),
+}));
+export { useMarkerOnOff };
+
+//___________________________________________________________________________________________________________
+// 지도 영역에 보이는 마커
+interface VisibleMarker {
+    visibleMarker: [];
+    setVisibleMarker: (state: []) => void;
+}
+const useVisibleMarker = create<VisibleMarker>((set) => ({
+    visibleMarker: [],
+    setVisibleMarker: (state) => set({ visibleMarker: state }),
+}));
+export { useVisibleMarker };

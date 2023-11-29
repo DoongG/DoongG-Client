@@ -14,7 +14,6 @@ interface Props {
 const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
     const [content, setContent] = useState('');
     const [modalShow, setModalShow] = useState(false);
-    console.log(mylat, mylng);
 
     // content 변경함수
     const onChangeContent: React.ChangeEventHandler<HTMLTextAreaElement> = (
@@ -22,6 +21,16 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
     ) => {
         setContent(e.target.value);
     };
+
+    const [token, setToken] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchToken = async () => {
+            const storedToken = localStorage.getItem('token');
+            setToken(storedToken);
+        };
+        fetchToken();
+    }, []);
 
     //모달 창
     function MyVerticallyCenteredModal(props: any) {
@@ -56,13 +65,22 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
 
     // 주소,리뷰 post 함수
     const submitAddress = () => {
+        console.log(token);
         axios
-            .post(' http://localhost:8080/review', {
-                address: address,
-                content: content,
-                latitude: mylat,
-                longitude: mylng,
-            })
+            .post(
+                'http://localhost:8080/review',
+                {
+                    address: address,
+                    content: content,
+                    latitude: mylat,
+                    longitude: mylng,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            )
             .then(function (response) {
                 console.log(response);
                 setContent('');
