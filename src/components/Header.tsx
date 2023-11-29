@@ -13,7 +13,7 @@ const _headerArea = styled.div`
     font-size: 14px;
     width: 100%;
     height: 50px;
-    background-color: #daddb1;
+    background-color: rgb(28, 57, 61);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -27,25 +27,25 @@ const _Menu = styled.div`
 
 const _MenuSpecific = styled(Link)<{ isSelected: boolean }>`
     @font-face {
-        font-family: 'Cafe24Moyamoya-Regular-v1.0';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/Cafe24Moyamoya-Regular-v1.0.woff2')
-            format('woff2');
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
         font-weight: normal;
         font-style: normal;
     }
-    font-family: 'Cafe24Moyamoya-Regular-v1.0';
+    font-family: 'JalnanGothic';
     text-decoration: none;
+    color: white;
     padding: 5px;
     padding-bottom: 15px;
     margin: 0 5px;
     &:hover {
-        background-color: white;
+        color: rgb(255, 202, 29);
     }
     ${({ isSelected }) =>
         isSelected &&
         `
-        background-color: white;
-        color: black;
+        color: rgb(255, 202, 29);
     `}
 `;
 
@@ -75,7 +75,6 @@ const Header = () => {
     useEffect(() => {
         const fetchToken = async () => {
             const storedToken = localStorage.getItem('token');
-            console.log(storedToken);
             setToken(storedToken);
         };
         fetchToken();
@@ -92,14 +91,6 @@ const Header = () => {
             return;
         }
         axios
-            // ({
-            //     method: 'GET',
-            //     url: 'http://localhost:8080/userAuth',
-            //     headers: {
-            //         Authorization: `Bearer ${token}`,
-            //         // 'Content-Type': 'application/json',
-            //     },
-            // })
             .get('http://localhost:8080/userAuth', {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -126,7 +117,7 @@ const Header = () => {
     return (
         <_headerArea>
             <_Logo>
-                <h4>DoongG</h4>
+                <h4 style={{ color: 'white', fontWeight: '500' }}>DoongG</h4>
             </_Logo>
             <_Menu>
                 <_MenuSpecific
@@ -134,59 +125,59 @@ const Header = () => {
                     to={'/'}
                     isSelected={location.pathname === '/'}
                 >
-                    Home
+                    홈
                 </_MenuSpecific>
                 <_MenuSpecific
                     style={{ fontSize: '20px' }}
                     to={'/shopping'}
                     isSelected={location.pathname === '/shopping'}
                 >
-                    Shopping
+                    핫딜
                 </_MenuSpecific>
                 <_MenuSpecific
                     style={{ fontSize: '20px' }}
                     to={'/board'}
                     isSelected={location.pathname === '/board'}
                 >
-                    Board
+                    게시판
                 </_MenuSpecific>
                 <_MenuSpecific
                     style={{ fontSize: '20px' }}
                     to={'/roomreview'}
                     isSelected={location.pathname === '/roomreview'}
                 >
-                    RoomReview
+                    자취방
                 </_MenuSpecific>
             </_Menu>
             {localStorage.getItem('token') ? (
-                <>
-                    <LogoutButton onClick={handleLogout}>
-                        <FaSignOutAlt
-                            style={{
-                                fontSize: '20px',
-                                marginRight: '5px',
-                                color: 'red',
-                            }}
-                        />
-                    </LogoutButton>
+                <div style={{ display: 'flex' }}>
                     {/* 마이페이지 버튼 */}
                     <LogoutButton onClick={onClickToggleMyPageModal}>
                         <FaUser
                             style={{
                                 fontSize: '20px',
                                 marginRight: '5px',
-                                color: 'blue',
+                                color: 'rgb(121, 180, 175)',
                             }}
                         />
                     </LogoutButton>
-                </>
+                    <LogoutButton onClick={handleLogout}>
+                        <FaSignOutAlt
+                            style={{
+                                fontSize: '20px',
+                                marginRight: '5px',
+                                color: 'rgb(121, 180, 175)',
+                            }}
+                        />
+                    </LogoutButton>
+                </div>
             ) : (
                 <_User onClick={onClickToggleLoginModal}>
                     <IoLogInSharp
                         style={{
                             fontSize: '30px',
                             marginRight: '10px',
-                            color: 'purple',
+                            color: 'rgb(121, 180, 175)',
                         }}
                     />
                 </_User>

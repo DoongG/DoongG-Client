@@ -53,12 +53,7 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
         setEditedNickname(e.target.value);
     };
 
-    const handleNicknameBlur = () => {
-        setEditingNickname(false);
-    };
-
     const handleNicknameSubmit = async () => {
-        console.log('수정 눌림');
         setEditingNickname(false);
 
         const requestData = {
@@ -79,7 +74,7 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
             const result = response.data;
 
             if (result) {
-                alert('success');
+                alert('성공적으로 닉네임이 변경되었습니다~^^');
                 setEditedNickname(requestData.nickname);
             }
         } catch (error) {
@@ -124,15 +119,14 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
                             <_ProfileEmail>{_ProfileEmailText}</_ProfileEmail>
                             {isEditingNickname ? (
                                 <_ChangeSection>
-                                    <_NewNicknameInput
-                                        type="text"
-                                        value={editedNickname}
-                                        onChange={handleNicknameChange}
-                                        onBlur={handleNicknameBlur}
-                                    />
-                                    <EditButton onClick={handleNicknameSubmit}>
-                                        수정
-                                    </EditButton>
+                                    <form onSubmit={handleNicknameSubmit}>
+                                        <_NewNicknameInput
+                                            type="text"
+                                            value={editedNickname}
+                                            onChange={handleNicknameChange}
+                                        />
+                                        <EditButton>수정</EditButton>
+                                    </form>
                                 </_ChangeSection>
                             ) : (
                                 <_ProfileName onClick={handleNicknameClick}>
@@ -145,6 +139,13 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
                             </_StyledButton>
                         </_ProfileSpesific>
                     </_ProfileSection>
+                    <_ButtonHouse>
+                        <_StyledButton2>내가 쓴 게시물</_StyledButton2>
+                        <_StyledButton2>좋아요</_StyledButton2>
+                        <_StyledButton2>자취방 리뷰</_StyledButton2>
+                        <_StyledButton2>장바구니</_StyledButton2>
+                        <_StyledButton2>주문내역</_StyledButton2>
+                    </_ButtonHouse>
                 </_SecondDialogBox>
             </DialogBox>
             <Backdrop
@@ -164,6 +165,12 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
         </ModalContainer>
     );
 }
+const _ButtonHouse = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    height: 200px;
+    justify-content: center;
+`;
 const _SecondDialogBox = styled.div`
     width: 460px;
     height: 600px;
@@ -183,6 +190,36 @@ const _StyledButton = styled.a`
     padding: 5px 15px;
     color: white;
     border-radius: 6px;
+    text-align: center;
+    transition: top 0.01s linear;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+    background-color: #82c8a0;
+    text-decoration: none;
+    box-shadow: 0 0 0 1px #82c8a0 inset,
+        0 0 0 2px rgba(255, 255, 255, 0.15) inset,
+        0 8px 0 0 rgba(126, 194, 155, 0.7), 0 8px 0 1px rgba(0, 0, 0, 0.4),
+        0 8px 8px 1px rgba(0, 0, 0, 0.5);
+
+    &:hover {
+        background-color: #80c49d;
+        cursor: pointer;
+    }
+
+    &:active {
+        top: 9px;
+        box-shadow: 0 0 0 1px #82c8a0 inset,
+            0 0 0 2px rgba(255, 255, 255, 0.15) inset,
+            0 0 0 1px rgba(0, 0, 0, 0.4);
+    }
+`;
+const _StyledButton2 = styled.a`
+    position: relative;
+    display: inline-block;
+    font-size: 18px;
+    margin: 20px;
+    padding: 5px 15px;
+    color: white;
+    border-radius: 100%;
     text-align: center;
     transition: top 0.01s linear;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
