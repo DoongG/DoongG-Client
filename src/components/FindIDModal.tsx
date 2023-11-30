@@ -49,21 +49,7 @@ function FindIDModal({
 
     // 아이디 찾기
     const handleFindID = () => {
-        // const user = UserData.find(
-        //     (u) =>
-        //         u.nickname === nickname &&
-        //         u.phone_number === formattedPhoneNumber.replace(/-/g, ''),
-        // );
-
-        // if (user) {
-        //     const maskedEmail = maskEmail(user.email);
-        //     setFoundEmail(maskedEmail);
-        // } else {
-        //     setFoundEmail(null);
-        // }
-
-        // setFindIDClicked(true);
-
+        console.log(phoneNumber);
         const requestData = {
             nickname,
             phoneNumber,
@@ -124,10 +110,7 @@ function FindIDModal({
                     (foundEmail !== null ? (
                         <_IDResult>
                             <strong>{nickname}님의 아이디는</strong>
-                            <br />
-                            <br />
                             <_IDResultID>{foundEmail}</_IDResultID>
-                            <br />
                             <strong>입니다.</strong>
                         </_IDResult>
                     ) : (
@@ -174,25 +157,37 @@ const _FindIDForm = styled.div`
 `;
 const _FormTitle = styled.div`
     margin-bottom: 5px;
-    color: gray;
+    color: rgb(28, 57, 61);
     font-weight: bold;
     margin-top: 10px;
 `;
 const _FormInput = styled.input`
-    width: 96.5%;
+    width: 100%;
     height: 35px;
-    border: 2px solid #daddb1;
+    border: 2px solid rgb(28, 57, 61);
     border-radius: 5px;
     padding: 0 0 0 2%;
 `;
 // 회원가입 버튼
 const _FindIDButton = styled.button`
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
     width: 100%;
     height: 35px;
     margin-top: 20px;
-    background-color: white;
-    border: 2px solid #daddb1;
+    color: white;
+    background-color: rgb(28, 57, 61);
+    border: 2px solid rgb(28, 57, 61);
     border-radius: 5px;
+    &:hover {
+        color: rgb(255, 202, 29);
+    }
 `;
 // 구분선
 const _Line = styled.hr`
@@ -201,15 +196,26 @@ const _Line = styled.hr`
     width: 80%;
 `;
 const _PhoneNumInput = styled.input`
-    width: 96.5%;
+    width: 100%;
     height: 35px;
-    border: 2px solid #daddb1;
+    border: 2px solid rgb(28, 57, 61);
     border-radius: 5px;
     padding: 0 0 0 2%;
 `;
 const _IDResult = styled.div``;
 
 const _IDResultID = styled.div`
+    @font-face {
+        font-family: 'SUIT-Regular';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_suit@1.0/SUIT-Regular.woff2')
+            format('woff2');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'SUIT-Regular';
+    font-weight: 600;
+    margin-top: 10px;
+    margin-bottom: 10px;
     color: blue;
     font-size: 20px;
 `;
@@ -220,6 +226,15 @@ const _IDResultNULL = styled.div`
 `;
 
 const ModalContainer = styled.div`
+    @font-face {
+        font-family: 'SUIT-Regular';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_suit@1.0/SUIT-Regular.woff2')
+            format('woff2');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'SUIT-Regular';
+    font-weight: 600;
     display: flex;
     justify-content: center;
     margin-top: -400px;
