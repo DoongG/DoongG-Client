@@ -42,6 +42,7 @@ const _MenuSpecific = styled(Link)<{ isSelected: boolean }>`
     margin: 0 5px;
     &:hover {
         color: rgb(255, 202, 29);
+        cursor: pointer;
     }
     ${({ isSelected }) =>
         isSelected &&

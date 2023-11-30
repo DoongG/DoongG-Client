@@ -171,24 +171,31 @@ const _ButtonHouse = styled.div`
     justify-content: center;
 `;
 const _StyledButton = styled.a`
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
     position: relative;
     display: inline-block;
-    font-size: 18px;
+    font-size: 15px;
     padding: 5px 15px;
-    color: white;
+    color: black;
     border-radius: 6px;
     text-align: center;
     transition: top 0.01s linear;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
-    background-color: #82c8a0;
+    background-color: rgb(255, 202, 29);
     text-decoration: none;
-    box-shadow: 0 0 0 1px #82c8a0 inset,
-        0 0 0 2px rgba(255, 255, 255, 0.15) inset,
-        0 8px 0 0 rgba(126, 194, 155, 0.7), 0 8px 0 1px rgba(0, 0, 0, 0.4),
-        0 8px 8px 1px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 0 1px rgb(255, 202, 29) inset,
+        0 0 0 2px rgb(255, 198, 10) inset, 0 8px 0 0 rgb(160, 125, 9),
+        0 8px 0 1px rgba(0, 0, 0, 0.4), 0 8px 8px 1px rgba(0, 0, 0, 0.5);
 
     &:hover {
-        background-color: #80c49d;
+        background-color: rgb(255, 202, 29);
         cursor: pointer;
     }
 
@@ -359,7 +366,7 @@ const DialogBox = styled.dialog`
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: none;
+    border: 3px solid rgb(28, 57, 61);
     border-radius: 10px;
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;

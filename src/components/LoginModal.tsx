@@ -103,74 +103,83 @@ function LoginModal({
 
     return (
         <_ModalContainer>
-            <_DialogBox>
-                <_ModalClose>
-                    <AiOutlineClose onClick={modalClose} />
-                </_ModalClose>
+            <_DialogBoxOut>
+                <_DialogBox>
+                    <_ModalClose>
+                        <AiOutlineClose onClick={modalClose} />
+                    </_ModalClose>
 
-                <_Title>DoongG</_Title>
-                <br />
-                <_SubTitle>자취생들을 위한 플랫폼</_SubTitle>
-                <_ExplainService>
-                    둥지가 제공하는 서비스를
+                    <_Title>
+                        D<span style={{ color: 'rgb(255, 202, 29)' }}>oo</span>
+                        ngG
+                    </_Title>
                     <br />
-                    하나의 계정으로 모두 이용할 수 있습니다.
-                </_ExplainService>
+                    <_SubTitle>자취생들을 위한 플랫폼</_SubTitle>
+                    <_ExplainService>
+                        둥지가 제공하는 서비스를
+                        <br />
+                        하나의 계정으로 모두 이용할 수 있습니다.
+                    </_ExplainService>
 
-                <_LoginForm>
-                    <_ID>이메일</_ID>
-                    <_IdInput
-                        placeholder="이메일을 입력해주세요."
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        onKeyPress={handleOnKeyPress}
-                    />
-                    <_PW>비밀번호</_PW>
-                    <_PwInput
-                        type="password"
-                        placeholder="비밀번호를 입력해주세요."
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        onKeyPress={handleOnKeyPress}
-                    />
-                    {loginError && <_ErrorMessage>{loginError}</_ErrorMessage>}
-                    <_LoginButton onClick={handleLogin}>로그인</_LoginButton>
-                </_LoginForm>
-                <_GoSignUp>
-                    {isFindIDModalOpen && (
-                        <FindIDModal onClickToggleModal={toggleFindIDModal}>
-                            Modal
-                        </FindIDModal>
-                    )}
-                    <_GoSignUpText onClick={toggleFindIDModal}>
-                        아이디 찾기
-                    </_GoSignUpText>
-                    <_GoSignUpText>|</_GoSignUpText>
-                    {isFindPWModalOpen && (
-                        <FindPWModal onClickToggleModal={toggleFindPWModal}>
-                            Modal
-                        </FindPWModal>
-                    )}
+                    <_LoginForm>
+                        <_ID>이메일</_ID>
+                        <_IdInput
+                            placeholder="이메일을 입력해주세요."
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            onKeyPress={handleOnKeyPress}
+                        />
+                        <_PW>비밀번호</_PW>
+                        <_PwInput
+                            type="password"
+                            placeholder="비밀번호를 입력해주세요."
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onKeyPress={handleOnKeyPress}
+                        />
+                        {loginError && (
+                            <_ErrorMessage>{loginError}</_ErrorMessage>
+                        )}
+                        <_LoginButton onClick={handleLogin}>
+                            로그인
+                        </_LoginButton>
+                    </_LoginForm>
+                    <_GoSignUp>
+                        {isFindIDModalOpen && (
+                            <FindIDModal onClickToggleModal={toggleFindIDModal}>
+                                Modal
+                            </FindIDModal>
+                        )}
+                        <_GoSignUpText onClick={toggleFindIDModal}>
+                            아이디 찾기
+                        </_GoSignUpText>
+                        <_GoSignUpText>|</_GoSignUpText>
+                        {isFindPWModalOpen && (
+                            <FindPWModal onClickToggleModal={toggleFindPWModal}>
+                                Modal
+                            </FindPWModal>
+                        )}
 
-                    <_GoSignUpText onClick={toggleFindPWModal}>
-                        비밀번호 찾기
-                    </_GoSignUpText>
-                    <_GoSignUpText>|</_GoSignUpText>
-                    {isSignUpModalOpen && (
-                        <SignUpModal onClickToggleModal={toggleSignUpModal}>
-                            Modal
-                        </SignUpModal>
-                    )}
-                    <_GoSignUpText onClick={toggleSignUpModal}>
-                        회원가입
-                    </_GoSignUpText>
-                </_GoSignUp>
-                <_Line />
-                <_SocialLogin>
-                    <_SocialImg src={KakaoImg} />
-                    <_SocialImg src={Google} />
-                </_SocialLogin>
-            </_DialogBox>
+                        <_GoSignUpText onClick={toggleFindPWModal}>
+                            비밀번호 찾기
+                        </_GoSignUpText>
+                        <_GoSignUpText>|</_GoSignUpText>
+                        {isSignUpModalOpen && (
+                            <SignUpModal onClickToggleModal={toggleSignUpModal}>
+                                Modal
+                            </SignUpModal>
+                        )}
+                        <_GoSignUpText onClick={toggleSignUpModal}>
+                            회원가입
+                        </_GoSignUpText>
+                    </_GoSignUp>
+                    <_Line />
+                    <_SocialLogin>
+                        <_SocialImg src={KakaoImg} />
+                        <_SocialImg src={Google} />
+                    </_SocialLogin>
+                </_DialogBox>
+            </_DialogBoxOut>
             <_Backdrop
                 onClick={(e: React.MouseEvent) => {
                     e.preventDefault();
@@ -183,7 +192,10 @@ function LoginModal({
         </_ModalContainer>
     );
 }
-
+const _DialogBoxOut = styled.div`
+    width: 100%;
+    height: 100%;
+`;
 // 모달 닫기 부분
 const _ModalClose = styled.div`
     font-size: 20px;
@@ -203,7 +215,6 @@ const _Title = styled.div`
         font-style: normal;
     }
     font-family: 'MBC1961GulimM';
-    margin-top: 20px;
     font-size: 40px;
 `;
 
@@ -230,7 +241,7 @@ const _ExplainService = styled.div`
 
 // Login Form 부분
 const _LoginForm = styled.div`
-    margin-top: 30px;
+    margin-top: 20px;
     text-align: left;
     width: 80%;
 `;
@@ -338,7 +349,7 @@ const _ModalContainer = styled.div`
 
 const _DialogBox = styled.dialog`
     width: 400px;
-    height: 650px;
+    height: 600px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -348,7 +359,7 @@ const _DialogBox = styled.dialog`
     box-sizing: border-box;
     background-color: white;
     z-index: 10000 !important;
-    margin-top: 900px;
+    margin-top: 60vh;
 `;
 
 const _Backdrop = styled.div`
