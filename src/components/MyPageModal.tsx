@@ -1,10 +1,12 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { AiOutlineClose } from 'react-icons/ai';
 import { User } from './data/User';
 import { PasswordChangeModal } from './PasswordChangeModal';
 import originalImg from '../assets/Mascot.jpg';
 import axios from 'axios';
+import { S3 } from 'aws-sdk';
+import ReactS3Client from 'react-aws-s3-typescript';
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
@@ -16,7 +18,7 @@ interface MyPageModalProps extends PropsWithChildren<ModalDefaultType> {
 
 function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
     const [token, setToken] = useState<string | null>(null);
-
+    const imageRef = useRef<any>(null);
     useEffect(() => {
         // 이 부분에서 로컬 스토리지에서 토큰을 가져와 상태로 관리합니다.
         const storedToken = localStorage.getItem('token');
@@ -40,9 +42,107 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
     const _ProfileImgSrc = user ? user.profileImg || originalImg : '';
     const _ProfileEmailText = user ? user.email : '';
 
+    // const s3 = new S3({
+    //     region,
+    //     accessKeyId,
+    //     secretAccessKey,
+    // });
+    // const handleImageUpload = async (file: File): Promise<String> => {
+    //     const imageName = `${Date.now()}-${file.name}`;
+    //     const params = {
+    //         Bucket: bucketName,
+    //         Key: imageName,
+    //         Body: file,
+    //         ContentType: file.type,
+    //     };
+    //     await s3.upload(params).promise();
+    //     return imageName;
+    // };
+    // const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+
+    // fileInput.addEventListener('change', async (event) => {
+    //     const file = (event.target as HTMLInputElement).files?.[0];
+    //     if (file) {
+    //         try {
+    //             const imageName = await handleImageUpload(file);
+    //             console.log('Imageuplosdto s3', imageName);
+
+    //             const imageUrl = generateImageUrl(imageName);
+    //         } catch (error) {
+    //             console.error(error);
+    //         }
+    //     }
+    // });
+
+    const config: any = {
+        bucketName: 'doongg-bucket',
+        region: 'ap-northeast-2',
+        accessKeyId: 'AKIAV64KNCLEKO47QYL4',
+        secretAccessKey: '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',
+    };
     // s3 업로드후 로딩 하는 로직
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const requestData = {};
+    const handleImageUpload = async (
+        e: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        if (imageRef.current) {
+            let file = imageRef.current.files[0];
+            const s3 = new ReactS3Client(config);
+            let fullName = file.name.split('.')[0] + Date.now();
+            const res = await s3.uploadFile(file, fullName);
+            console.log('Uploaded Image URL:', res.location);
+
+            const requestData = {
+                profileImg: res.location,
+            };
+
+            // 서버에 이미지 URL 전송 및 DB 저장
+            try {
+                const response = await axios.post(
+                    'http://localhost:8080/userAuth/chProImg',
+                    requestData,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    },
+                );
+
+                const result = response.data;
+
+                if (result) {
+                    // 성공적으로 이미지가 업데이트되었으면, 사용자 정보 다시 불러오기
+                    const userResponse = await axios.get(
+                        'http://localhost:8080/userAuth',
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                'Content-Type': 'application/json',
+                            },
+                        },
+                    );
+
+                    const updatedUser = userResponse.data;
+                    console.log('Updated User Info:', updatedUser);
+
+                    // 화면에 변경된 이미지 반영
+                    const newImageUrl = updatedUser.profileImg;
+                    if (newImageUrl) {
+                        // 이미지 업로드 후 변경된 이미지로 갱신
+                        setEditedImageUrl(newImageUrl);
+                    }
+                }
+            } catch (error) {
+                console.error('에러 발생:', error);
+            }
+        }
+    };
+    // MyPageModal 컴포넌트 최상단에 상태 추가
+    const [editedImageUrl, setEditedImageUrl] = useState<string | null>(
+        user?.profileImg || '',
+    );
+
+    const setEditedImageUrlState = (newImageUrl: string) => {
+        setEditedImageUrl(newImageUrl);
     };
 
     const handleNicknameClick = () => {
@@ -100,12 +200,13 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
                 <_ProfileSection>
                     <_ImgSection>
                         <_ProfileImg
-                            src={_ProfileImgSrc}
+                            src={editedImageUrl || originalImg} // 변경된 이미지가 없으면 기본 이미지 사용
                             alt={user ? user.nickname : ''}
                         />
                         <ImageUploadButton>
                             <label htmlFor="imageUpload">편집</label>
                             <input
+                                ref={imageRef}
                                 type="file"
                                 id="imageUpload"
                                 onChange={handleImageUpload}
@@ -181,7 +282,7 @@ const _StyledButton = styled.a`
     font-family: 'JalnanGothic';
     position: relative;
     display: inline-block;
-    font-size: 15px;
+    font-size: 13px;
     padding: 5px 15px;
     color: black;
     border-radius: 6px;
@@ -232,10 +333,24 @@ const _StyledButton2 = styled.a`
         cursor: pointer;
     }
 `;
-const _ChangeSection = styled.div``;
+const _ChangeSection = styled.div`
+    margin-bottom: 10px;
+`;
 
 const _NewNicknameInput = styled.input`
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
     width: 100px;
+    background-color: rgb(28, 57, 61);
+    border: 2px solid rgb(255, 202, 29);
+    color: white;
+    border-radius: 5px;
 `;
 const EditableNickname = styled.span`
     font-size: 20px;
@@ -246,7 +361,20 @@ const EditableNickname = styled.span`
 `;
 
 const EditButton = styled.button`
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
+    margin-left: 5px;
     cursor: pointer;
+    background-color: rgb(255, 202, 29);
+    border: 2px solid rgb(255, 202, 29);
+    border-radius: 5px;
+    color: black;
 `;
 const _ImgSection = styled.div``;
 // 모달 닫기 부분
@@ -300,7 +428,7 @@ const _ProfileName = styled.div`
     }
     font-family: 'JalnanGothic';
     font-size: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 `;
 const _ProfileEmail = styled.div`
     @font-face {
@@ -315,6 +443,7 @@ const _ProfileEmail = styled.div`
     margin-bottom: 5px;
 `;
 const _ProfileSpesific = styled.div`
+    width: 160px;
     display: inline-block;
 `;
 
