@@ -305,22 +305,22 @@ const GalleryStyle = () => {
                                     {x.likeCount}
                                 </_cardLike>
                                 <_cardDisplay>
-                                    <_card id="img" src={x.url} />
+                                    <_card
+                                        id="img"
+                                        src={
+                                            x.postImages.map((img: any) => {
+                                                if (
+                                                    img.imageType == 'thumbnail'
+                                                ) {
+                                                    return img.url;
+                                                }
+                                            })[0]
+                                        }
+                                    />
                                 </_cardDisplay>
                                 <_cardInst>
                                     <_cardLeft>
-                                        <_cardProfileImg
-                                            src={
-                                                x.postImages.map((img: any) => {
-                                                    if (
-                                                        img.imageType ==
-                                                        'thumbnail'
-                                                    ) {
-                                                        return img.url;
-                                                    }
-                                                })[0]
-                                            }
-                                        ></_cardProfileImg>
+                                        <_cardProfileImg src=""></_cardProfileImg>
                                     </_cardLeft>
                                     <_cardRight>
                                         <_cardTitle id="title">

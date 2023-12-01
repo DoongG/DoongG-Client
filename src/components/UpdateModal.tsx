@@ -29,6 +29,7 @@ function UpdateModal() {
     const [title, setTitle] = useState('');
     const [commentAllowed, setCommentAllowed] = useState(true);
     const [currentTag, setCurrentTag] = useState('');
+    const [inputImage, setInputImage] = useState<any>(null);
     const [tagExsist, setTagExsist] = useState(false);
     const [tags, setTags] = useState<any>([]);
     const [images, setImages] = useState<any>([]);
@@ -78,36 +79,45 @@ function UpdateModal() {
         accessKeyId: 'AKIAV64KNCLEKO47QYL4',
         secretAccessKey: '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',
     };
-    const imageHandler = async () => {
-        const input = document.createElement('input');
-        input.setAttribute('type', 'file');
-        input.setAttribute('accept', 'image/*');
-        input.click();
-        input.addEventListener('change', async () => {
+
+    const imageSender = async (input: any, images: any) => {
+        if (input) {
             const file: any = input.files?.[0];
             console.log(file);
             try {
                 const s3 = new ReactS3Client(config);
                 let fullName = file.name.split('.')[0] + Date.now();
                 const res = await s3.uploadFile(file, fullName);
-                console.log(res);
                 if (myRef.current) {
                     const editor = myRef.current.getEditor();
                     const range: any = editor.getSelection();
                     editor.insertEmbed(range.index, 'image', res.location);
+                    console.log(images);
                     const eachImage = {
                         url: res.location,
                         imageType: images.length > 0 ? 'contents' : 'thumbnail',
                         description: Date.now(),
                     };
-                    let tempImage = images;
-                    tempImage.push(eachImage);
-                    setImages(tempImage);
+                    setImages((prevList: any) => [...prevList, eachImage]);
                 }
             } catch (error) {
                 console.log(error);
             }
-        });
+        }
+    };
+
+    useEffect(() => {
+        imageSender(inputImage, images);
+    }, [inputImage]);
+
+    const imageHandler = async () => {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.click();
+        input.onchange = () => {
+            setInputImage(input);
+        };
     };
     const modules = useMemo<any>(() => {
         return {
@@ -198,6 +208,8 @@ function UpdateModal() {
         }
     };
 
+    const imageDelete = () => {};
+
     return (
         <_modalContainer>
             <_dialogBox>
@@ -209,15 +221,9 @@ function UpdateModal() {
                     onChange={handleTitleChange}
                     spellCheck={false}
                 />
-                <ReactQuill
+                <_customQuill
                     ref={myRef}
                     // 스타일 이거 반응형 맞춰야함
-                    style={{
-                        padding: 0,
-                        width: '100%',
-                        height: '500px',
-                        marginBottom: '80px',
-                    }}
                     value={content}
                     modules={modules}
                     onChange={setContent}
@@ -246,6 +252,7 @@ function UpdateModal() {
                             >
                                 <img
                                     style={{
+                                        position: 'relative',
                                         width: '90%',
                                         height: '90%',
                                         border:
@@ -255,6 +262,26 @@ function UpdateModal() {
                                     }}
                                     src={x.url}
                                 ></img>
+                                <div
+                                    style={{
+                                        cursor: 'pointer',
+                                        position: 'absolute',
+                                        marginTop: '-80px',
+                                        marginLeft: '8px',
+                                    }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        let temper =
+                                            window.confirm(
+                                                '이미지를 삭제하시겠습니까?',
+                                            );
+                                        if (temper) {
+                                            imageDelete();
+                                        }
+                                    }}
+                                >
+                                    x
+                                </div>
                             </div>
                         );
                     })}
@@ -335,6 +362,17 @@ function UpdateModal() {
         </_modalContainer>
     );
 }
+
+const _customQuill = styled(ReactQuill)`
+    padding: 0;
+    width: 100%;
+    height: 280px;
+    max-height: 500px;
+    margin-bottom: 80px;
+    & .ql-editor {
+        max-height: 500px;
+    }
+`;
 
 const _belowPlace = styled.div`
     display: flex;

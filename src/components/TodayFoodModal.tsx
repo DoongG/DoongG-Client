@@ -8,7 +8,8 @@ const TodayFoodModal = () => {
     const { gameModalOn, setGameModalOn } = BoardStore();
 
     const [isFlipped, setIsFlipped] = useState(false);
-
+    const [width, setWidth] = useState(16);
+    const [titleWidth, setTitleWidth] = useState(30);
     const [target, setTarget] = useState<any>([]);
 
     const randomMixer = (foodArr: any) => {
@@ -140,14 +141,32 @@ const TodayFoodModal = () => {
         }
     }, [target]);
 
+    const handleResize = () => {
+        console.log(window.innerWidth / 25);
+        if (window.innerWidth / 10 < 45) {
+            setTitleWidth(window.innerWidth / 10);
+        }
+        if (window.innerWidth / 25 < 16) {
+            setWidth(window.innerWidth / 25);
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
     return (
         <_modalContainer>
             <_dialogBox>
                 <_gameSpace>
-                    <_gameTitle>오늘 뭐 먹지</_gameTitle>
+                    <_gameTitle style={{ fontSize: titleWidth + 'px' }}>
+                        오늘 뭐 먹지
+                    </_gameTitle>
                     <_itemSpace>
                         {sampledb.map((x, index) => {
-                            console.log(index);
                             return (
                                 <ReactCardFlip
                                     containerStyle={{
@@ -162,10 +181,24 @@ const TodayFoodModal = () => {
                                             flip(x);
                                         }}
                                     >
-                                        <p>{x}</p>
+                                        <p
+                                            style={{
+                                                marginTop: '20px',
+                                                fontSize: width + 'px',
+                                            }}
+                                        >
+                                            {x}
+                                        </p>
                                     </_item>
                                     <_item>
-                                        <p>{target[index]}</p>
+                                        <p
+                                            style={{
+                                                marginTop: '20px',
+                                                fontSize: width + 'px',
+                                            }}
+                                        >
+                                            {target[index]}
+                                        </p>
                                     </_item>
                                 </ReactCardFlip>
                             );
@@ -194,7 +227,6 @@ const TodayFoodModal = () => {
 };
 
 const _gameTitle = styled.div`
-    font-size: 60px;
     font-weight: 600;
 `;
 
@@ -204,7 +236,18 @@ const _reset = styled.button`
 `;
 
 const _gameSpace = styled.div`
-    width: 100%;
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    margin-top: 80px;
+    font-family: 'JalnanGothic';
+    min-width: 268px;
+    max-width: 400px;
+    width: 60%;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -221,8 +264,10 @@ const _itemSpace = styled.div`
 `;
 
 const _item = styled.div`
-    background-color: #daddb1;
-    width: 100%;
+    background-color: #1c393d;
+    color: #ffca1d;
+    width: 95%;
+    font-size: 20px;
     min-width: 50px;
     border-radius: 10px;
     aspect-ratio: auto 1 / 1;
@@ -244,7 +289,7 @@ const _modalContainer = styled.div`
 `;
 
 const _dialogBox = styled.dialog`
-    width: 80%;
+    width: 85%;
     height: 100%;
     display: flex;
     flex-direction: column;

@@ -6,15 +6,33 @@ import { useNavigate } from 'react-router-dom';
 import { BoardStore } from '../store/storeT';
 import { TodayFoodModal } from '../components/TodayFoodModal';
 import { useLocation } from 'react-router';
+import { RecipeGenerator } from '../components/RecipeGenerator';
 
 const _hr = styled.hr`
     /* width: 100%; */
 `;
 
 const _rightSection = styled.div`
-    width: 150px;
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
+    width: 100%;
+    min-width: 140px;
     height: 200px;
-    border: 1px solid black;
+    background-color: #1c393d;
+    /* border: 5px solid #1c393d; */
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 5px;
+    cursor: pointer;
 `;
 
 const _backArea = styled.div`
@@ -24,7 +42,7 @@ const _backArea = styled.div`
 `;
 
 const _allBoardArea = styled.div`
-    width: 80%;
+    width: 90%;
     display: flex;
     flex-wrap: wrap;
 `;
@@ -55,12 +73,24 @@ const _eachPost = styled.div`
     cursor: pointer;
 `;
 
+const _rightPlace = styled.div`
+    width: 150px;
+    right: 5%;
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+`;
+
 const BoardUnited = () => {
     const {
         currentBoardName,
         setCurrentBoardName,
         gameModalOn,
         setGameModalOn,
+        game2ModalOn,
+        setGame2ModalOn,
         modalSignal,
         setModalSignal,
     } = BoardStore();
@@ -95,6 +125,7 @@ const BoardUnited = () => {
         <>
             <_backArea>
                 {gameModalOn && <TodayFoodModal></TodayFoodModal>}
+                {game2ModalOn && <RecipeGenerator></RecipeGenerator>}
                 <_allBoardArea>
                     {allBoard.map((x: any) => {
                         return (
@@ -134,11 +165,60 @@ const BoardUnited = () => {
                         );
                     })}
                 </_allBoardArea>
-                <_rightSection
-                    onClick={() => {
-                        setGameModalOn(true);
-                    }}
-                ></_rightSection>
+                <_rightPlace>
+                    <_rightSection
+                        onClick={() => {
+                            setGameModalOn(true);
+                        }}
+                    >
+                        <div
+                            style={{
+                                width: '80%',
+                                margin: '5px',
+                                color: 'white',
+                            }}
+                        >
+                            {' '}
+                            오늘 뭐 먹을지 고민될 땐?
+                        </div>
+                        <div
+                            style={{
+                                borderRadius: '5px',
+                                padding: '5px',
+                                backgroundColor: '#ffca1d',
+                                color: '#1c393d',
+                            }}
+                        >
+                            클릭!
+                        </div>
+                    </_rightSection>
+                    <_rightSection
+                        onClick={() => {
+                            setGame2ModalOn(true);
+                        }}
+                    >
+                        <div
+                            style={{
+                                width: '80%',
+                                margin: '5px',
+                                color: 'white',
+                            }}
+                        >
+                            {' '}
+                            냉장고에 남은 것들로 만들 수 있는 요리 추천!
+                        </div>
+                        <div
+                            style={{
+                                borderRadius: '5px',
+                                padding: '5px',
+                                backgroundColor: '#ffca1d',
+                                color: '#1c393d',
+                            }}
+                        >
+                            클릭!
+                        </div>
+                    </_rightSection>
+                </_rightPlace>
             </_backArea>
         </>
     );
