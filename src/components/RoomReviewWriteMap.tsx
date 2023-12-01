@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { RoomReviewWrite } from './RoomReviewWrite';
 import { RoomReviewWatch } from './RoomReviewWatch';
+import { IoIosSearch } from 'react-icons/io';
+import DaumPostcode from 'react-daum-postcode';
+
 import {
     useButtonStore,
     useCenterLatLng,
@@ -16,17 +19,22 @@ declare global {
     }
 }
 const RoomReviewWriteMap = () => {
-    const [map, setMap] = useState(null);
+    const [map, setMap] = useState<any>();
     const [marker, setMarker] = useState<any>();
 
     const [latitude, setLatitude] = useState<number>(0);
     const [longitude, setLongitude] = useState<number>(0);
+
+    // 주소 찾는 모달 상태
+    const [openPostModal, setOpenPostModal] = useState(false);
 
     const { button, setButton } = useButtonStore();
     // 클릭한 곳의 내용
     const { address, mylat, mylng, setAddress, setMylat, setMylng } =
         useReviewDateStore();
 
+    // 주소 입력 모달 상태 state
+    const [daumAddress, setDaumAddress] = useState('');
     // 지도 중심 내용
     const {
         centerLat,
@@ -199,6 +207,40 @@ const RoomReviewWriteMap = () => {
             setButton(false);
         }
     };
+
+    // 주소 검색 함수
+    const onSearchAddress = () => {
+        // 주소 찾기 버튼 이벤트
+
+        setOpenPostModal(!openPostModal);
+    };
+
+    // 주소 검색 후 지도 이동
+    const onCompletePost = (data: any) => {
+        setOpenPostModal(false);
+        if (map) {
+            let geocoder = new window.kakao.maps.services.Geocoder();
+            geocoder.addressSearch(
+                data.address,
+                function (result: any, status: any) {
+                    if (status === window.kakao.maps.services.Status.OK) {
+                        let currentPos = new window.kakao.maps.LatLng(
+                            result[0].y,
+                            result[0].x,
+                        );
+                        setDaumAddress(data.address);
+                        setAddress(data.address);
+                        map.panTo(currentPos);
+                        setMap(map);
+                        marker.setMap(null);
+                        marker.setPosition(currentPos);
+                        marker.setMap(map);
+                    }
+                },
+            );
+        }
+    };
+
     return (
         <>
             <_kakaoMapWrapper id="map">
@@ -218,6 +260,26 @@ const RoomReviewWriteMap = () => {
                         전체 리뷰 보기
                     </button>
                 </_buttonWrapper>
+                <_searchAddressInputBox className="Hello">
+                    <_inputBox className="inputBox" onClick={onSearchAddress}>
+                        <input
+                            type="text"
+                            id="addr"
+                            placeholder="주소를 입력해주세요"
+                            value={daumAddress}
+                        />
+                        <_iconBox className="iconBox">
+                            <_customIcon />
+                        </_iconBox>
+                        {openPostModal && (
+                            <_DaumPostcode
+                                onComplete={onCompletePost} // 값을 선택할 경우 실행되는 이벤트
+                                autoClose={false} // 값을 선택할 경우 사용되는 DOM을 제거하여 자동 닫힘 설정
+                                defaultQuery="" // 팝업을 열때 기본적으로 입력되는 검색어
+                            />
+                        )}
+                    </_inputBox>
+                </_searchAddressInputBox>
             </_kakaoMapWrapper>
         </>
     );
@@ -241,6 +303,66 @@ const _buttonWrapper = styled.div`
         border: none;
         background-color: #404040;
         color: rgba(var(--bs-link-color-rgb));
+    }
+`;
+const _searchAddressInputBox = styled.div`
+    left: 16px;
+    top: 10px;
+    position: absolute;
+    z-index: 999;
+    border: 1px solid rgb(28 57 61 / 38%);
+    background-color: white;
+    padding: 10px;
+`;
+const _inputBox = styled.div`
+    display: flex;
+    align-items: center;
+    border: 2px solid rgb(28, 57, 61);
+    border-radius: 3px;
+    position: relative;
+
+    & > input {
+        width: 285px;
+        border: none;
+        font-size: 13px;
+        padding: 0px 10px;
+        outline: none;
+    }
+`;
+const _iconBox = styled.div`
+    height: 100%;
+
+    background-color: rgb(28, 57, 61);
+`;
+const _customIcon = styled(IoIosSearch)`
+    margin-right: 5px;
+    margin-left: 5px;
+    color: white;
+`;
+const _DaumPostcode = styled(DaumPostcode)`
+    position: absolute;
+    top: 236px;
+    left: 156px;
+
+    width: 335px !important;
+    box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
+    box-sizing: border-box;
+    background-color: white;
+    z-index: 4;
+    /* transform: translate(-50%, -50%); */
+    animation: scale-in-center 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+
+    @keyframes scale-in-center {
+        0% {
+            -webkit-transform: scale(0);
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 1;
+        }
+        100% {
+            -webkit-transform: scale(1);
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
     }
 `;
 
