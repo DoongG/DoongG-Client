@@ -83,7 +83,6 @@ function UpdateModal() {
     const imageSender = async (input: any, images: any) => {
         if (input) {
             const file: any = input.files?.[0];
-            console.log(file);
             try {
                 const s3 = new ReactS3Client(config);
                 let fullName = file.name.split('.')[0] + Date.now();
@@ -92,6 +91,7 @@ function UpdateModal() {
                     const editor = myRef.current.getEditor();
                     const range: any = editor.getSelection();
                     editor.insertEmbed(range.index, 'image', res.location);
+                    editor.setSelection(range.index + 1);
                     console.log(images);
                     const eachImage = {
                         url: res.location,
@@ -119,19 +119,13 @@ function UpdateModal() {
             setInputImage(input);
         };
     };
+
     const modules = useMemo<any>(() => {
         return {
             toolbar: {
                 container: [
                     ['image'],
                     [{ header: [1, 2, 3, 4, 5, false] }],
-                    [
-                        { list: 'ordered' },
-                        { list: 'bullet' },
-                        { indent: '-1' },
-                        { indent: '+1' },
-                        { align: [] },
-                    ],
                     ['bold', 'italic', 'underline', 'strike', 'blockquote'],
                 ],
                 handlers: {
@@ -208,7 +202,28 @@ function UpdateModal() {
         }
     };
 
-    const imageDelete = () => {};
+    const imageDelete = (type: any, id: any, url: any) => {
+        let temp = [];
+        for (let i = 0; i < images.length; i++) {
+            if (images[i].description !== id) {
+                temp.push(images[i]);
+            }
+        }
+        if (myRef.current) {
+            const editor = myRef.current.getEditor();
+            const content = editor.getContents().ops;
+            let renew: any = [];
+            if (content) {
+                for (let i = 0; i < content?.length; i++) {
+                    if (content[i].insert?.image !== url) {
+                        renew.push(content[i]);
+                    }
+                }
+            }
+            editor.setContents(renew);
+        }
+        setImages(temp);
+    };
 
     return (
         <_modalContainer>
@@ -228,6 +243,16 @@ function UpdateModal() {
                     modules={modules}
                     onChange={setContent}
                 />
+                <p
+                    style={{
+                        color: 'grey',
+                        margin: 0,
+                        width: '99%',
+                        textAlign: 'start',
+                    }}
+                >
+                    (이미지를 클릭하여 대표이미지를 정할 수 있습니다)
+                </p>
                 <div
                     style={{
                         width: '100%',
@@ -271,12 +296,15 @@ function UpdateModal() {
                                     }}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        let temper =
-                                            window.confirm(
-                                                '이미지를 삭제하시겠습니까?',
-                                            );
+                                        let temper = window.confirm(
+                                            '이미지를 삭제하시겠습니까? (복사된 이미지까지 전부 삭제됩니다)',
+                                        );
                                         if (temper) {
-                                            imageDelete();
+                                            imageDelete(
+                                                x.imageType,
+                                                x.description,
+                                                x.url,
+                                            );
                                         }
                                     }}
                                 >

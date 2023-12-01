@@ -9,6 +9,7 @@ import { IoCopyOutline } from 'react-icons/io5';
 import { TbHeartBroken } from 'react-icons/tb';
 import eyes from '../assets/eyes.png';
 import axios from 'axios';
+import Mascot from '../assets/Mascot-removebg-preview.png';
 
 const _modalArea = styled.div`
     position: absolute;
@@ -245,7 +246,7 @@ const PostModal = () => {
                                         width: '30px',
                                         height: '30px',
                                     }}
-                                    src={onePageData[0].profileImg}
+                                    src={onePageData[0].profileImg || Mascot}
                                 ></img>
                             </div>
                         </_writer>

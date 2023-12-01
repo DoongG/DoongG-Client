@@ -12,6 +12,7 @@ import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { BoardUpperPart } from './BoardUpperPart';
 import { PostModal } from './PostModal';
 import { useLocation, useParams } from 'react-router';
+import Mascot from '../assets/Mascot-removebg-preview.png';
 
 const _allArea = styled.div`
     display: flex;
@@ -273,6 +274,17 @@ const GalleryStyle = () => {
         // setOnePageData(tempData);
     };
 
+    const thumbnailPicker = (imageArr: any) => {
+        if (imageArr) {
+            for (let i = 0; i < imageArr.length; i++) {
+                if (imageArr[i].imageType == 'thumbnail') {
+                    return imageArr[i].url;
+                }
+            }
+        }
+        return Mascot;
+    };
+
     useEffect(() => {
         console.log(onePageData);
         if (onePageData.length > 0) {
@@ -307,20 +319,14 @@ const GalleryStyle = () => {
                                 <_cardDisplay>
                                     <_card
                                         id="img"
-                                        src={
-                                            x.postImages.map((img: any) => {
-                                                if (
-                                                    img.imageType == 'thumbnail'
-                                                ) {
-                                                    return img.url;
-                                                }
-                                            })[0]
-                                        }
+                                        src={thumbnailPicker(x.postImages)}
                                     />
                                 </_cardDisplay>
                                 <_cardInst>
                                     <_cardLeft>
-                                        <_cardProfileImg src=""></_cardProfileImg>
+                                        <_cardProfileImg
+                                            src={x.user.profileImg || Mascot}
+                                        ></_cardProfileImg>
                                     </_cardLeft>
                                     <_cardRight>
                                         <_cardTitle id="title">
