@@ -45,6 +45,9 @@ const RoomreView = () => {
 const _WrapperBox = styled.div`
     display: flex;
     height: calc(100vh - 50px);
+    // 로그인 버튼 누르면 지도 앞으로 나오게 하는 속성
+    /* z-index: -1;
+    position: relative; */
 `;
 
 export { RoomreView };
