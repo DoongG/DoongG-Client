@@ -93,60 +93,58 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
     return (
         <ModalContainer>
             <DialogBox>
-                <_SecondDialogBox>
-                    <_ModalClose>
-                        <AiOutlineClose onClick={modalClose} />
-                    </_ModalClose>
-                    <_Title>MyPage</_Title>
-                    <_ProfileSection>
-                        <_ImgSection>
-                            <_ProfileImg
-                                src={_ProfileImgSrc}
-                                alt={user ? user.nickname : ''}
+                <_ModalClose>
+                    <AiOutlineClose onClick={modalClose} />
+                </_ModalClose>
+                <_Title>MyPage</_Title>
+                <_ProfileSection>
+                    <_ImgSection>
+                        <_ProfileImg
+                            src={_ProfileImgSrc}
+                            alt={user ? user.nickname : ''}
+                        />
+                        <ImageUploadButton>
+                            <label htmlFor="imageUpload">편집</label>
+                            <input
+                                type="file"
+                                id="imageUpload"
+                                onChange={handleImageUpload}
+                                accept="image/*"
+                                style={{ display: 'none' }}
                             />
-                            <ImageUploadButton>
-                                <label htmlFor="imageUpload">편집</label>
-                                <input
-                                    type="file"
-                                    id="imageUpload"
-                                    onChange={handleImageUpload}
-                                    accept="image/*"
-                                    style={{ display: 'none' }}
-                                />
-                            </ImageUploadButton>
-                        </_ImgSection>
-                        <_ProfileSpesific>
-                            <_ProfileEmail>{_ProfileEmailText}</_ProfileEmail>
-                            {isEditingNickname ? (
-                                <_ChangeSection>
-                                    <form onSubmit={handleNicknameSubmit}>
-                                        <_NewNicknameInput
-                                            type="text"
-                                            value={editedNickname}
-                                            onChange={handleNicknameChange}
-                                        />
-                                        <EditButton>수정</EditButton>
-                                    </form>
-                                </_ChangeSection>
-                            ) : (
-                                <_ProfileName onClick={handleNicknameClick}>
-                                    {editedNickname}
-                                </_ProfileName>
-                            )}
-                            {/* <button>비밀번호 변경</button> */}
-                            <_StyledButton onClick={openPasswordChangeModal}>
-                                비밀번호 변경
-                            </_StyledButton>
-                        </_ProfileSpesific>
-                    </_ProfileSection>
-                    <_ButtonHouse>
-                        <_StyledButton2>내가 쓴 게시물</_StyledButton2>
-                        <_StyledButton2>좋아요</_StyledButton2>
-                        <_StyledButton2>자취방 리뷰</_StyledButton2>
-                        <_StyledButton2>장바구니</_StyledButton2>
-                        <_StyledButton2>주문내역</_StyledButton2>
-                    </_ButtonHouse>
-                </_SecondDialogBox>
+                        </ImageUploadButton>
+                    </_ImgSection>
+                    <_ProfileSpesific>
+                        <_ProfileEmail>{_ProfileEmailText}</_ProfileEmail>
+                        {isEditingNickname ? (
+                            <_ChangeSection>
+                                <form onSubmit={handleNicknameSubmit}>
+                                    <_NewNicknameInput
+                                        type="text"
+                                        value={editedNickname}
+                                        onChange={handleNicknameChange}
+                                    />
+                                    <EditButton>수정</EditButton>
+                                </form>
+                            </_ChangeSection>
+                        ) : (
+                            <_ProfileName onClick={handleNicknameClick}>
+                                {editedNickname}
+                            </_ProfileName>
+                        )}
+                        {/* <button>비밀번호 변경</button> */}
+                        <_StyledButton onClick={openPasswordChangeModal}>
+                            비밀번호 변경
+                        </_StyledButton>
+                    </_ProfileSpesific>
+                </_ProfileSection>
+                <_ButtonHouse>
+                    <_StyledButton2>내가 쓴 게시물</_StyledButton2>
+                    <_StyledButton2>좋아요</_StyledButton2>
+                    <_StyledButton2>자취방 리뷰</_StyledButton2>
+                    <_StyledButton2>장바구니</_StyledButton2>
+                    <_StyledButton2>주문내역</_StyledButton2>
+                </_ButtonHouse>
             </DialogBox>
             <Backdrop
                 onClick={(e: React.MouseEvent) => {
@@ -168,40 +166,36 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
 const _ButtonHouse = styled.div`
     display: flex;
     flex-wrap: wrap;
-    height: 200px;
+    height: 150px;
+    margin-top: 20px;
     justify-content: center;
 `;
-const _SecondDialogBox = styled.div`
-    width: 460px;
-    height: 600px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 2px solid purple;
-    border-radius: 10px;
-    box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
-    box-sizing: border-box;
-    background-color: #daddb1;
-`;
 const _StyledButton = styled.a`
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
     position: relative;
     display: inline-block;
-    font-size: 18px;
+    font-size: 15px;
     padding: 5px 15px;
-    color: white;
+    color: black;
     border-radius: 6px;
     text-align: center;
     transition: top 0.01s linear;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
-    background-color: #82c8a0;
+    background-color: rgb(255, 202, 29);
     text-decoration: none;
-    box-shadow: 0 0 0 1px #82c8a0 inset,
-        0 0 0 2px rgba(255, 255, 255, 0.15) inset,
-        0 8px 0 0 rgba(126, 194, 155, 0.7), 0 8px 0 1px rgba(0, 0, 0, 0.4),
-        0 8px 8px 1px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 0 1px rgb(255, 202, 29) inset,
+        0 0 0 2px rgb(255, 198, 10) inset, 0 8px 0 0 rgb(160, 125, 9),
+        0 8px 0 1px rgba(0, 0, 0, 0.4), 0 8px 8px 1px rgba(0, 0, 0, 0.5);
 
     &:hover {
-        background-color: #80c49d;
+        background-color: rgb(255, 202, 29);
         cursor: pointer;
     }
 
@@ -213,33 +207,29 @@ const _StyledButton = styled.a`
     }
 `;
 const _StyledButton2 = styled.a`
-    position: relative;
-    display: inline-block;
-    font-size: 18px;
-    margin: 20px;
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
+    display: flex;
+    font-size: 15px;
+    margin: 15px 20px;
     padding: 5px 15px;
+    background-color: rgb(28, 57, 61);
+    border: 2px solid rgb(28, 57, 61);
     color: white;
-    border-radius: 100%;
-    text-align: center;
-    transition: top 0.01s linear;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
-    background-color: #82c8a0;
+    border-radius: 10px;
+    align-items: center;
+    justify-content: center;
     text-decoration: none;
-    box-shadow: 0 0 0 1px #82c8a0 inset,
-        0 0 0 2px rgba(255, 255, 255, 0.15) inset,
-        0 8px 0 0 rgba(126, 194, 155, 0.7), 0 8px 0 1px rgba(0, 0, 0, 0.4),
-        0 8px 8px 1px rgba(0, 0, 0, 0.5);
 
     &:hover {
-        background-color: #80c49d;
+        color: rgb(255, 202, 29);
         cursor: pointer;
-    }
-
-    &:active {
-        top: 9px;
-        box-shadow: 0 0 0 1px #82c8a0 inset,
-            0 0 0 2px rgba(255, 255, 255, 0.15) inset,
-            0 0 0 1px rgba(0, 0, 0, 0.4);
     }
 `;
 const _ChangeSection = styled.div``;
@@ -294,19 +284,35 @@ const _ProfileSection = styled.div`
     display: flex;
     align-items: center;
     text-align: left;
-    background-color: white;
-    border: 2px solid purple;
+    background-color: rgb(28, 57, 61);
+    border: 2px solid rgb(28, 57, 61);
+    color: white;
     border-radius: 10px;
     padding-bottom: 5px;
 `;
 const _ProfileName = styled.div`
-    font-size: 20px;
-    font-family: sans-serif, 'Times New Roman', Times, serif;
-    font-weight: 800;
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
+    font-size: 15px;
+    margin-bottom: 20px;
 `;
 const _ProfileEmail = styled.div`
-    font-size: 16px;
-    margin-top: 5px;
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
+    font-size: 14px;
+    margin-bottom: 5px;
 `;
 const _ProfileSpesific = styled.div`
     display: inline-block;
@@ -321,16 +327,24 @@ const ImageUploadButton = styled.div`
     text-align: center;
 
     label {
+        @font-face {
+            font-family: 'JalnanGothic';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+                format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+        font-family: 'JalnanGothic';
         display: inline-block;
         width: 140px;
-        padding: 10px;
-        background-color: rgba(255, 255, 255, 0.3);
+        padding: 5px;
+        background-color: none;
         color: black;
         cursor: pointer;
     }
 
     &:hover {
-        background-color: rgba(255, 255, 255, 0.5);
+        background-color: none;
         cursor: pointer;
     }
 `;
@@ -352,7 +366,7 @@ const DialogBox = styled.dialog`
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: none;
+    border: 3px solid rgb(28, 57, 61);
     border-radius: 10px;
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;

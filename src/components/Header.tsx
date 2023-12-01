@@ -7,6 +7,7 @@ import { FiLogIn } from 'react-icons/fi';
 import { MyPageModal } from '../components/MyPageModal';
 import { User } from './data/User';
 import profileImg from '../assets/Mascot.jpg';
+import { useSpring, animated } from 'react-spring';
 import axios from 'axios';
 
 const _headerArea = styled.div`
@@ -41,6 +42,7 @@ const _MenuSpecific = styled(Link)<{ isSelected: boolean }>`
     margin: 0 5px;
     &:hover {
         color: rgb(255, 202, 29);
+        cursor: pointer;
     }
     ${({ isSelected }) =>
         isSelected &&

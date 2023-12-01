@@ -92,8 +92,6 @@ function FindPWModal({ onClickToggleModal }: ModalDefaultType) {
                 <_ModalClose>
                     <AiOutlineClose onClick={modalClose} />
                 </_ModalClose>
-                <_Title style={{ fontSize: '50px' }}>DoongG</_Title>
-                <br />
                 <_Title>비밀번호 변경</_Title>
                 {step === ModalStep.EmailInput && (
                     <_FindIDForm>
@@ -182,25 +180,16 @@ const _FindIDForm = styled.div`
 `;
 const _FormTitle = styled.div`
     margin-bottom: 5px;
-    color: gray;
+    color: rgb(28, 57, 61);
     font-weight: bold;
     margin-top: 10px;
 `;
 const _FormInput = styled.input`
     width: 96.5%;
     height: 35px;
-    border: 2px solid #daddb1;
+    border: 2px solid rgb(28, 57, 61);
     border-radius: 5px;
     padding: 0 0 0 2%;
-`;
-// 회원가입 버튼
-const _FindIDButton = styled.button`
-    width: 100%;
-    height: 35px;
-    margin-top: 20px;
-    background-color: white;
-    border: 2px solid #daddb1;
-    border-radius: 5px;
 `;
 
 const _CertificationForm = styled.div`
@@ -209,12 +198,21 @@ const _CertificationForm = styled.div`
     margin-bottom: 5px;
 `;
 const _VerifyButton = styled.button`
-    width: 40%;
-    background-color: white;
-    border: 2px solid #daddb1;
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
+    color: white;
+    width: 30%;
+    background-color: rgb(28, 57, 61);
+    border: 2px solid rgb(28, 57, 61);
     border-radius: 5px;
     &:hover {
-        background-color: #daddb1;
+        color: rgb(255, 202, 29);
         cursor: pointer;
     }
 `;
@@ -233,7 +231,7 @@ const ModalContainer = styled.div`
 
 const DialogBox = styled.dialog`
     width: 400px;
-    height: 300px;
+    height: 250px;
     display: flex;
     flex-direction: column;
     align-items: center;
