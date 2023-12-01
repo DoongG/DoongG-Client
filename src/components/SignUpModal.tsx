@@ -48,6 +48,14 @@ function SignUpModal({
     const [signupSuccess, setSignupSuccess] = useState(false);
     const [enteredAuthNum, setEnteredAuthNum] = useState('');
 
+    // 다음과 같이 상태 변수를 추가합니다.
+    const [isEmailInputDisabled, setEmailInputDisabled] = useState(false);
+    const [isNicknameInputDisabled, setNicknameInputDisabled] = useState(false);
+    const [isPhoneNumberInputDisabled, setPhoneNumberInputDisabled] =
+        useState(false);
+    const [isAccessKeyInputDisabled, setAccessKeyInputDisabled] =
+        useState(false);
+
     const formatPhoneNumber = (phoneNumber: string): string => {
         if (phoneNumber.length >= 4 && phoneNumber.length <= 7) {
             return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3)}`;
@@ -102,9 +110,10 @@ function SignUpModal({
 
                     if (result) {
                         alert('사용 가능한 이메일입니다');
-                        document
-                            .getElementById('emailInput')
-                            ?.setAttribute('disabled', 'true');
+                        // document
+                        //     .getElementById('emailInput')
+                        //     ?.setAttribute('disabled', 'true');
+                        setEmailInputDisabled(true);
                     } else {
                         alert('중복되는 이메일입니다.');
                     }
@@ -113,21 +122,6 @@ function SignUpModal({
                     console.log(error);
                 });
         }
-
-        // // 중복 검사 로직 추가
-        // const isDuplicate = UserData.some((user) => user.email === email);
-        // setEmailAvailable(!isDuplicate);
-        // setEmailChecked(true);
-
-        // // 중복된 경우에만 input 태그를 활성화 상태로 변경
-        // if (isDuplicate) {
-        //     document.getElementById('emailInput')?.removeAttribute('disabled');
-        // } else {
-        //     setEmailAvailable(true);
-        // }
-
-        // // 중복 검사 이후 input 태그 비활성화
-        // document.getElementById('emailInput')?.setAttribute('disabled', 'true');
     };
     // 이메일 형식 검사 함수
     const validateEmail = (email: string): boolean => {
@@ -163,19 +157,6 @@ function SignUpModal({
             setNicknameError('닉네임은 3글자에서 8글자까지 가능합니다.');
             return;
         } else {
-            // const isDuplicate = UserData.some(
-            //     (user) => user.nickname === nickname,
-            // );
-            // setNicknameAvailable(!isDuplicate);
-            // setNicknameChecked(true);
-            // console.log('Is duplicate:', isDuplicate);
-
-            // // 중복 검사 이후 input 태그 비활성화
-            // document
-            //     .getElementById('nicknameInput')
-            //     ?.setAttribute('disabled', 'true');
-            // // 오류 메시지 초기화
-            // setNicknameError('');
             const requestData = {
                 nickname,
             };
@@ -187,9 +168,10 @@ function SignUpModal({
 
                     if (result) {
                         alert('사용가능한 닉네임 입니다.');
-                        document
-                            .getElementById('nicknameInput')
-                            ?.setAttribute('disabled', 'true');
+                        // document
+                        //     .getElementById('nicknameInput')
+                        //     ?.setAttribute('disabled', 'true');
+                        setNicknameInputDisabled(true);
                     } else {
                         alert('중복되는 닉네임입니다.');
                     }
@@ -219,9 +201,10 @@ function SignUpModal({
                         authNum = result;
                         alert('인증번호가 발송되었습니다.');
                         console.log(authNum);
-                        document
-                            .getElementById('phonenumber')
-                            ?.setAttribute('disabled', 'true');
+                        // document
+                        //     .getElementById('phonenumber')
+                        //     ?.setAttribute('disabled', 'true');
+                        setPhoneNumberInputDisabled(true);
                     }
                 });
         } else {
@@ -237,9 +220,10 @@ function SignUpModal({
 
         if (authNum == enteredAuthNum) {
             alert('인증성공');
-            document
-                .getElementById('accessKey')
-                ?.setAttribute('disabled', 'true');
+            // document
+            // .getElementById('accessKey')
+            // ?.setAttribute('disabled', 'true');
+            setAccessKeyInputDisabled(true);
         } else {
             alert('인증번호가 옳바르지 않습니다.');
         }
@@ -291,16 +275,70 @@ function SignUpModal({
         }
     };
 
-    // 체크박스 전체 선택
+    const [checkboxResult, setCheckboxResult] = useState(false);
+
+    useEffect(() => {
+        console.log(selectAllChecked);
+        setCheckboxResult(selectAllChecked);
+    }, [selectAllChecked]);
     const handleSelectAllChange = (e: ChangeEvent<HTMLInputElement>) => {
         const isChecked = e.target.checked;
         setSelectAllChecked(isChecked);
         setFirstChecked(isChecked);
         setSecondChecked(isChecked);
         setThirdChecked(isChecked);
+
+        console.log(isChecked);
     };
 
-    const signup = () => {};
+    const signup = () => {
+        const isAllFieldsDisabled =
+            isEmailInputDisabled &&
+            isNicknameInputDisabled &&
+            isPhoneNumberInputDisabled &&
+            isAccessKeyInputDisabled;
+        const isPasswordMatchAndEmailAvailable =
+            isPasswordMatch && isEmailAvailable;
+
+        if (isAllFieldsDisabled) {
+            if (isPasswordMatchAndEmailAvailable) {
+                if (password === '' || confirmPassword === '') {
+                    alert('비밀번호 및 비밀번호 확인을 입력해주세요.');
+                } else {
+                    if (checkboxResult) {
+                        const requestData = {
+                            email,
+                            password,
+                            nickname,
+                            phoneNumber: formattedPhoneNumber,
+                            profileImg: '',
+                        };
+                        axios
+                            .post(
+                                'http://localhost:8080/user/join',
+                                requestData,
+                            )
+                            .then((response) => {
+                                const result = response.data;
+                                console.log(typeof result);
+                                if (result) {
+                                    alert('회원가입 완료!');
+                                    window.location.replace('/');
+                                } else {
+                                    alert('error');
+                                }
+                            });
+                    } else {
+                        alert('하단 체크박스를 모두 선택해 주세요');
+                    }
+                }
+            } else {
+                alert('비밀번호를 확인해 주세요');
+            }
+        } else {
+            alert('모든 필드의 중복검사 및 인증번호 확인을 해주세요.');
+        }
+    };
 
     // 뒤의 [] 값들이 바뀔때 발동하는 것
     useEffect(() => {
@@ -333,6 +371,7 @@ function SignUpModal({
                             value={email}
                             onChange={handleEmailChange}
                             onKeyPress={handleOnKeyPressEmail}
+                            disabled={isEmailInputDisabled}
                         />
                         <_VerifyButton
                             onClick={handleEmailDuplicateCheck}
@@ -372,6 +411,7 @@ function SignUpModal({
                             value={nickname}
                             onChange={handleNicknameChange}
                             onKeyPress={handleOnKeyPressNickname}
+                            disabled={isNicknameInputDisabled}
                         />
 
                         <_VerifyButton
@@ -403,6 +443,7 @@ function SignUpModal({
                             placeholder="(예시) 01000000000"
                             value={formattedPhoneNumber}
                             onChange={handlePhoneNumChange}
+                            disabled={isPhoneNumberInputDisabled}
                         />
                         <_VerifyButton onClick={getAccessKey}>
                             인증번호 받기
@@ -412,6 +453,7 @@ function SignUpModal({
                         <_PhoneNumInput
                             id="accessKey"
                             placeholder="인증번호를 입력해주세요"
+                            disabled={isAccessKeyInputDisabled}
                         />
                         <_VerifyButton onClick={checkAccessKey}>
                             인증번호 확인
