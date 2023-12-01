@@ -89,10 +89,44 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
     // 제품 상세 정보 상태
     const [detailInfos, setDetailInfos] = useState<DetailInfos | null>(null);
 
+    const [token, setToken] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchToken = async () => {
+            const storedToken = localStorage.getItem('token');
+            setToken(storedToken);
+        };
+        fetchToken();
+    }, []);
+
     // 결제 모달 on/off 함수
     const onClickbuyModal = useCallback(() => {
         setIsOpenBuyModal(!isOpenBuyModal);
     }, [isOpenBuyModal]);
+
+    // 장바구니 함수
+    const onClickCartModal = () => {
+        console.log('cart');
+        axios
+            .post(
+                'http://localhost:8080/userAuth/addCart',
+                {
+                    productID: productId,
+                    quantity: count,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            )
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
 
     const shoppingDetailHeader = useRef<HTMLDivElement>(null);
 
@@ -299,7 +333,9 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
                             </_plus>
                         </_countBox>
                         <_buyBox className="buyBox">
-                            <_cart className="cart">장바구니 담기</_cart>
+                            <_cart className="cart" onClick={onClickCartModal}>
+                                장바구니 담기
+                            </_cart>
                             <_buy className="buy" onClick={onClickbuyModal}>
                                 구매하기
                             </_buy>
