@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {
     useButtonStore,
+    useCenterLatLng,
     useMarkerOnOff,
+    useReviewDateStore,
     useVisibleMarker,
 } from '../store/shoppingHeaderSelectBarStore';
 import axios from 'axios';
@@ -22,6 +24,20 @@ const RoomReviewWatchMap = () => {
     const [markers, setMarkers] = useState<any>();
     // 지도에 보이는 마커
     const { visibleMarker, setVisibleMarker } = useVisibleMarker();
+    // 클릭한 곳의 내용
+    const { address, mylat, mylng, setAddress, setMylat, setMylng } =
+        useReviewDateStore();
+    // 지도 중심 내용
+    const {
+        centerLat,
+        centerLng,
+        centerLevel,
+        count,
+        setCount,
+        setCenterLat,
+        setCenterLng,
+        setCenterLevel,
+    } = useCenterLatLng();
 
     const {
         markerOnOff,
@@ -43,7 +59,7 @@ const RoomReviewWatchMap = () => {
     useEffect(() => {
         // 지정된 ID를 가진 유저에 대한 요청
         axios
-            .get('http://localhost:8080/review')
+            .get('http://localhost:8080/roomRivew/getAll')
             .then(function (response) {
                 // 성공 핸들링
                 setMarkers(response.data);
@@ -71,11 +87,12 @@ const RoomReviewWatchMap = () => {
                         console.error('Error getting current location:', error);
                     },
                 );
+
                 // 카카오 지도 출력
                 const container = document.getElementById('map');
                 const option = {
-                    center: new kakao.maps.LatLng(lat, lng),
-                    level: 4,
+                    center: new kakao.maps.LatLng(centerLat, centerLng),
+                    level: `${centerLevel}`,
                 };
                 const kakaoMap = new kakao.maps.Map(container, option);
                 setMap(kakaoMap);
@@ -115,18 +132,6 @@ const RoomReviewWatchMap = () => {
                                 const clickedMarkerContent = marker.getTitle();
                                 const clickedMarkerPosition =
                                     marker.getPosition();
-
-                                // TODO: 클릭한 마커에 대한 정보를 활용하여 필요한 동작 수행
-                                console.log(
-                                    'Clicked Marker Content:',
-                                    clickedMarkerContent,
-                                );
-                                console.log(
-                                    'Clicked Marker Position:',
-                                    clickedMarkerPosition,
-                                );
-                                console.log(marker.address);
-                                console.log(marker.createdAt.split(' ')[0]);
                                 setClickedAddress(marker.address);
                                 setClickedDate(marker.createdAt.split(' ')[0]);
                                 setClickedContent(clickedMarkerContent);
@@ -173,7 +178,7 @@ const RoomReviewWatchMap = () => {
         };
 
         getCurrentLocation();
-    }, [lat, lng, markers]);
+    }, [markers]);
 
     // 지도 영역에 포함된 마커만 추출하기
     useEffect(() => {
@@ -189,23 +194,41 @@ const RoomReviewWatchMap = () => {
                 let ne = bounds.getNorthEast();
 
                 // 지도영역 마커만 filter
-                const selectedMarker = markers.filter((item: any) => {
-                    // 현재 지도 영역의 남서쪽, 북동쪽 좌표
-                    let lb = new kakao.maps.LatLngBounds(sw, ne);
-                    let l1 = new kakao.maps.LatLng(
-                        item.latitude,
-                        item.longitude,
-                    );
-                    // true -> 출력O
-                    // false -> 출력X
-                    return lb.contain(l1);
-                });
+                if (markers) {
+                    const selectedMarker = markers.filter((item: any) => {
+                        // 현재 지도 영역의 남서쪽, 북동쪽 좌표
+                        let lb = new kakao.maps.LatLngBounds(sw, ne);
+                        let l1 = new kakao.maps.LatLng(
+                            item.latitude,
+                            item.longitude,
+                        );
+                        // true -> 출력O
+                        // false -> 출력X
+                        return lb.contain(l1);
+                    });
+                    setVisibleMarker(selectedMarker);
+                }
+
                 // console.log(selectedMarker);
-                setVisibleMarker(selectedMarker);
             });
         }
     }, [map]);
     // console.log(visibleMarker);
+
+    // 지도 중심 좌표
+    useEffect(() => {
+        if (map) {
+            kakao.maps.event.addListener(map, 'center_changed', function () {
+                // 지도의  레벨을 얻어옵니다
+                var level = (map as any).getLevel();
+                // 지도의 중심좌표를 얻어옵니다
+                var latlng = (map as any).getCenter();
+                setCenterLat(latlng.getLat());
+                setCenterLng(latlng.getLng());
+                setCenterLevel(level);
+            });
+        }
+    }, [map]);
 
     return (
         <>

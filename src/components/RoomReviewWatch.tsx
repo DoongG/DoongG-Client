@@ -9,6 +9,7 @@ import {
 } from '../store/shoppingHeaderSelectBarStore';
 interface Props {
     marker: boolean;
+    markerOnOff: boolean;
 }
 interface VisibleMarker {
     address: string;
@@ -21,7 +22,6 @@ interface VisibleMarker {
 
 const RoomReviewWatch = () => {
     const [markers, setMarkers] = useState<any>();
-    // const [markerOnOff, setMarkerOnOff] = useState(false);
     const { visibleMarker, setVisibleMarker } = useVisibleMarker();
     const {
         markerOnOff,
@@ -47,7 +47,6 @@ const RoomReviewWatch = () => {
                 // 항상 실행되는 영역
             });
     }, []);
-    console.log(visibleMarker);
     return (
         <>
             <_RoomReviewWatchWrapper>
@@ -72,7 +71,11 @@ const RoomReviewWatch = () => {
                 )}
 
                 {/* 주위 자취방 리뷰 */}
-                <_AroundReview marker={markerOnOff} className="AroundReview">
+                <_AroundReview
+                    marker={markerOnOff}
+                    markerOnOff={markerOnOff}
+                    className="AroundReview"
+                >
                     <_watch className="watch">근처 자취방</_watch>
                     {visibleMarker &&
                         visibleMarker
@@ -118,6 +121,7 @@ const _RoomReviewWatchWrapper = styled.div`
     overflow: hidden;
 `;
 const _ClickedReview = styled.div`
+    margin-top: 10px;
     position: relative;
     &::before {
         background-color: #343a40;
@@ -136,8 +140,11 @@ const _ClickedReview = styled.div`
 const _AroundReview = styled.div<Props>`
     overflow-y: auto;
     padding-bottom: 25px;
-    height: calc(1000px - 300px);
-    margin-top: ${(props) => (props.marker === true ? '25px' : '0px')};
+    height: ${(props) =>
+        props.markerOnOff === true
+            ? 'calc(100vh - 227px)'
+            : 'calc(100vh - 60px)'};
+    margin-top: ${(props) => (props.marker === true ? '25px' : '10px')};
 `;
 const _reviewBox = styled.div`
     margin-top: 5px;

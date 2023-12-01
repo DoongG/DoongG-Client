@@ -4,6 +4,7 @@ import { RoomReviewWrite } from './RoomReviewWrite';
 import { RoomReviewWatch } from './RoomReviewWatch';
 import {
     useButtonStore,
+    useCenterLatLng,
     useReviewDateStore,
 } from '../store/shoppingHeaderSelectBarStore';
 
@@ -20,18 +21,27 @@ const RoomReviewWriteMap = () => {
 
     const [latitude, setLatitude] = useState<number>(0);
     const [longitude, setLongitude] = useState<number>(0);
-    // const [mylat, setMylat] = useState(0);
-    // const [mylng, setMylng] = useState(0);
-    // const [address, setAddress] = useState('');
-    // const [button, setButton] = useState(true);
 
     const { button, setButton } = useButtonStore();
+    // 클릭한 곳의 내용
     const { address, mylat, mylng, setAddress, setMylat, setMylng } =
         useReviewDateStore();
 
+    // 지도 중심 내용
+    const {
+        centerLat,
+        centerLng,
+        centerLevel,
+        setCenterLat,
+        setCenterLng,
+        setCenterLevel,
+        count,
+        setCount,
+    } = useCenterLatLng();
+
     // 인포 윈도우 내용
     let iwContent = '<div style="padding:5px;">자취방 리뷰달기 </div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
-        iwPosition = new kakao.maps.LatLng(latitude, longitude),
+        iwPosition = new kakao.maps.LatLng(centerLat, centerLng),
         iwRemoveable = true; //삭제 가능
 
     // 인포윈도우를 생성합니다
@@ -46,15 +56,15 @@ const RoomReviewWriteMap = () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    setLatitude(position.coords.latitude);
-                    setLongitude(position.coords.longitude);
+                    // setLatitude(position.coords.latitude);
+                    // setLongitude(position.coords.longitude);
                     setMylat(position.coords.latitude);
                     setMylng(position.coords.longitude);
                     // 주소-좌표 변환 객체를 생성
                     var geocoder = new window.kakao.maps.services.Geocoder();
                     geocoder.coord2Address(
-                        position.coords.longitude,
-                        position.coords.latitude,
+                        count == 0 ? position.coords.longitude : centerLng,
+                        count == 0 ? position.coords.latitude : centerLat,
                         (result: any, status: any) => {
                             if (
                                 status === window.kakao.maps.services.Status.OK
@@ -62,7 +72,6 @@ const RoomReviewWriteMap = () => {
                                 let addr = !!result[0].road_address
                                     ? result[0].road_address.address_name
                                     : result[0].address.address_name;
-
                                 setAddress(addr);
                             }
                         },
@@ -71,18 +80,28 @@ const RoomReviewWriteMap = () => {
                     // 카카오 지도 출력
                     const container = document.getElementById('map');
                     const option = {
-                        center: new kakao.maps.LatLng(latitude, longitude),
-                        level: 4,
+                        center: new kakao.maps.LatLng(
+                            count == 0 ? position.coords.latitude : centerLat,
+                            count == 0 ? position.coords.longitude : centerLng,
+                        ),
+                        level: `${centerLevel}`,
                     };
+                    const kakaoMap = new kakao.maps.Map(container, option);
+
                     // 초기 마커 생성
                     const initialMarker = new kakao.maps.Marker({
-                        position: new kakao.maps.LatLng(latitude, longitude),
-                        map: map,
+                        position: new kakao.maps.LatLng(
+                            count == 0 ? position.coords.latitude : centerLat,
+                            count == 0 ? position.coords.longitude : centerLng,
+                        ),
+                        map: kakaoMap,
                     });
-                    const kakaoMap = new kakao.maps.Map(container, option);
+
                     setMap(kakaoMap);
                     setMarker(initialMarker);
-                    console.log(latitude, longitude);
+                    console.log(count);
+
+                    setCount(count + 1);
                 },
                 //에러 메시지
                 (error) => console.log(error),
@@ -105,21 +124,12 @@ const RoomReviewWriteMap = () => {
             });
             setMarker(initialMarker);
         }
-    }, [latitude, longitude]);
-
-    useEffect(() => {
-        // 초기 마커 생성 및 표시
-        const initialMarker = new kakao.maps.Marker({
-            position: new kakao.maps.LatLng(latitude, longitude),
-            map: map,
-        });
-        setMarker(initialMarker);
-        infowindow.open(map, marker);
-    }, [map]);
+    }, []);
 
     // 지도 클릭시 마커 생성 이벤트
     useEffect(() => {
         if (map) {
+            infowindow.open(map, marker);
             window.kakao.maps.event.addListener(
                 map,
                 'click',
@@ -136,12 +146,11 @@ const RoomReviewWriteMap = () => {
                                 let addr = !!result[0].road_address
                                     ? result[0].road_address.address_name
                                     : result[0].address.address_name;
-                                console.log(
-                                    mouseEvent.latLng.getLng(),
-                                    mouseEvent.latLng.getLat(),
-                                );
+
                                 setMylat(mouseEvent.latLng.getLat());
                                 setMylng(mouseEvent.latLng.getLng());
+                                setCenterLat(mouseEvent.latLng.getLat());
+                                setCenterLng(mouseEvent.latLng.getLng());
                                 setAddress(addr);
                                 // 클릭한 위치 주소를 가저온다.
 
@@ -151,8 +160,7 @@ const RoomReviewWriteMap = () => {
                                 }
 
                                 // 기존 마커를 제거하고 새로운 마커를 넣는다.
-                                // setMarker(null);
-                                marker.setMap(null);
+
                                 infowindow.close();
 
                                 // 마커를 클릭한 위치에 표시합니다
@@ -167,6 +175,23 @@ const RoomReviewWriteMap = () => {
             );
         }
     }, [map, marker]);
+
+    // 지도 중심 좌표
+    useEffect(() => {
+        if (map) {
+            kakao.maps.event.addListener(map, 'center_changed', function () {
+                // 지도의  레벨을 얻어옵니다
+                var level = (map as any).getLevel();
+                // 지도의 중심좌표를 얻어옵니다
+                var latlng = (map as any).getCenter();
+                setCenterLat(latlng.getLat());
+                setCenterLng(latlng.getLng());
+                setCenterLevel(level);
+            });
+        }
+    }, [map]);
+
+    // 리뷰쓰기,보기 버튼 함수
     const handleChangeReview = (write: string) => {
         if (write === '리뷰쓰기') {
             setButton(true);

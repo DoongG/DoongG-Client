@@ -77,7 +77,7 @@ const useButtonStore = create<buttonStroe>((set) => ({
 export { useButtonStore };
 
 //____________________________________________________________________________________________________-
-// DB로 보낼 주소, 위도, 경도
+// 클릭한 곳을 DB로 보낼 주소, 위도, 경도
 interface ReviewDateStore {
     address: string;
     mylat: number;
@@ -131,3 +131,27 @@ const useVisibleMarker = create<VisibleMarker>((set) => ({
     setVisibleMarker: (state) => set({ visibleMarker: state }),
 }));
 export { useVisibleMarker };
+
+//_______________________________________________________________________________________-
+// 지도 중심 좌표
+interface CenterLatLng {
+    centerLat: number;
+    centerLng: number;
+    centerLevel: number;
+    count: number;
+    setCount: (state: number) => void;
+    setCenterLat: (state: number) => void;
+    setCenterLng: (state: number) => void;
+    setCenterLevel: (state: number) => void;
+}
+const useCenterLatLng = create<CenterLatLng>((set) => ({
+    centerLat: 0,
+    centerLng: 0,
+    centerLevel: 4,
+    count: 0,
+    setCenterLat: (state) => set({ centerLat: state }),
+    setCenterLng: (state) => set({ centerLng: state }),
+    setCenterLevel: (state) => set({ centerLevel: state }),
+    setCount: (state) => set({ count: state }),
+}));
+export { useCenterLatLng };
