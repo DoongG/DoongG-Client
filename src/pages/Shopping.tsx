@@ -8,11 +8,13 @@ import styled from 'styled-components';
 
 const _hr = styled.hr`
     margin: 0;
-    padding: 0.5em 0;
-    background-color: white;
+    padding: 1px;
+    background-color: rgb(28, 57, 61);
     border-bottom: none;
-    z-index: 99;
-    position: fixed;
+    z-index: 3;
+    position: relative;
+    width: 100%;
+    opacity: 1;
 `;
 
 //shopping

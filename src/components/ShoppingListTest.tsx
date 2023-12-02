@@ -207,7 +207,7 @@ export default function ShoppingListTest() {
                 </_categoryBar>
             </_listWrapper>
             <_productListWrapper className="productListWrapper">
-                <_productListBar className="bar">
+                <_productListBar className="productListBar">
                     <_imgBar
                         src={listbar}
                         alt=""
@@ -281,6 +281,7 @@ export default function ShoppingListTest() {
                         </_endPoint>
                     </_categoryDiv>
                 </_productListWrapper1>
+                <_emptyBox className="emptyBox">텅</_emptyBox>
             </_productListWrapper>
             {isOpenModal && (
                 <ShoppingDetailHeader
@@ -314,6 +315,13 @@ const _listWrapper = styled.div`
     background-color: white;
     padding: 0px 80px;
     justify-content: center;
+    z-index: 3;
+    position: relative;
+    padding-bottom: 14px;
+    padding-top: 20px;
+    @media (max-width: 575px) {
+        padding: 8px 25px;
+    }
 `;
 
 const _categoryBar = styled.div`
@@ -333,9 +341,33 @@ const _ul = styled.ul`
     border-radius: 15px;
     justify-content: space-evenly;
     padding: 0px 70px;
+    align-items: center;
+    @media (max-width: 991px) {
+        font-size: 14px;
+        padding: 0px 40px;
+    }
+    @media (max-width: 767px) {
+        font-size: 9px;
+    }
+    @media (max-width: 575px) {
+        flex-wrap: wrap;
+    }
     li {
         margin: 10px;
         min-width: 74px;
+        @media (max-width: 1200px) {
+            min-width: 65px;
+            margin: 0px;
+        }
+        @media (max-width: 991px) {
+            word-break: keep-all;
+        }
+        @media (max-width: 767px) {
+            min-width: 0px;
+        }
+        @media (max-width: 575px) {
+            padding: 5px 7px;
+        }
     }
 `;
 const _li = styled.li`
@@ -350,16 +382,39 @@ const _before = styled.div`
     border-radius: 50%;
     top: 20px;
     right: 25px;
+    @media (max-width: 1200px) {
+        width: 17px;
+        height: 17px;
+        top: 15px;
+        right: 18px;
+    }
+    @media (max-width: 767px) {
+        width: 14px;
+        height: 14px;
+        top: 12px;
+    }
+    @media (max-width: 575px) {
+        top: 20px;
+    }
 
     &::after {
         content: '';
         width: 5px;
-        height: 80px;
+        height: 60px;
         background-color: black;
         position: absolute;
         z-index: 1;
         left: 50%;
         transform: translate(-50%, 0%);
+        @media (max-width: 1200px) {
+            height: 44px;
+        }
+        @media (max-width: 991px) {
+            height: 40px;
+        }
+        @media (max-width: 767px) {
+            height: 36px;
+        }
     }
 `;
 const _after = styled.div`
@@ -370,16 +425,39 @@ const _after = styled.div`
     border-radius: 40px;
     top: 20px;
     left: 25px;
+    @media (max-width: 1200px) {
+        width: 17px;
+        height: 17px;
+        top: 15px;
+        right: 18px;
+    }
+    @media (max-width: 767px) {
+        width: 14px;
+        height: 14px;
+        top: 12px;
+    }
+    @media (max-width: 575px) {
+        top: 20px;
+    }
     &::after {
         content: '';
         width: 5px;
-        height: 80px;
+        height: 60px;
         background-color: black;
         position: absolute;
         z-index: 1;
 
         left: 50%;
         transform: translate(-50%, 0%);
+        @media (max-width: 1200px) {
+            height: 44px;
+        }
+        @media (max-width: 991px) {
+            height: 40px;
+        }
+        @media (max-width: 767px) {
+            height: 37px;
+        }
     }
 `;
 
@@ -387,30 +465,89 @@ const _productListWrapper = styled.div`
     position: relative;
     /* width: 100%; */
     padding: 0px 80px;
-    padding-top: 16px;
 
+    z-index: 2;
     background-color: white;
+    @media (max-width: 991px) {
+        padding: 0px 30px;
+    }
+    @media (max-width: 767px) {
+        padding: 0px 27px;
+    }
+    @media (max-width: 575px) {
+        padding: 0px 25px;
+    }
     &::before {
         background-color: rgba(0, 0, 0, 0.5);
         border-radius: 5px;
-        top: 40px;
+        top: 30px;
         left: 50px;
         content: '';
         width: 30px;
         height: 46px;
         position: absolute;
         box-shadow: 0px 0px 5px 4px rgb(0 0 0 / 66%);
+        @media (max-width: 1200px) {
+            top: 20px;
+            left: 54px;
+
+            width: 25px;
+            height: 40px;
+        }
+        @media (max-width: 991px) {
+            top: 16px;
+            left: 9px;
+            width: 20px;
+            height: 33px;
+        }
+        @media (max-width: 767px) {
+            top: 12px;
+            left: 13px;
+            width: 13px;
+            height: 26px;
+        }
+        @media (max-width: 575px) {
+            top: 10px;
+            left: 10px;
+            width: 14px;
+            height: 25px;
+        }
     }
     &::after {
         background-color: rgba(0, 0, 0, 0.5);
         border-radius: 5px;
-        top: 40px;
+        top: 30px;
         right: 50px;
         content: '';
         width: 30px;
         height: 46px;
         position: absolute;
         box-shadow: 0px 0px 5px 4px rgb(0 0 0 / 66%);
+        @media (max-width: 1200px) {
+            top: 20px;
+            right: 54px;
+
+            width: 25px;
+            height: 40px;
+        }
+        @media (max-width: 991px) {
+            top: 16px;
+            right: 9px;
+            width: 20px;
+            height: 33px;
+        }
+        @media (max-width: 767px) {
+            top: 12px;
+            right: 13px;
+            width: 13px;
+            height: 26px;
+        }
+        @media (max-width: 575px) {
+            top: 10px;
+            right: 10px;
+            width: 14px;
+            height: 25px;
+        }
     }
 `;
 
@@ -421,12 +558,24 @@ const _productListBar = styled.div`
     justify-content: center;
     overflow: hidden;
     position: relative;
-    z-index: 1;
+    z-index: 3;
     box-shadow: 0px -5px 3px 0px rgb(0 0 0 / 66%);
     background-color: #b3a492;
     height: 100px;
     border-bottom-right-radius: 0px;
     border-bottom-left-radius: 0px;
+    @media (max-width: 1200px) {
+        height: 80px;
+    }
+    @media (max-width: 991px) {
+        height: 65px;
+    }
+    @media (max-width: 767px) {
+        height: 50px;
+    }
+    @media (max-width: 575px) {
+        height: 45px;
+    }
 `;
 
 const _productDivWrapper = styled.div`
@@ -435,6 +584,7 @@ const _productDivWrapper = styled.div`
     display: flex;
     justify-content: center;
     margin-bottom: 10px;
+    z-index: 2;
     a {
         width: 95%;
         display: flex;
@@ -442,12 +592,28 @@ const _productDivWrapper = styled.div`
         color: black;
         justify-content: center;
     }
+    @media (max-width: 1200px) {
+        height: 300px;
+    }
+    @media (max-width: 991px) {
+        height: 265px;
+    }
+    @media (max-width: 767px) {
+        height: 230px;
+    }
+    @media (max-width: 575px) {
+        width: 33.3%;
+        height: 170px;
+    }
 `;
 const _productDiv = styled.div`
     width: 95%;
 `;
 const _imgDiv = styled.div`
     height: 70%;
+    @media (max-width: 767px) {
+        height: 60%;
+    }
 `;
 const _img = styled.img`
     width: 100%;
@@ -467,14 +633,45 @@ const _per = styled.div`
     font-weight: 700;
     font-size: 20px;
     color: red;
+    @media (max-width: 1200px) {
+        font-size: 16px;
+    }
+    @media (max-width: 991px) {
+        font-size: 13px;
+    }
+    @media (max-width: 767px) {
+        font-size: 11px;
+    }
 `;
 const _priceDiv = styled.div`
     margin-left: 15px;
-    margin-top: 5px;
+    @media (max-width: 1200px) {
+        font-size: 14px;
+    }
+    @media (max-width: 991px) {
+        font-size: 13px;
+    }
+    @media (max-width: 767px) {
+        font-size: 11px;
+    }
 `;
 
 const _title = styled.div`
     min-height: 43px;
+    @media (max-width: 1200px) {
+        font-size: 14px;
+    }
+    @media (max-width: 991px) {
+        font-size: 13px;
+    }
+    @media (max-width: 767px) {
+        font-size: 11px;
+        min-height: 35px;
+    }
+    @media (max-width: 575px) {
+        font-size: 8px;
+        min-height: 25px;
+    }
 `;
 
 const _initPriceDiv = styled.div`
@@ -482,12 +679,11 @@ const _initPriceDiv = styled.div`
 `;
 const _realPriceDiv = styled.div`
     font-weight: 700;
-    margin-top: 5px;
 `;
 const _productListWrapper1 = styled.div`
     background-color: #ffda00;
     /* overflow: hidden; */
-    z-index: -1;
+    z-index: 2;
     position: relative;
     display: flex;
     min-height: 100%; /* 추가된 부분 */
@@ -530,6 +726,20 @@ const _categoryDiv = styled.div<ImgBarProps>`
     justify-content: flex-start;
     animation-fill-mode: forwards;
     animation: 'none';
+    padding-right: 20px;
+    padding-left: 20px;
+    @media (max-width: 1200px) {
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+    @media (max-width: 767px) {
+        padding-top: 30px;
+        padding-bottom: 55px;
+    }
+    @media (max-width: 575px) {
+        padding-top: 20px;
+        padding-bottom: 45px;
+    }
 
     @keyframes listDown {
         from {
@@ -557,6 +767,15 @@ const _endPoint = styled.div`
     display: flex;
     flex-direction: column;
     cursor: pointer;
+    @media (max-width: 991px) {
+        font-size: 25px;
+    }
+    @media (max-width: 767px) {
+        font-size: 17px;
+    }
+    @media (max-width: 575px) {
+        font-size: 14px;
+    }
 `;
 
 const _backdrop = styled.div`
@@ -564,6 +783,29 @@ const _backdrop = styled.div`
     height: 100vh;
     position: fixed;
     top: 0;
-    z-index: 2;
+    z-index: 3;
     background-color: rgba(0, 0, 0, 0.2);
+`;
+
+const _emptyBox = styled.div`
+    margin-bottom: 50px;
+    border: 6px solid rgb(255, 202, 29);
+    display: flex;
+    font-size: 104px;
+    color: rgb(28, 57, 61);
+    align-items: center;
+    justify-content: center;
+    border-top: none;
+    position: relative;
+    height: 480px;
+    width: 100%;
+    /* background-color: rgb(255, 202, 29); */
+    z-index: 1;
+    @media (max-width: 991px) {
+        font-size: 75px;
+    }
+    @media (max-width: 575px) {
+        font-size: 50px;
+        height: 265px;
+    }
 `;

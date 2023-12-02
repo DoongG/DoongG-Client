@@ -72,13 +72,48 @@ export default function ShoppingSlideResent() {
                     modules={[Navigation, Pagination]}
                     spaceBetween={50} // 이미지 간격
                     slidesPerView={5} // 한번에 보이는 이미지 수
-                    slidesPerGroup={1} // 그룹 당 슬라이드 수 설정
+                    slidesPerGroup={5} // 그룹 당 슬라이드 수 설정
                     navigation
+                    breakpoints={{
+                        // 1300px 이상일 때
+                        1200: {
+                            slidesPerView: 5,
+                            spaceBetween: 50,
+                            slidesPerGroup: 5,
+                            //   spaceBetween: 30,
+                        },
+                        // 1024px 이상일 때
+                        991: {
+                            slidesPerView: 4,
+                            spaceBetween: 50,
+                            slidesPerGroup: 4,
+                            //   spaceBetween: 10,
+                        },
+                        // 768px 이상일 때
+                        767: {
+                            slidesPerView: 3,
+                            spaceBetween: 50,
+                            slidesPerGroup: 3,
+                        },
+                        575: {
+                            slidesPerView: 2,
+                            spaceBetween: 50,
+                            slidesPerGroup: 2,
+                        },
+                        375: {
+                            slidesPerView: 2,
+                            spaceBetween: 50,
+                            slidesPerGroup: 2,
+                        },
+                    }}
                 >
                     {resentProductList.map((item: ApiResponse) => {
                         return (
                             <>
-                                <_customSwiperSlide className="swiperslide">
+                                <_customSwiperSlide
+                                    key={item.productID}
+                                    className="swiperslide"
+                                >
                                     <_contentWrapper className="contentWrapper">
                                         <_favoriteDiv className="favoriteDiv">
                                             <img src={eyes} alt="" />
@@ -119,26 +154,53 @@ export default function ShoppingSlideResent() {
 
 // Swiper Custom
 const _customSwiper = styled(Swiper)`
-    width: 90%;
-    height: 350px;
+    width: 95%;
+    height: 400px;
     margin: 0 !important;
-    padding: 0px 50px;
+    padding: 0px 43px;
     // 슬라이드 버튼
     .swiper-button-prev,
     .swiper-button-next {
         position: absolute;
-        top: 110px;
+        top: 145px;
+        @media (max-width: 1200px) {
+            top: 125px;
+        }
     }
     .swiper-button-next {
         right: 0px;
+        color: rgb(28, 57, 61);
+        @media (max-width: 575px) {
+            right: 5px;
+        }
+        &::after {
+            @media (max-width: 1200px) {
+                font-size: 35px;
+            }
+            @media (max-width: 575px) {
+                font-size: 25px;
+            }
+        }
     }
     .swiper-button-prev {
         left: 0px;
+        color: rgb(28, 57, 61);
+        @media (max-width: 575px) {
+            left: 5px;
+        }
+        &::after {
+            @media (max-width: 1200px) {
+                font-size: 35px;
+            }
+            @media (max-width: 575px) {
+                font-size: 25px;
+            }
+        }
     }
     img {
         border-radius: 15px;
         width: 100%;
-        height: 95%;
+        height: 100%;
     }
     span {
         display: -webkit-box;
@@ -149,11 +211,37 @@ const _customSwiper = styled(Swiper)`
         margin-top: 10px;
         white-space: pre-line; /* 공백 유지 */
         min-height: 42px;
+        @media (max-width: 1200px) {
+            font-size: 14px;
+        }
+        @media (max-width: 765px) {
+            font-size: 12px;
+        }
+    }
+    @media (max-width: 1200px) {
+        height: 330px;
+    }
+    @media (max-width: 765px) {
+        width: 80%;
+        height: 285px;
+    }
+    @media (max-width: 575px) {
+        width: 100%;
+        height: 265px;
     }
 `;
 // SwiperSlide Custom
 const _customSwiperSlide = styled(SwiperSlide)`
-    height: 220px;
+    height: 260px;
+    @media (max-width: 1200px) {
+        height: 180px;
+    }
+    @media (max-width: 767px) {
+        height: 170px;
+    }
+    @media (max-width: 575px) {
+        height: 145px;
+    }
 `;
 
 const _favoriteDiv = styled.div`
@@ -161,12 +249,23 @@ const _favoriteDiv = styled.div`
     position: absolute;
     top: 15px;
     left: 15px;
+    align-items: center;
     img {
         margin-right: 5px;
         width: 20px;
+        @media (max-width: 1200px) {
+            height: 17px;
+        }
     }
     p {
         margin: 0;
+        font-weight: 700;
+        @media (max-width: 1200px) {
+            font-size: 14px;
+        }
+        @media (max-width: 767px) {
+            font-size: 12px;
+        }
     }
 `;
 
@@ -177,13 +276,18 @@ const _customFontAwesome = styled(FontAwesomeIcon)`
 `;
 
 const _swiperWrapper = styled.div`
-    padding: 20px 80px 32px;
+    display: flex;
+    justify-content: center;
+    padding: 20px 0px 32px;
     position: relative;
     background-color: white;
-
+    z-index: 3;
     .swiper-wrapper {
         transition-timing-function: linear !important;
         transition-duration: 500ms !important;
+    }
+    @media (max-width: 575px) {
+        padding: 20px 0px 20px;
     }
 `;
 
@@ -195,22 +299,49 @@ const _contentWrapper = styled.div`
 const _productInfos = styled.div`
     display: flex;
     margin-top: 10px;
+    @media (max-width: 575px) {
+        margin-top: 0px;
+    }
 `;
 
 const _perDiv = styled.div`
     font-weight: 700;
     font-size: 20px;
     color: red;
+    @media (max-width: 1200px) {
+        font-size: 17px;
+    }
+    @media (max-width: 767px) {
+        font-size: 15px;
+    }
 `;
 const _priceDiv = styled.div`
     margin-left: 15px;
-    margin-top: 5px;
+
+    @media (max-width: 1200px) {
+        font-size: 17px;
+    }
+    @media (max-width: 767px) {
+        font-size: 15px;
+    }
 `;
 
 const _initPriceDiv = styled.div`
     text-decoration: line-through;
+    @media (max-width: 1200px) {
+        font-size: 17px;
+    }
+    @media (max-width: 767px) {
+        font-size: 15px;
+    }
 `;
 const _realPriceDiv = styled.div`
     font-weight: 700;
-    margin-top: 5px;
+
+    @media (max-width: 1200px) {
+        font-size: 17px;
+    }
+    @media (max-width: 767px) {
+        font-size: 15px;
+    }
 `;

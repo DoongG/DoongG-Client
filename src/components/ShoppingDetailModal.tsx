@@ -166,7 +166,7 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
             document.body.style.cssText = `
     position: fixed; 
     top: -${window.scrollY}px;
-    overflow-y: scroll;
+    overflow-y: auto;
     width: 100%;`;
             return () => {
                 const scrollY = document.body.style.top;
@@ -181,7 +181,7 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
         if (isOpenBuyModal === true) {
             shoppingDetailHeader.current!.style.overflow = `hidden`;
         } else {
-            shoppingDetailHeader.current!.style.overflow = `scroll`;
+            shoppingDetailHeader.current!.style.overflow = `auto`;
         }
     }, [isOpenBuyModal]);
 
@@ -374,7 +374,7 @@ const _ShoppingDetailModal = styled.div<ModalProps>`
     position: fixed;
     top: 50%;
     left: 50%;
-    overflow: scroll;
+    overflow: auto;
     background-color: white;
     padding: 20px 110px;
     border: none;
@@ -382,11 +382,22 @@ const _ShoppingDetailModal = styled.div<ModalProps>`
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;
     background-color: white;
-    z-index: 3;
+    z-index: 4;
     animation: ${(props) =>
         props.isModal
             ? 'scale-in-center 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both'
             : 'scale-out-center 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both'};
+
+    @media (max-width: 1200px) {
+        padding: 20px 50px;
+        height: 70%;
+    }
+    @media (max-width: 991px) {
+        height: 60%;
+    }
+    @media (max-width: 575px) {
+        padding: 20px 25px;
+    }
     @keyframes scale-in-center {
         0% {
             -webkit-transform: scale(0);
@@ -418,6 +429,10 @@ const _closeModal = styled.div`
     position: absolute;
     right: 30px;
     top: 25px;
+    @media (max-width: 575px) {
+        right: 10px;
+        top: 5px;
+    }
 `;
 
 // 카테고리 경로
@@ -440,6 +455,21 @@ const _headerWrapper = styled.div`
     div {
         padding: 0px 10px;
     }
+    @media (max-width: 1200px) {
+        padding: 40px 30px 20px;
+    }
+    @media (max-width: 991px) {
+        padding: 12px 30px 12px;
+        font-size: 12px;
+    }
+    @media (max-width: 767px) {
+        font-size: 10px;
+        padding: 12px 0px 12px;
+    }
+    @media (max-width: 575px) {
+        font-size: 8px;
+        padding: 6px 0px 6px;
+    }
 `;
 
 // 상품 이미지박스
@@ -450,6 +480,13 @@ const _productInfoBox = styled.div`
     img {
         width: 100%;
         height: 100%;
+    }
+    @media (max-width: 1200px) {
+        padding: 0px 30px;
+    }
+    @media (max-width: 767px) {
+        flex-direction: column;
+        padding: 0px 0px;
     }
 `;
 
@@ -462,17 +499,42 @@ const _productInfos = styled.div`
     flex: 1;
     padding-left: 40px;
     position: relative;
+    @media (max-width: 991px) {
+        padding-left: 17px;
+    }
+    @media (max-width: 767px) {
+        margin-top: 10px;
+        padding-left: 0px;
+    }
 `;
 
 const _category = styled.div`
     color: #9c9a9a;
     text-align: left;
+    @media (max-width: 1200px) {
+        font-size: 14px;
+    }
+    @media (max-width: 991px) {
+        font-size: 12px;
+    }
+    @media (max-width: 575px) {
+        font-size: 11px;
+    }
 `;
 
 const _title = styled.div`
     font-weight: 700;
     font-size: 36px;
     text-align: left;
+    @media (max-width: 1200px) {
+        font-size: 25px;
+    }
+    @media (max-width: 991px) {
+        font-size: 17px;
+    }
+    @media (max-width: 575px) {
+        font-size: 14px;
+    }
 `;
 
 // 아이콘 커스텀
@@ -486,6 +548,15 @@ const _heartAndViewBox = styled.div`
     padding-top: 10px;
     display: flex;
     align-items: center;
+    @media (max-width: 1200px) {
+        font-size: 13px;
+    }
+    @media (max-width: 991px) {
+        padding-top: 5px;
+    }
+    @media (max-width: 767px) {
+        font-size: 10px;
+    }
 `;
 const _heartBox = styled.div`
     margin-right: 10px;
@@ -499,6 +570,9 @@ const _viewBox = styled.div`
     img {
         margin-right: 5px;
         width: 20px;
+        @media (max-width: 991px) {
+            width: 16px;
+        }
     }
 `;
 
@@ -506,10 +580,16 @@ const _viewBox = styled.div`
 const _priceBox = styled.div`
     text-align: left;
     margin-top: 30px;
+    @media (max-width: 991px) {
+        margin-top: 5px;
+    }
 `;
 
 const _beforePrice = styled.div`
     display: flex;
+    @media (max-width: 575px) {
+        font-size: 14px;
+    }
 `;
 const _per = styled.div`
     margin-right: 10px;
@@ -519,35 +599,71 @@ const _price = styled.div`
     color: grey;
 `;
 const _afterPrice = styled.div`
-    font-weight: 500;
+    font-weight: 700;
     font-size: 30px;
+    @media (max-width: 1200px) {
+        font-size: 25px;
+    }
+    @media (max-width: 991px) {
+        font-size: 20px;
+    }
+    @media (max-width: 575px) {
+        font-size: 15px;
+    }
 `;
 
 const _countBox = styled.div`
     margin-top: 50px;
     display: flex;
+    @media (max-width: 1200px) {
+        margin-top: 20px;
+    }
+    @media (max-width: 991px) {
+        margin-top: 10px;
+    }
 `;
 const _minus = styled.button`
     padding: 10px 13px;
     border: 1px solid #8080801f;
     background-color: #8080801f;
+    @media (max-width: 1200px) {
+        font-size: 14px;
+    }
+    @media (max-width: 767px) {
+        padding: 0px 7px;
+    }
 `;
 
 const _count = styled.button`
     padding: 10px 18px;
     border: 1px solid #8080801f;
     background-color: #f9f9f9;
+    @media (max-width: 1200px) {
+        font-size: 14px;
+    }
+    @media (max-width: 767px) {
+        padding: 0px 7px;
+    }
 `;
 const _plus = styled.button`
     padding: 10px 13px;
     border: 1px solid #8080801f;
     background-color: #8080801f;
+    @media (max-width: 1200px) {
+        font-size: 14px;
+    }
+    @media (max-width: 767px) {
+        padding: 0px 7px;
+    }
 `;
 
 const _buyBox = styled.div`
     width: 100%;
     margin-top: 20px;
     display: flex;
+    @media (max-width: 1200px) {
+        margin-top: 13px;
+    }
 `;
 const _cart = styled.button`
     color: white;
@@ -559,6 +675,15 @@ const _cart = styled.button`
     background-color: #3128288f;
     border-radius: 10px;
     margin-right: 10px;
+    @media (max-width: 1200px) {
+        min-width: 140px;
+        padding: 7px 22px;
+    }
+    @media (max-width: 575px) {
+        min-width: 115px;
+        padding: 4px 10px;
+        font-size: 12px;
+    }
 `;
 const _buy = styled.button`
     color: white;
@@ -570,6 +695,15 @@ const _buy = styled.button`
     background-color: #3128288f;
     border-radius: 10px;
     margin-right: 10px;
+    @media (max-width: 1200px) {
+        min-width: 140px;
+        padding: 7px 22px;
+    }
+    @media (max-width: 575px) {
+        min-width: 115px;
+        padding: 4px 10px;
+        font-size: 12px;
+    }
 `;
 
 export { ShoppingDetailHeader };
