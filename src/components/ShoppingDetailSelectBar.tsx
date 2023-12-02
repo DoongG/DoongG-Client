@@ -94,6 +94,16 @@ export { ShoppingDetailSelectBar };
 const _selectWrapperBox = styled.div`
     margin-top: 30px;
     padding: 0px 80px;
+    @media (max-width: 1200px) {
+        padding: 0px 50px;
+    }
+    @media (max-width: 991px) {
+        padding: 0px 30px;
+        margin-top: 20px;
+    }
+    @media (max-width: 767px) {
+        padding: 0px 0px;
+    }
 `;
 const _selectTitleBar = styled.div`
     display: flex;
@@ -104,12 +114,18 @@ const _selectTitleBar = styled.div`
 `;
 const _descriptionSelectBox = styled.div<Props>`
     min-width: 100px;
+    @media (max-width: 991px) {
+        font-size: 14px;
+    }
     border-bottom: ${(props) =>
         props.isSelect === '설명' ? '1px solid black' : 'none'};
     padding-bottom: 10px;
     color: ${(props) => (props.isSelect === '설명' ? 'black' : 'grey')};
 `;
 const _reviewSelectBox = styled.div<Props>`
+    @media (max-width: 991px) {
+        font-size: 14px;
+    }
     padding-bottom: 10px;
     min-width: 100px;
     border-bottom: ${(props) =>
@@ -118,12 +134,18 @@ const _reviewSelectBox = styled.div<Props>`
 `;
 
 const _descriptionBox = styled.div<Props>`
+    @media (max-width: 991px) {
+        font-size: 14px;
+    }
     text-align: left;
     margin-top: 15px;
     display: ${(props) => (props.isSelect === '설명' ? 'block' : 'none')};
 `;
 
 const _reviewBox = styled.div<Props>`
+    @media (max-width: 991px) {
+        font-size: 14px;
+    }
     margin-top: 15px;
     display: ${(props) => (props.isSelect === '리뷰' ? 'block' : 'none')};
 `;

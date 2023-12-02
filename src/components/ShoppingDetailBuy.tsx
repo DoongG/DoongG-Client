@@ -248,7 +248,7 @@ const _closeModal = styled.div`
 `;
 
 const _shoppingDetailBuy = styled.div`
-    height: 88%;
+    height: 84%;
     width: 400px;
     position: fixed;
     top: 50%;
@@ -260,9 +260,12 @@ const _shoppingDetailBuy = styled.div`
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;
     background-color: #f5f5f5;
-    z-index: 4;
+    z-index: 5;
     transform: translate(-50%, -50%);
     animation: scale-in-center 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    @media (max-width: 575px) {
+        width: 300px;
+    }
     @keyframes scale-in-center {
         0% {
             -webkit-transform: scale(0);
@@ -287,7 +290,7 @@ const _backdrop = styled.div`
     backdrop-filter: blur(10px);
     top: 0;
     left: 0px;
-    z-index: 3;
+    z-index: 4;
     background-color: rgba(0, 0, 0, 0.2);
 `;
 
@@ -348,8 +351,11 @@ const _addressDaumBox = styled.div`
     display: flex;
     width: 100%;
     button {
-        width: 15%;
+        width: 20%;
         font-size: 9px;
+        @media (max-width: 575px) {
+            width: 30%;
+        }
     }
 `;
 const _addressInput = styled.input`
@@ -369,10 +375,13 @@ const _DaumPostcode = styled(DaumPostcode)`
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;
     background-color: white;
-    z-index: 4;
+    z-index: 6;
     transform: translate(-50%, -50%);
     animation: scale-in-center 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-
+    @media (max-width: 575px) {
+        height: 84% !important;
+        width: 300px !important;
+    }
     @keyframes scale-in-center {
         0% {
             -webkit-transform: scale(0);
