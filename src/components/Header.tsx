@@ -18,6 +18,7 @@ const _headerArea = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    z-index: 7000 !important;
 `;
 
 const _Logo = styled.div``;

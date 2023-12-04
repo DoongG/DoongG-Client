@@ -33,7 +33,7 @@ const _MainSection = styled.div`
     width: 100%;
     background-color: rgb(28, 57, 61);
     position: relative;
-    overflow: hidden;
+    overflow: auto;
 `;
 
 const _Character1 = styled.img`
@@ -86,10 +86,17 @@ const _Page1 = styled.div<PageProps>`
     height: 100%;
     display: ${({ currentPage }) => (currentPage === 1 ? 'block' : 'none')};
 `;
-
 const _Page2 = styled.div<PageProps>`
     height: 100%;
     display: ${({ currentPage }) => (currentPage === 2 ? 'block' : 'none')};
+`;
+const _Page3 = styled.div<PageProps>`
+    height: 100%;
+    display: ${({ currentPage }) => (currentPage === 3 ? 'block' : 'none')};
+`;
+const _Page4 = styled.div<PageProps>`
+    height: 100%;
+    display: ${({ currentPage }) => (currentPage === 4 ? 'block' : 'none')};
 `;
 
 const IntroduceHotdeal1 = () => {
@@ -105,9 +112,9 @@ const IntroduceHotdeal1 = () => {
         if (container) {
             const scrollPosition = container.scrollTop;
             const pageHeight = container.clientHeight;
-            const newPage = Math.ceil(scrollPosition / pageHeight) + 1;
+            const newPage = Math.floor(scrollPosition / pageHeight) + 1;
 
-            if (newPage !== currentPage) {
+            if (newPage !== currentPage && newPage >= 1) {
                 setCurrentPage(newPage);
             }
         }
@@ -116,13 +123,24 @@ const IntroduceHotdeal1 = () => {
     useEffect(() => {
         const container = containerRef.current;
         if (container) {
+            const handleScroll = () => {
+                // 스크롤 이벤트 핸들러 로직
+                const scrollPosition = container.scrollTop;
+                const pageHeight = container.clientHeight;
+                const newPage = Math.floor(scrollPosition / pageHeight) + 1;
+
+                if (newPage !== currentPage && newPage >= 1) {
+                    setCurrentPage(newPage);
+                }
+            };
+
             container.addEventListener('scroll', handleScroll);
 
             return () => {
                 container.removeEventListener('scroll', handleScroll);
             };
         }
-    }, [currentPage]);
+    }, []); // 의존성 배열 비움
 
     return (
         <_MainSection ref={containerRef}>
@@ -152,6 +170,32 @@ const IntroduceHotdeal1 = () => {
                 </_ExplainTotal>
                 <_Character1 src={character} />
             </_Page2>
+            <_Page3 currentPage={currentPage}>
+                <_ExplainTotal>
+                    <_Explain>
+                        <span style={{ color: 'rgb(255, 202, 29)' }}>
+                            알깽이
+                        </span>
+                        와
+                    </_Explain>
+                    <_Explain>자취 라이프 꿀팁</_Explain>
+                    <_Explain>공유</_Explain>
+                </_ExplainTotal>
+                <_Character1 src={character} />
+            </_Page3>
+            <_Page4 currentPage={currentPage}>
+                <_ExplainTotal>
+                    <_Explain>
+                        <span style={{ color: 'rgb(255, 202, 29)' }}>
+                            알깽이
+                        </span>
+                        가
+                    </_Explain>
+                    <_Explain>알려주는 지역별</_Explain>
+                    <_Explain>자취방 리뷰</_Explain>
+                </_ExplainTotal>
+                <_Character1 src={character} />
+            </_Page4>
             <_PageNum>
                 <li
                     onClick={() => handlePageClick(1)}
@@ -161,8 +205,14 @@ const IntroduceHotdeal1 = () => {
                     onClick={() => handlePageClick(2)}
                     className={currentPage === 2 ? 'selected' : ''}
                 ></li>
-                <li></li>
-                <li></li>
+                <li
+                    onClick={() => handlePageClick(3)}
+                    className={currentPage === 3 ? 'selected' : ''}
+                ></li>
+                <li
+                    onClick={() => handlePageClick(4)}
+                    className={currentPage === 4 ? 'selected' : ''}
+                ></li>
                 <li></li>
             </_PageNum>
         </_MainSection>
