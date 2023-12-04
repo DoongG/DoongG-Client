@@ -20,7 +20,6 @@ const _hr = styled.hr`
 //shopping
 const Shopping = () => {
     const { selectButton, setSelectButton } = useShoppingHeaderSelectBarStore();
-    console.log(selectButton);
     return (
         <>
             <ShoppingHeaderSelectBar />

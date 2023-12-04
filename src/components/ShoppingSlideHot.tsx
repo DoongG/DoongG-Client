@@ -56,7 +56,6 @@ export default function ShoppingSlideResent() {
                 const res = await axios.get<ApiResponse, any>(
                     'http://localhost:8080/shop/best',
                 );
-                console.log(res.data);
                 setResentProductList(res.data);
             } catch (error) {
                 console.error('데이터를 가져오는 중 오류 발생:', error);
@@ -89,7 +88,7 @@ export default function ShoppingSlideResent() {
                             slidesPerGroup: 4,
                             //   spaceBetween: 10,
                         },
-                        // 768px 이상일 때
+                        // 767px 이상일 때
                         767: {
                             slidesPerView: 3,
                             spaceBetween: 50,
@@ -110,7 +109,10 @@ export default function ShoppingSlideResent() {
                     {resentProductList.map((item: ApiResponse) => {
                         return (
                             <>
-                                <_customSwiperSlide className="swiperslide">
+                                <_customSwiperSlide
+                                    className="swiperslide"
+                                    key={item.productID}
+                                >
                                     <_contentWrapper className="contentWrapper">
                                         <_favoriteDiv className="favoriteDiv">
                                             <img src={eyes} alt="" />

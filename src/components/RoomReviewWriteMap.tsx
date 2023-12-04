@@ -18,6 +18,9 @@ declare global {
         kakao: any;
     }
 }
+interface Props {
+    button: boolean;
+}
 const RoomReviewWriteMap = () => {
     const [map, setMap] = useState<any>();
     const [marker, setMarker] = useState<any>();
@@ -245,20 +248,22 @@ const RoomReviewWriteMap = () => {
         <>
             <_kakaoMapWrapper id="map">
                 <_buttonWrapper className="buttonWrapper">
-                    <button
+                    <_buttonWrite
+                        button={button}
                         onClick={() => {
                             handleChangeReview('리뷰쓰기');
                         }}
                     >
                         리뷰 달기
-                    </button>
-                    <button
+                    </_buttonWrite>
+                    <_buttonSee
+                        button={button}
                         onClick={() => {
                             handleChangeReview('리뷰보기');
                         }}
                     >
                         전체 리뷰 보기
-                    </button>
+                    </_buttonSee>
                 </_buttonWrapper>
                 <_searchAddressInputBox className="Hello">
                     <_inputBox className="inputBox" onClick={onSearchAddress}>
@@ -294,16 +299,29 @@ const _buttonWrapper = styled.div`
     z-index: 999;
     bottom: 4px;
     right: 0px;
-    & > button {
-        margin-right: 1px;
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-weight: 700;
-        min-width: 120px;
-        border: none;
-        background-color: #404040;
-        color: rgba(var(--bs-link-color-rgb));
-    }
+`;
+const _buttonWrite = styled.button<Props>`
+    margin-right: 1px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: 700;
+    min-width: 120px;
+    border: none;
+    background-color: rgb(28, 57, 61);
+
+    color: ${(props) =>
+        props.button === true ? 'rgb(255, 202, 29)' : 'white'};
+`;
+const _buttonSee = styled.button<Props>`
+    margin-right: 1px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: 700;
+    min-width: 120px;
+    border: none;
+    background-color: rgb(28, 57, 61);
+    color: ${(props) =>
+        props.button === true ? 'white' : 'rgb(255, 202, 29)'};
 `;
 const _searchAddressInputBox = styled.div`
     left: 16px;
@@ -327,6 +345,9 @@ const _inputBox = styled.div`
         font-size: 13px;
         padding: 0px 10px;
         outline: none;
+        @media (max-width: 575px) {
+            width: 170px;
+        }
     }
 `;
 const _iconBox = styled.div`

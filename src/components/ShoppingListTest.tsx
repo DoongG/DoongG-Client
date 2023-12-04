@@ -217,7 +217,7 @@ export default function ShoppingListTest() {
                 </_productListBar>
                 <_productListWrapper1 className="productListWrapper">
                     <_categoryDiv
-                        className="beautyDiv"
+                        className="categoryDiv"
                         ref={categoryDiv}
                         shouldAnimate={shouldAnimate}
                         calculatedHeight={divHeigth}

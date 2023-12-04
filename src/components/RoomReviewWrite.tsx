@@ -151,6 +151,12 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
 const _reviewComponent = styled.div`
     background-color: white;
     width: 20%;
+    @media (max-width: 991px) {
+        width: 25%;
+    }
+    @media (max-width: 767px) {
+        width: 38%;
+    }
 `;
 const _reviewBox = styled.div`
     margin-top: 10px;
@@ -173,6 +179,13 @@ const _title = styled.div`
     border-radius: 5px;
     color: white;
     padding: 10px 0px;
+    @media (max-width: 767px) {
+        font-size: 14px;
+    }
+    @media (max-width: 575px) {
+        font-size: 10px;
+        padding: 7px 0px;
+    }
 `;
 const _infosBox = styled.div`
     @font-face {
@@ -193,11 +206,15 @@ const _infosBox = styled.div`
         font-size: 13px;
         display: flex;
         justify-content: center;
+        @media (max-width: 575px) {
+            font-size: 10px;
+        }
     }
 `;
 const _addressBox = styled.div`
     padding-bottom: 10px;
     position: relative;
+
     &::before {
         background-color: #00000040;
         content: '';
@@ -214,9 +231,22 @@ const _address = styled.div`
     width: 70%;
     padding: 0px 10px;
     text-align: left;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    word-break: break-word;
+    margin: 0px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 `;
 const _contentBox = styled.div`
     margin-top: 10px;
+    @media (max-width: 767px) {
+        height: 120px;
+    }
+    @media (max-width: 575px) {
+        height: 70px;
+    }
 `;
 const _contentLabel = styled.label`
     width: 30%;
@@ -227,7 +257,7 @@ const _content = styled.textarea`
     border: none;
     resize: none;
     outline: none;
-    font-weight: 700;
+    font-weight: 300;
 `;
 const _ButtonBox = styled.div`
     @font-face {
@@ -250,6 +280,9 @@ const _ButtonBox = styled.div`
     flex-direction: column;
     align-items: flex-start;
     border: 1px solid black;
+    @media (max-width: 575px) {
+        padding: 5px;
+    }
     button {
         border: none;
         color: white;
@@ -260,6 +293,12 @@ const _ButtonBox = styled.div`
         font-size: 17px;
         width: 100%;
         cursor: pointer;
+        @media (max-width: 767px) {
+            font-size: 14px;
+        }
+        @media (max-width: 575px) {
+            font-size: 10px;
+        }
     }
 `;
 export { RoomReviewWrite };
