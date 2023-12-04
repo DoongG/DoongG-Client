@@ -93,7 +93,7 @@ const RoomReviewWatch = () => {
                     className="AroundReview"
                 >
                     <_watch className="watch">근처 자취방</_watch>
-                    {visibleMarker &&
+                    {visibleMarker ? (
                         visibleMarker
                             .filter((item: VisibleMarker) => {
                                 return item.address !== clickedAddress;
@@ -124,7 +124,10 @@ const RoomReviewWatch = () => {
                                         </_reviewBoxWrapper>
                                     </>
                                 );
-                            })}
+                            })
+                    ) : (
+                        <div>안녕</div>
+                    )}
                 </_AroundReview>
             </_RoomReviewWatchWrapper>
         </>
@@ -173,7 +176,20 @@ const _AroundReview = styled.div<Props>`
             ? `calc(100vh - ${props.clickedReviewHeight + 70}px)`
             : 'calc(100vh - 48px)'};
     margin-top: ${(props) => (props.marker === true ? '25px' : '10px')};
+    &::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgb(28, 57, 61); /* 스크롤바 색상 */
+        border-radius: 10px; /* 스크롤바 둥근 테두리 */
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgb(255, 202, 29); /*스크롤바 뒷 배경 색상*/
+    }
 `;
+
 const _reviewBox = styled.div`
     margin-top: 5px;
     padding: 10px 0px;
@@ -194,8 +210,16 @@ const _reviewBox = styled.div`
     }
 `;
 const _watch = styled.div`
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
     border-radius: 5px;
-    font-weight: 700;
+
     font-size: 15px;
     padding: 10px 10px;
     text-align: left;

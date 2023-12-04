@@ -1,15 +1,17 @@
 import styled from 'styled-components';
 import React, { PropsWithChildren, useEffect, useState } from 'react';
-import { AiOutlineClose } from 'react-icons/ai';
+import { AiOutlineClose, AiOutlineConsoleSql } from 'react-icons/ai';
 import { useBuyModalStore } from '../store/shoppingHeaderSelectBarStore';
 import { useForm } from 'react-hook-form';
 import DaumPostcode from 'react-daum-postcode';
 import fox from '../assets/fox.jpg';
+import axios from 'axios';
 
 interface ModalDefaultType {
     onClickbuyModal: () => void;
     cost: number;
     count: number;
+    productId: number;
 }
 interface ValidProps {
     valid: boolean;
@@ -19,6 +21,7 @@ const ShoppingDetailBuy = ({
     onClickbuyModal,
     cost,
     count,
+    productId,
 }: PropsWithChildren<ModalDefaultType>) => {
     const { isOpenBuyModal, setIsOpenBuyModal } = useBuyModalStore();
     // 주소 찾는 모달 상태
@@ -28,6 +31,8 @@ const ShoppingDetailBuy = ({
     const [postNumber, setPostNumber] = useState('');
     // 도로명 주소
     const [postAddress, setPostAddress] = useState('');
+
+    const [token, setToken] = useState<string | null>(null);
 
     // 주소 찾기 버튼 이벤트
     const handleOpenPost = () => {
@@ -41,6 +46,15 @@ const ShoppingDetailBuy = ({
         setPostAddress(data.address);
     };
 
+    //jwt 토큰 가져오는 함수
+    useEffect(() => {
+        const fetchToken = async () => {
+            const storedToken = localStorage.getItem('token');
+            setToken(storedToken);
+        };
+        fetchToken();
+    }, []);
+
     // 결제 모달 닫는 함수
     const closeModal = () => {
         console.log('모달 닫기');
@@ -48,9 +62,6 @@ const ShoppingDetailBuy = ({
         setTimeout(() => {
             isOpenBuyModal && setIsOpenBuyModal(!isOpenBuyModal);
         }, 200);
-
-        // setOpenModal(bool);
-        console.log(isOpenBuyModal);
     };
 
     // react-hook-form
@@ -63,8 +74,6 @@ const ShoppingDetailBuy = ({
 
     const [nameWatch, restAddressWatch] = watch(['name', 'restAddress']);
 
-    console.log(errors.name, errors.restAddress);
-
     // DB로 보내는 함수
     const onSubmit = () => {
         console.log();
@@ -73,6 +82,31 @@ const ShoppingDetailBuy = ({
     // 천 단위 쉼표 추가 함수
     const addCommas = (num: number) => {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    };
+
+    // 상품 결제 함수
+    const onClickBuy = () => {
+        axios
+            .post(
+                'http://localhost:8080/userAuth/buy',
+                {
+                    productID: productId,
+                    quantity: count,
+                    postNumber,
+                    address: postAddress + restAddressWatch,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            )
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     };
     return (
         <>
@@ -211,11 +245,12 @@ const ShoppingDetailBuy = ({
                     <_payButtonBox
                         className="payButtonBox"
                         valid={
-                            nameWatch &&
-                            errors.name === undefined &&
-                            restAddressWatch &&
-                            errors.restAddress === undefined
+                            watch('name') &&
+                            !errors.name &&
+                            watch('restAddress') &&
+                            !errors.restAddress
                         }
+                        onClick={onClickBuy}
                     >
                         <button type="button">결제하기</button>
                     </_payButtonBox>
@@ -248,7 +283,7 @@ const _closeModal = styled.div`
 `;
 
 const _shoppingDetailBuy = styled.div`
-    height: 84%;
+    height: 94%;
     width: 400px;
     position: fixed;
     top: 50%;

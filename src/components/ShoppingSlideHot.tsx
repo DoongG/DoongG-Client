@@ -17,6 +17,11 @@ import shopping2 from '../assets/shopping2.jpg';
 import shopping3 from '../assets/shopping3.jpg';
 import shopping4 from '../assets/shopping4.jpg';
 import shopping5 from '../assets/shopping5.jpg';
+import {
+    useBuyModalStore,
+    useModalStore,
+    useProductId,
+} from '../store/shoppingHeaderSelectBarStore';
 
 interface ApiResponse {
     discountedPrice: number;
@@ -26,12 +31,21 @@ interface ApiResponse {
     productName: string;
     stock: number;
     viewCount: number;
+    category: string;
 }
 
 export default function ShoppingSlideResent() {
     const [resentProductList, setResentProductList] = useState<ApiResponse[]>(
         [],
     );
+    const { isOpenModal, setOpenModal } = useModalStore(); // 모달 창 state
+    const { isOpenBuyModal, setIsOpenBuyModal } = useBuyModalStore(); //결제 모달 창 state
+
+    // 상품 리스트에서 클릭한 상품의 제목과 카테고리
+    const [title, setTitle] = useState('');
+    const [category, setCategory] = useState('');
+    // const [productId, setProductId] = useState(0);
+    const { productId, setProductId } = useProductId();
 
     // 천 단위 쉼표 추가 함수
     const addCommas = (num: number) => {
@@ -56,6 +70,7 @@ export default function ShoppingSlideResent() {
                 const res = await axios.get<ApiResponse, any>(
                     'http://localhost:8080/shop/best',
                 );
+
                 setResentProductList(res.data);
             } catch (error) {
                 console.error('데이터를 가져오는 중 오류 발생:', error);
@@ -63,6 +78,18 @@ export default function ShoppingSlideResent() {
         };
         getResentProduct();
     }, []);
+
+    const onClickToggleModal = (
+        changedCategory: string,
+        changedTitle: string,
+        changedId: number,
+    ) => {
+        // 제목, 카테고리 state값 변경
+        setTitle(changedTitle);
+        setCategory(changedCategory);
+        setProductId(changedId);
+        setOpenModal(!isOpenModal);
+    };
 
     return (
         <>
@@ -110,10 +137,19 @@ export default function ShoppingSlideResent() {
                         return (
                             <>
                                 <_customSwiperSlide
-                                    className="swiperslide"
                                     key={item.productID}
+                                    className="swiperslide"
                                 >
-                                    <_contentWrapper className="contentWrapper">
+                                    <_contentWrapper
+                                        className="contentWrapper"
+                                        onClick={() =>
+                                            onClickToggleModal(
+                                                item.category,
+                                                item.productName,
+                                                item.productID,
+                                            )
+                                        }
+                                    >
                                         <_favoriteDiv className="favoriteDiv">
                                             <img src={eyes} alt="" />
                                             <p>{item.viewCount}</p>

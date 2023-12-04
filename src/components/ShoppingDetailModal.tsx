@@ -19,6 +19,7 @@ import { AiOutlineClose } from 'react-icons/ai';
 import {
     useBuyModalStore,
     useModalStore,
+    useProductId,
 } from '../store/shoppingHeaderSelectBarStore';
 import { ShoppingDetailSelectBar } from './ShoppingDetailSelectBar';
 import { ShoppingDetailBuy } from './ShoppingDetailBuy';
@@ -72,14 +73,13 @@ interface DetailInfos {
 const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
     category,
     title,
-    productId,
+
     onClickToggleModal,
 }) => {
     // 모달 상태
     const { isOpenModal, setOpenModal } = useModalStore();
     const { isOpenBuyModal, setIsOpenBuyModal } = useBuyModalStore();
-
-    console.log(category, title, productId);
+    const { productId, setProductId } = useProductId();
 
     // 수량과 가격 상태
     const [count, setCount] = useState(1);
@@ -107,7 +107,6 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
 
     // 장바구니 함수
     const onClickCartModal = () => {
-        console.log('cart');
         axios
             .post(
                 'http://localhost:8080/userAuth/addCart',
@@ -133,21 +132,22 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
 
     // 상품 정보 가져오는 함수
     useEffect(() => {
-        const getDetailInfos = async () => {
-            console.log(productId);
-            try {
-                const res = await axios.get<DetailInfos, any>(
-                    `http://localhost:8080/shop/get/${productId}`,
-                );
-                console.log(res.data);
-                setDetailInfos(res.data);
-                setbeforePrice(res.data.price);
-                setAfterPrice(res.data.discountedPrice);
-            } catch (error) {
-                console.error('데이터를 가져오는 중 오류 발생:', error);
-            }
-        };
-        getDetailInfos();
+        console.log('productID,', productId);
+        if (productId !== 0) {
+            const getDetailInfos = async () => {
+                try {
+                    const res = await axios.get<DetailInfos, any>(
+                        `http://localhost:8080/shop/get/${productId}`,
+                    );
+                    setDetailInfos(res.data);
+                    setbeforePrice(res.data.price);
+                    setAfterPrice(res.data.discountedPrice);
+                } catch (error) {
+                    console.error('데이터를 가져오는 중 오류 발생:', error);
+                }
+            };
+            getDetailInfos();
+        }
     }, []);
 
     useEffect(() => {
@@ -268,7 +268,7 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
                         <li onClick={() => window.location.reload()}>SHOP</li>
 
                         <div>{'>'}</div>
-                        <li>{decodedTitle}</li>
+                        <li>{detailInfos?.productName}</li>
                     </ul>
                 </_headerWrapper>
                 <_productInfoBox className="productInfoBox">
@@ -276,8 +276,12 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
                         <img src={fox} alt="" />
                     </_imgBox>
                     <_productInfos className="productInfos">
-                        <_category className="category">{category}</_category>
-                        <_title className="title">{decodedTitle}</_title>
+                        <_category className="category">
+                            {detailInfos?.category}
+                        </_category>
+                        <_title className="title">
+                            {detailInfos?.productName}
+                        </_title>
                         <_heartAndViewBox className="heartAndViewBox">
                             <_viewBox className="viewBox">
                                 <img src={eyes} alt="" />
@@ -357,6 +361,7 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
                     onClickbuyModal={onClickbuyModal}
                     cost={afterPrice}
                     count={count}
+                    productId={productId}
                 ></ShoppingDetailBuy>
             )}
         </>
