@@ -91,6 +91,7 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
 
     const [token, setToken] = useState<string | null>(null);
 
+    //jwt 토큰 가져오는 함수
     useEffect(() => {
         const fetchToken = async () => {
             const storedToken = localStorage.getItem('token');
@@ -243,15 +244,10 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
 
     // 모달 닫는 함수
     const closeModal = () => {
-        console.log('모달 닫기');
-
         setTimeout(() => {
             isOpenModal && setOpenModal(!isOpenModal);
         }, 200);
-        console.log(isOpenModal);
     };
-
-    console.log(detailInfos?.viewCount);
 
     return (
         <>
