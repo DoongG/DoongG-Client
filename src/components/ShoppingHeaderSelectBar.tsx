@@ -20,6 +20,7 @@ const _selectWrapperBox = styled.div`
         font-weight: normal;
         font-style: normal;
     }
+    font-family: 'JalnanGothic';
     @media (max-width: 575px) {
         padding: 17px 25px;
     }
@@ -34,7 +35,7 @@ const _selectButton = styled.button<Props>`
     border: none;
     font-size: 24px;
     cursor: pointer;
-    font-weight: 700;
+
     color: ${(props) => (props.isSelected ? 'rgb(255, 202, 29)' : '#c1c1c1')};
     @media (max-width: 767px) {
         font-size: 18px;

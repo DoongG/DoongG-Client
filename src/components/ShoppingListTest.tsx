@@ -7,11 +7,13 @@ import shopping2 from '../assets/shopping2.jpg';
 import shopping3 from '../assets/shopping3.jpg';
 import shopping4 from '../assets/shopping4.jpg';
 import shopping5 from '../assets/shopping5.jpg';
-import listbar from '../assets/listbar.png';
+import eyes from '../assets/eyes.png';
+import listbar from '../assets/listBar2.png';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
     useBuyModalStore,
     useModalStore,
+    useProductId,
 } from '../store/shoppingHeaderSelectBarStore';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -41,6 +43,9 @@ interface ApiResponse {
     category: string;
 }
 
+interface PropsCss {
+    selected: boolean;
+}
 export default function ShoppingListTest() {
     const [shouldAnimate, setShouldAnimate] = useState(false);
     const [click, setClick] = useState(false);
@@ -49,13 +54,14 @@ export default function ShoppingListTest() {
     const [divHeigth, setDivHeigth] = useState(0); // 상품 목록 Div의 content 높이
     const { isOpenModal, setOpenModal } = useModalStore(); // 모달 창 state
     const { isOpenBuyModal, setIsOpenBuyModal } = useBuyModalStore(); //결제 모달 창 state
+    const [selectedCategory, setSelectedCategory] = useState(''); // 초기값은 빈 문자열로 설정
 
     const [allProductList, setAllProductList] = useState<ApiResponse[]>([]);
 
     // 상품 리스트에서 클릭한 상품의 제목과 카테고리
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('');
-    const [productId, setProductId] = useState(0);
+    const { productId, setProductId } = useProductId();
 
     const categoryDiv = useRef<HTMLDivElement>(null);
     const listWrapper = useRef<HTMLDivElement>(null);
@@ -167,6 +173,8 @@ export default function ShoppingListTest() {
         getResentProduct();
         setParam({ name: category });
         setClick(true);
+        // 클릭한 카테고리 업데이트
+        setSelectedCategory(category);
     };
 
     // "위로 올리기 버튼" 작동 함수 => 무조건 상품 목록Div가 올라가야 함
@@ -196,6 +204,7 @@ export default function ShoppingListTest() {
                         ].map((category) => (
                             <_li
                                 key={category}
+                                selected={selectedCategory === category} // 선택된 카테고리일 때 selected prop을 true로 설정
                                 onClick={() => handleCategoryClick(category)}
                             >
                                 {category}
@@ -240,6 +249,10 @@ export default function ShoppingListTest() {
                                         <_productDiv className="productDiv">
                                             <_imgDiv className="imgDiv">
                                                 <_img src={shopping1}></_img>
+                                                <_favoriteDiv className="favoriteDiv">
+                                                    <img src={eyes} alt="" />
+                                                    <p>{item.viewCount}</p>
+                                                </_favoriteDiv>
                                             </_imgDiv>
                                             <_infosDiv className="infosDiv">
                                                 <_title className="title">
@@ -281,7 +294,9 @@ export default function ShoppingListTest() {
                         </_endPoint>
                     </_categoryDiv>
                 </_productListWrapper1>
-                <_emptyBox className="emptyBox">텅</_emptyBox>
+                <_emptyBox className="emptyBox">
+                    카테고리를 선택해주세요
+                </_emptyBox>
             </_productListWrapper>
             {isOpenModal && (
                 <ShoppingDetailHeader
@@ -342,6 +357,7 @@ const _ul = styled.ul`
     justify-content: space-evenly;
     padding: 0px 70px;
     align-items: center;
+    background-color: rgb(28, 57, 61);
     @media (max-width: 991px) {
         font-size: 14px;
         padding: 0px 40px;
@@ -370,12 +386,22 @@ const _ul = styled.ul`
         }
     }
 `;
-const _li = styled.li`
+const _li = styled.li<PropsCss>`
     padding: 10px 10px;
+    color: white;
+    color: ${(props) => (props.selected ? 'rgb(255, 202, 29)' : 'white')};
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
 `;
 
 const _before = styled.div`
-    background-color: black;
+    background-color: rgb(255, 202, 29);
     position: absolute;
     width: 22px;
     height: 22px;
@@ -401,7 +427,7 @@ const _before = styled.div`
         content: '';
         width: 5px;
         height: 60px;
-        background-color: black;
+        background-color: rgb(255, 202, 29);
         position: absolute;
         z-index: 1;
         left: 50%;
@@ -418,7 +444,7 @@ const _before = styled.div`
     }
 `;
 const _after = styled.div`
-    background-color: black;
+    background-color: rgb(255, 202, 29);
     position: absolute;
     width: 22px;
     height: 22px;
@@ -443,7 +469,7 @@ const _after = styled.div`
         content: '';
         width: 5px;
         height: 60px;
-        background-color: black;
+        background-color: rgb(255, 202, 29);
         position: absolute;
         z-index: 1;
 
@@ -457,6 +483,30 @@ const _after = styled.div`
         }
         @media (max-width: 767px) {
             height: 37px;
+        }
+    }
+`;
+const _favoriteDiv = styled.div`
+    display: flex;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    align-items: center;
+    img {
+        margin-right: 5px;
+        width: 20px;
+        @media (max-width: 1200px) {
+            height: 17px;
+        }
+    }
+    p {
+        margin: 0;
+        font-weight: 700;
+        @media (max-width: 1200px) {
+            font-size: 14px;
+        }
+        @media (max-width: 767px) {
+            font-size: 12px;
         }
     }
 `;
@@ -561,7 +611,7 @@ const _productListBar = styled.div`
     z-index: 3;
     box-shadow: 0px -5px 3px 0px rgb(0 0 0 / 66%);
     background-color: #b3a492;
-    height: 100px;
+    height: 80px;
     border-bottom-right-radius: 0px;
     border-bottom-left-radius: 0px;
     @media (max-width: 1200px) {
@@ -608,9 +658,12 @@ const _productDivWrapper = styled.div`
 `;
 const _productDiv = styled.div`
     width: 95%;
+    border-radius: 10px;
+    background-color: white;
 `;
 const _imgDiv = styled.div`
     height: 70%;
+    position: relative;
     @media (max-width: 767px) {
         height: 60%;
     }
@@ -624,6 +677,7 @@ const _img = styled.img`
 const _infosDiv = styled.div`
     margin-top: 5px;
     text-align: left;
+    padding: 0px 10px;
 `;
 
 const _price = styled.div`
@@ -715,7 +769,7 @@ const _imgBar = styled.img<ImgBarProps>`
 const _categoryDiv = styled.div<ImgBarProps>`
     padding-bottom: 120px;
     padding-top: 50px;
-    background-color: #ffda00;
+    background-color: rgb(28, 57, 61);
     border-bottom-right-radius: 30px;
     border-bottom-left-radius: 30px;
     bottom: -${(props) => props.calculatedHeight}px;
@@ -759,6 +813,14 @@ const _categoryDiv = styled.div<ImgBarProps>`
     }
 `;
 const _endPoint = styled.div`
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'JalnanGothic';
     transform: translate(-50%, -50%);
     position: absolute;
     bottom: 0px;
@@ -766,6 +828,7 @@ const _endPoint = styled.div`
     font-size: 30px;
     display: flex;
     flex-direction: column;
+    color: white;
     cursor: pointer;
     @media (max-width: 991px) {
         font-size: 25px;
@@ -788,10 +851,20 @@ const _backdrop = styled.div`
 `;
 
 const _emptyBox = styled.div`
+    @font-face {
+        font-family: 'JalnanGothic';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    border-bottom-right-radius: 30px;
+    border-bottom-left-radius: 30px;
+    font-family: 'JalnanGothic';
     margin-bottom: 50px;
-    border: 6px solid rgb(255, 202, 29);
+    border: 6px solid rgb(28, 57, 61);
     display: flex;
-    font-size: 104px;
+    font-size: 40px;
     color: rgb(28, 57, 61);
     align-items: center;
     justify-content: center;
@@ -801,6 +874,27 @@ const _emptyBox = styled.div`
     width: 100%;
     /* background-color: rgb(255, 202, 29); */
     z-index: 1;
+    animation: text-pop-up-top 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+        infinite alternate both;
+    @keyframes text-pop-up-top {
+        0% {
+            -webkit-transform: translateY(0);
+            transform: translateY(0);
+            -webkit-transform-origin: 50% 50%;
+            transform-origin: 50% 50%;
+            text-shadow: none;
+        }
+        100% {
+            -webkit-transform: translateY(-50px);
+            transform: translateY(-50px);
+            -webkit-transform-origin: 50% 50%;
+            transform-origin: 50% 50%;
+            text-shadow: 0 1px 0 #cccccc, 0 2px 0 #cccccc, 0 3px 0 #cccccc,
+                0 4px 0 #cccccc, 0 5px 0 #cccccc, 0 6px 0 #cccccc,
+                0 7px 0 #cccccc, 0 8px 0 #cccccc, 0 9px 0 #cccccc,
+                0 50px 30px rgba(0, 0, 0, 0.3);
+        }
+    }
     @media (max-width: 991px) {
         font-size: 75px;
     }

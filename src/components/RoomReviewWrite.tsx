@@ -14,6 +14,8 @@ interface Props {
 const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
     const [content, setContent] = useState('');
     const [modalShow, setModalShow] = useState(false);
+    // false = input이 클릭되어 있지 않을 때, true = input이 클릭되어 있을 때
+    let [isInputClicked, setIsInputClicked] = useState(false);
 
     // content 변경함수
     const onChangeContent: React.ChangeEventHandler<HTMLTextAreaElement> = (
@@ -121,10 +123,19 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
                                     id="content"
                                     name="content"
                                     className="content"
-                                    placeholder="소중한 후기를 남겨주세요."
+                                    placeholder={
+                                        isInputClicked === true
+                                            ? ''
+                                            : '소중한 후기를 남겨주세요.'
+                                    }
                                     rows={10}
                                     onChange={onChangeContent}
                                     value={content}
+                                    // onfocus="this.placeholder = ''"
+                                    // 클릭될 때 작동
+                                    onFocus={() => {
+                                        setIsInputClicked(true);
+                                    }}
                                 />
                             </_contentBox>
                         </_infosBox>

@@ -20,6 +20,7 @@ import shopping5 from '../assets/shopping5.jpg';
 import {
     useBuyModalStore,
     useModalStore,
+    useProductId,
 } from '../store/shoppingHeaderSelectBarStore';
 import { ShoppingDetailHeader } from './ShoppingDetailModal';
 
@@ -44,7 +45,8 @@ export default function ShoppingSlideResent() {
     // 상품 리스트에서 클릭한 상품의 제목과 카테고리
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('');
-    const [productId, setProductId] = useState(0);
+    // const [productId, setProductId] = useState(0);
+    const { productId, setProductId } = useProductId();
 
     // 천 단위 쉼표 추가 함수
     const addCommas = (num: number) => {

@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 
 // 스토어의 상태를 나타내는 인터페이스 정의
 interface ShoppingHeaderSelectBarStore {
@@ -155,3 +155,15 @@ const useCenterLatLng = create<CenterLatLng>((set) => ({
     setCount: (state) => set({ count: state }),
 }));
 export { useCenterLatLng };
+
+//___________________________________________________________________________________________
+// changed productId
+interface ProductId {
+    productId: number;
+    setProductId: (state: number) => void;
+}
+const useProductId = create<ProductId>((set) => ({
+    productId: 0,
+    setProductId: (state) => set({ productId: state }),
+}));
+export { useProductId };
