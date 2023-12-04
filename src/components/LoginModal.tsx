@@ -75,14 +75,19 @@ function LoginModal({
             .then((response) => {
                 const result = response.data;
 
+                console.log(result);
+
                 if (result == '1') {
                     setLoginError('비밀번호가 옳바르지 않습니다.');
                 } else if (result == '0') {
                     setLoginError('존재하지 않는 사용자 입니다.');
                 } else {
                     setLoginError(null);
-                    localStorage.setItem('token', result);
-                    localStorage.getItem('token');
+                    const [token, nickname] = result.split(',');
+
+                    // 로컬스토리지에 token과 nickname 저장
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('nickname', nickname);
 
                     // 로그인 성공 시 처리
                     window.location.replace('/');
