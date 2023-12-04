@@ -189,7 +189,7 @@ const RecipeGenerator = () => {
                                             <img
                                                 style={{
                                                     height: '100%',
-                                                    width: '100%',
+                                                    // width: '100%',
                                                 }}
                                                 src={x.url}
                                             />
