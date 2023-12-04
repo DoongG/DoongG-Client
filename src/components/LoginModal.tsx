@@ -345,6 +345,7 @@ const _ModalContainer = styled.div`
     align-items: center;
     justify-content: center;
     position: fixed;
+    z-index: 10000 !important;
 `;
 
 const _DialogBox = styled.dialog`
@@ -358,7 +359,7 @@ const _DialogBox = styled.dialog`
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;
     background-color: white;
-    z-index: 10000 !important;
+    z-index: 10001 !important;
     margin-top: 60vh;
 `;
 
