@@ -13,18 +13,23 @@ const _MainSection = styled.div`
 const slideRight = keyframes`
   from {
     transform: translateX(0);
+    opacity: 0;
   }
   to {
-    transform: translateX(35vw);
+    transform: translateX(calc(100% + 10px));
+    /* transform: translateX(25rem); */
+    opacity: 1;
   }
 `;
 // 왼쪽 이동하는 것
 const slideLeft = keyframes`
   from {
     transform: translateX(0);
+    opacity: 0;
   }
   to {
-    transform: translateX(-35vw);
+    transform: translateX(-25rem);
+    opacity: 1;
   }
 `;
 // 말풍선 나타남
@@ -38,18 +43,18 @@ const appear = keyframes`
 `;
 
 const _Character1 = styled.img`
-    width: 150px;
-    height: 150px;
-    margin-top: 110px;
+    width: 170px;
+    height: 170px;
+    /* margin-top: 110px; */
     float: left;
     animation: ${slideRight} 4s forwards;
 `;
 
 const _Character2 = styled.img`
     /* position: fixed; */
-    width: 150px;
-    height: 150px;
-    margin-top: 110px;
+    width: 170px;
+    height: 170px;
+    /* margin-top: 110px; */
     float: right;
     animation: ${slideLeft} 4s forwards;
 `;
@@ -73,12 +78,34 @@ const _TalkText = styled.div`
     left: 370px;
     top: 50px;
 `;
+const _Character1Move = styled.div`
+    width: 50%;
+    height: 170px;
+`;
+
+const _Character2Move = styled.div`
+    width: 50%;
+    height: 170px;
+`;
+
+const CharacterMove = styled.div`
+    display: flex;
+    width: 100%;
+    height: 170px;
+    margin-top: 100px;
+`;
 
 const IntroduceHotdeal = () => {
     return (
         <_MainSection>
-            <_Character1 src={character} alt="" />
-            <_Character2 src={character} alt="" />
+            <CharacterMove>
+                <_Character1Move>
+                    <_Character1 src={character} alt="" />
+                </_Character1Move>
+                <_Character2Move>
+                    <_Character2 src={character} alt="" />
+                </_Character2Move>
+            </CharacterMove>
             <_Talking>
                 <_TalkImg1 src={Talk} alt="" />
                 <_TalkText>이야 이거 싸다</_TalkText>

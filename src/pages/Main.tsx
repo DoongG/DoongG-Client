@@ -1,16 +1,13 @@
 import styled from 'styled-components';
-import { IntroduceCarousel } from '../components/IntroduceCarousel';
-import { IntroduceHotdeal } from '../components/IntroduceHotdeal';
+import { IntroduceHotdeal1 } from '../components/IntroduceHotdeal1';
 
 const Main = (): JSX.Element => {
     return (
-        <>
+        <AppContainer>
             <_Main>
-                <br />
-                {/* <IntroduceCarousel /> */}
-                {/* <IntroduceHotdeal /> */}
+                <IntroduceHotdeal1 />
             </_Main>
-        </>
+        </AppContainer>
     );
 };
 
@@ -20,6 +17,11 @@ const _Main = styled.main`
     display: flex;
     flex-direction: column;
     align-items: center;
+    /* overflow: hidden; */
+`;
+
+const AppContainer = styled.div`
+    height: 100%;
 `;
 
 export { Main };
