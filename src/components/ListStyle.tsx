@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { BoardStore } from '../store/storeT';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import ramen from '../assets/ramen1.jpg';
 import fox from '../assets/fox.jpg';
 import { IoMdPhotos } from 'react-icons/io';
@@ -43,15 +43,15 @@ const _td = styled.td`
 `;
 
 const _titleTd = styled.td`
-    border-bottom: 1px solid #000;
     display: flex;
     flex-direction: row;
 `;
 
 const ListStyle = () => {
+    const isMounted = useRef(false);
     const {
-        // listData,
-        // setListData,
+        listData,
+        setListData,
         signal,
         setSignal,
         detailModalOn,
@@ -62,38 +62,96 @@ const ListStyle = () => {
         setOrderKind,
         boardPostCount,
         setBoardPostCount,
+        setIsKeywordExsist,
+        isKeywordExsist,
+        realBoardName,
     } = BoardStore();
     const navigate = useNavigate();
-    const [postNum, setPostNum] = useState(0);
-    const [whichOrder, setWhichOrder] = useState(false);
-
-    const [listData, setListData] = useState([]);
-    const [getCount, setGetCount] = useState(1);
     const path = useLocation();
 
-    const getListData = async () => {
+    const routingManager = () => {
+        if (path.search) return 'pattern1';
+        else return 'pattern2';
+    };
+
+    const getListData = async (page: any) => {
         let whichType = 'latest';
         if (orderKind === false) whichType = 'latest';
         else whichType = 'views';
         let res;
+        let keyword = '';
+        let pageNum = 1;
+        let order = 'latest';
         if (path.search) {
-            res = await axios({
-                method: 'get',
-                url: `http://localhost:8080/boards/${
-                    path.pathname.split('/')[2]
-                }?page=${path.search.split('=')[1]}&order=${whichType}`,
-            });
+            let temp = path.search.slice(1);
+            let arr = temp.split('&');
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i].includes('keyword')) {
+                    keyword = arr[i].split('=')[1];
+                }
+                if (arr[i].includes('page')) {
+                    pageNum = +arr[i].split('=')[1];
+                }
+                if (arr[i].includes('order')) {
+                    order = arr[i].split('=')[1];
+                }
+            }
+            if (keyword) {
+                setIsKeywordExsist(keyword);
+            }
+            if (keyword.length > 0) {
+                console.log(
+                    `http://localhost:8080/boards/search/${
+                        path.pathname.split('/')[3]
+                    }?keyword=${keyword}&page=${page}&order=${order}`,
+                );
+                res = await axios({
+                    method: 'get',
+                    url: `http://localhost:8080/boards/search/${
+                        path.pathname.split('/')[3]
+                    }?keyword=${keyword}&page=${page}&order=${order}`,
+                });
+            } else {
+                console.log(
+                    `http://localhost:8080/boards/${
+                        path.pathname.split('/')[2]
+                    }?page=${page}&order=${order}`,
+                );
+                res = await axios({
+                    method: 'get',
+                    url: `http://localhost:8080/boards/${
+                        path.pathname.split('/')[2]
+                    }?page=${page}&order=${order}`,
+                });
+            }
         } else {
-            res = await axios({
-                method: 'get',
-                url: `http://localhost:8080/boards/${
-                    path.pathname.split('/')[2]
-                }`,
-            });
+            if (page == 1) {
+                res = await axios({
+                    method: 'get',
+                    url: `http://localhost:8080/boards/${
+                        path.pathname.split('/')[2]
+                    }?order=${whichType}`,
+                });
+            } else {
+                res = await axios({
+                    method: 'get',
+                    url: `http://localhost:8080/boards/${
+                        path.pathname.split('/')[2]
+                    }?page=${page}&order=${whichType}`,
+                });
+            }
         }
 
         setListData(res?.data.posts);
     };
+
+    useEffect(() => {
+        if (isMounted.current) {
+            getListData(1);
+        } else {
+            isMounted.current = true;
+        }
+    }, [orderKind]);
 
     const getListDataAfterPosting = async () => {
         let res = await axios({
@@ -104,17 +162,36 @@ const ListStyle = () => {
         });
         console.log(res.data);
         setListData(res.data.posts);
+        setSignal(false);
+        navigate(`/board/${realBoardName}`);
     };
 
     useEffect(() => {
-        getListData();
+        console.log(path);
+        if (path.search) {
+            let temp = path.search.slice(1);
+            let arr = temp.split('&');
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i].split('=')[0] == 'page') {
+                    getListData(+arr[i].split('=')[1]);
+                }
+            }
+        } else {
+            getListData(1);
+        }
     }, []);
 
     useEffect(() => {
-        getListDataAfterPosting();
+        if (signal) {
+            getListDataAfterPosting();
+        }
     }, [signal]);
 
     const pagination = (num: number) => {
+        let whichType = 'latest';
+        if (orderKind === false) whichType = 'latest';
+        else whichType = 'views';
+
         let pages = Math.ceil(num / 12);
         let data = [];
         for (let i = 1; i <= pages; i++) {
@@ -138,12 +215,14 @@ const ListStyle = () => {
                                 margin: '0px 10px 0px 10px',
                             }}
                             onClick={(e) => {
-                                navigate(
-                                    `/board/${
-                                        path.pathname.split('/')[2]
-                                    }?page=${e.currentTarget.innerText}`,
-                                );
-                                getListData();
+                                let completeURL = '';
+                                if (isKeywordExsist) {
+                                    completeURL += `/boards/search/${realBoardName}?keyword=${isKeywordExsist}&page=${x}&order=${whichType}`;
+                                } else {
+                                    completeURL += `/board/${realBoardName}?page=${x}&order=${whichType}`;
+                                }
+                                navigate(completeURL);
+                                getListData(x);
                             }}
                         >
                             {x}
@@ -154,229 +233,6 @@ const ListStyle = () => {
         );
     };
 
-    const sampledb = [
-        {
-            id: 1,
-            url: ramen,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            id: 2,
-            url: fox,
-            profileImg: fox,
-            writer: '여우',
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-    ];
-
     const getOnePost = async (id: number) => {
         console.log(id);
 
@@ -385,74 +241,23 @@ const ListStyle = () => {
             url: `http://localhost:8080/boards/posts/${id}`,
         });
 
-        const tempData: any = [
-            {
-                id: id,
-                profileImg: fox,
-                title: 'ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ',
-                writer: '여우여우여우여우여우여우여우여우여우',
-                date: '2023-11-21 02:23',
-                likes: 12,
-                views: 121,
-                content:
-                    '일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다v',
-                comments: [
-                    {
-                        id: 1,
-                        writer: '늑대',
-                        date: '2023-11-21 02:25',
-                        content: '뭐래씹',
-                        childCommentsList: [
-                            {
-                                id: 1,
-                                writer: '늑대',
-                                date: '2023-11-21 02:25',
-                                content: '뭐래씹',
-                            },
-                            {
-                                id: 2,
-                                writer: '늑대',
-                                date: '2023-11-21 02:25',
-                                content: '걍뒤져',
-                            },
-                        ],
-                    },
-                    {
-                        id: 2,
-                        writer: '늑대',
-                        date: '2023-11-21 02:25',
-                        content: '걍뒤져',
-                        childCommentsList: [
-                            {
-                                id: 1,
-                                writer: '늑대늑대늑대늑대늑대늑대늑대늑대',
-                                date: '2023-11-21 02:25',
-                                content: '뭐래씹',
-                            },
-                            {
-                                id: 2,
-                                writer: '늑대',
-                                date: '2023-11-21 02:25',
-                                content: '걍뒤져',
-                            },
-                        ],
-                    },
-                ],
-            },
-        ];
         setOnePageData([res.data]);
     };
 
-    useEffect(() => {
-        console.log(onePageData);
-        if (onePageData.length > 0) {
-            setDetailModalOn(true);
-        }
-    }, [onePageData]);
+    const plusView = async (postId: any) => {
+        let res = await axios({
+            method: 'post',
+            url: `http://localhost:8080/boards/posts/increaseViews/${postId}`,
+        });
+        getOnePost(postId);
+    };
 
-    useEffect(() => {
-        getListData();
-    }, [orderKind]);
+    // useEffect(() => {
+    //     console.log(onePageData);
+    //     if (onePageData.length > 0) {
+    //         setDetailModalOn(true);
+    //     }
+    // }, [onePageData]);
 
     return (
         <_listContainer>
@@ -464,31 +269,45 @@ const ListStyle = () => {
                     <_th style={{ width: '100px' }}>조회수</_th>
                     <_th style={{ width: '100px' }}>추천수</_th>
                 </tr>
-                {listData.map((x: any, index: number) => {
-                    return (
-                        <>
-                            <tr
-                                onClick={() => {
-                                    getOnePost(x.postId);
-                                }}
-                            >
-                                <_td>{x.postId}</_td>
-                                <_titleTd id="title">
-                                    <div style={{ color: 'orange' }}>
-                                        {x.postImages && <IoMdPhotos />}
-                                    </div>
-                                    <div>
-                                        {x.title} [{x.commentCount}]
-                                    </div>
-                                </_titleTd>
-                                <_td>{x.views}</_td>
-                                <_td>{x.likeCount}</_td>
-                            </tr>
-                        </>
-                    );
-                })}
+                {listData &&
+                    listData.map((x: any, index: number) => {
+                        return (
+                            <>
+                                <tr
+                                    onClick={() => {
+                                        plusView(x.postId);
+                                    }}
+                                >
+                                    <td>{x.postId}</td>
+                                    <_titleTd id="title">
+                                        <div
+                                            style={{
+                                                color: 'orange',
+                                            }}
+                                        >
+                                            {x.postImages.length > 0 && (
+                                                <IoMdPhotos />
+                                            )}
+                                        </div>
+                                        <div>
+                                            {x.title} [{x.commentCount}]
+                                        </div>
+                                    </_titleTd>
+                                    <td>{x.views}</td>
+                                    <td>{x.likeCount}</td>
+                                </tr>
+                                <tr>
+                                    <_td></_td>
+                                    <_td></_td>
+                                    <_td></_td>
+                                    <_td></_td>
+                                </tr>
+                            </>
+                        );
+                    })}
             </_listRow>
-            {pagination(boardPostCount !== 0 ? boardPostCount : 1)}
+            {/* {pagination(boardPostCount !== 0 ? boardPostCount : 1)} */}
+            {pagination(20)}
         </_listContainer>
     );
 };

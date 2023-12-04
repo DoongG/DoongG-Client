@@ -52,16 +52,12 @@ const _galleryContainer = styled.div`
 `;
 
 const Board = () => {
-    // const param = useParams();
-    // console.log(param);
     const navigate = useNavigate();
     const location = useLocation();
-    console.log(location);
-    const [galleryName, setGalleryName] = useState('');
+    // const [galleryName, setGalleryName] = useState('');
     const [galleryType, setGalleryType] = useState('');
-    const [data, setData] = useState(); // db에서 가져온 데이터들을 담는 state
-    console.log(location.pathname);
-    const judgement = location.pathname.split('/')[2];
+    // const [styleSwitch, setStyleSwitch] = useState(true);
+
     const {
         onePageData,
         setOnePageData,
@@ -76,150 +72,46 @@ const Board = () => {
         modalSignal,
         boardPostCount,
         setBoardPostCount,
+        styleSwitch,
+        setStyleSwitch,
+        firstData,
+        setFirstData,
+        setGalleryData,
+        realBoardName,
+        setRealBoardName,
     } = BoardStore();
+
     const getBoardData = async () => {
-        console.log(`http://localhost:8080/boards/${judgement}`);
-        let res = await axios({
-            method: 'get',
-            url: `http://localhost:8080/boards/${judgement}`,
-        });
-        console.log(res.data);
-        setGalleryName(res.data.boardName);
-        setGalleryType(res.data.boardDefaultType);
-        setBoardPostCount(res.data.postCount);
-        // return res.data.boardDefaultType;
-        // setOnePageData([res.data]);
+        let res;
+        if (location.pathname.includes('search')) {
+            const judgement = location.pathname.split('/')[3];
+            console.log(`http://localhost:8080/boards/${judgement}`);
+            res = await axios({
+                method: 'get',
+                url: `http://localhost:8080/boards/${judgement}`,
+            });
+        } else {
+            const judgement = location.pathname.split('/')[2];
+            console.log(`http://localhost:8080/boards/${judgement}`);
+            res = await axios({
+                method: 'get',
+                url: `http://localhost:8080/boards/${judgement}`,
+            });
+        }
+        if (res) {
+            console.log(res.data);
+            setRealBoardName(res.data.boardName);
+            setGalleryType(res.data.boardDefaultType);
+            // setGalleryData(res.data.posts);
+            setBoardPostCount(res.data.postCount);
+        }
     };
 
-    // useEffect(() => {
-    //     const request = async () => {
-    //         const res = await axios({
-    //             method: 'GET',
-    //             url: `http://localhost:8080/${where}/${param.page}`
-    //         });
-    //         setData(res.data);
-    //     };
-
-    //     request();
-    // },[param.page]);
-
-    const uploadCallback = () => {
-        console.log('이미지 업로드');
-    };
-
-    const [styleSwitch, setStyleSwitch] = useState(true);
     useEffect(() => {
         getBoardData();
         if (location.search) {
             setStyleSwitch(false);
         }
-        setCarousel([
-            {
-                url: ramen,
-                title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-                comments: 12,
-                likes: 12,
-                visits: 121,
-            },
-            {
-                url: ramen,
-                title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-                comments: 12,
-                likes: 12,
-                visits: 121,
-            },
-            {
-                url: ramen,
-                title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-                comments: 12,
-                likes: 12,
-                visits: 121,
-            },
-            {
-                url: ramen,
-                title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-                comments: 12,
-                likes: 12,
-                visits: 121,
-            },
-            {
-                url: ramen,
-                title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-                comments: 12,
-                likes: 12,
-                visits: 121,
-            },
-            {
-                url: ramen,
-                title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-                comments: 12,
-                likes: 12,
-                visits: 121,
-            },
-            {
-                url: ramen,
-                title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-                comments: 12,
-                likes: 12,
-                visits: 121,
-            },
-            {
-                url: ramen,
-                title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-                comments: 12,
-                likes: 12,
-                visits: 121,
-            },
-            {
-                url: ramen,
-                title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-                comments: 12,
-                likes: 12,
-                visits: 121,
-            },
-            {
-                url: ramen,
-                title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-                comments: 12,
-                likes: 12,
-                visits: 121,
-            },
-            {
-                url: ramen,
-                title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-                comments: 12,
-                likes: 12,
-                visits: 121,
-            },
-            {
-                url: ramen,
-                title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-                comments: 12,
-                likes: 12,
-                visits: 121,
-            },
-            {
-                url: ramen,
-                title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-                comments: 12,
-                likes: 12,
-                visits: 121,
-            },
-            {
-                url: ramen,
-                title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-                comments: 12,
-                likes: 12,
-                visits: 121,
-            },
-            {
-                url: ramen,
-                title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-                comments: 12,
-                likes: 12,
-                visits: 121,
-            },
-        ]);
     }, []);
 
     useEffect(() => {
@@ -247,7 +139,6 @@ const Board = () => {
 
     useEffect(() => {
         if (modalSignal !== 0) {
-            console.log('헤헤헤이');
             getOnePageData();
         }
     }, [modalSignal]);
@@ -255,11 +146,11 @@ const Board = () => {
     return (
         <_boardArea>
             {postModalOn && <Modal />}
-            {detailModalOn == true && <PostModal />}
-            {updateModal && <UpdateModal></UpdateModal>}
+            {detailModalOn && <PostModal />}
+            {updateModal && <UpdateModal />}
             <_boardHeader>
                 <_innerBoardHeader>
-                    <h1>{galleryName}</h1>
+                    <h1>{realBoardName}</h1>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <_switchButton
                             onClick={() => {

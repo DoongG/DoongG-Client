@@ -17,6 +17,7 @@ function UpdateModal() {
     let tagRef = useRef<any>(null);
     const {
         onePageData,
+        setOnePageData,
         postModalOn,
         setPostModalOn,
         setSignal,
@@ -33,6 +34,7 @@ function UpdateModal() {
     const [tagExsist, setTagExsist] = useState(false);
     const [tags, setTags] = useState<any>([]);
     const [images, setImages] = useState<any>([]);
+    const [token, setToken] = useState<any>('');
 
     const handleTitleChange = (e: any) => {
         setTitle(e.currentTarget.value);
@@ -136,6 +138,7 @@ function UpdateModal() {
     }, []);
 
     const postUpdatePost = async () => {
+        console.log(token);
         let tagTempArr = [];
         for (let i = 0; i < tags.length; i++) {
             let newTag = {
@@ -162,8 +165,19 @@ function UpdateModal() {
             method: 'post',
             url: `http://localhost:8080/boardsAuth/updatePost/${updatePostId}`,
             data: data,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         });
         console.log(res);
+
+        let res2 = await axios({
+            method: 'get',
+            url: `http://localhost:8080/boards/posts/${onePageData[0]?.postId}`,
+        });
+        console.log(res2);
+        setOnePageData([res2.data]);
+
         alert('글 수정 성공!');
         setSignal(!signal);
         setTitle('');
@@ -181,6 +195,9 @@ function UpdateModal() {
         }
         setTags(tagTemps);
         setImages(onePageData[0].postImages);
+        setCommentAllowed(
+            onePageData[0].commentAllowed == 'true' ? true : false,
+        );
     }, [updateModal]);
 
     const chooseThumbnail = (type: any, id: any) => {
@@ -204,9 +221,16 @@ function UpdateModal() {
 
     const imageDelete = (type: any, id: any, url: any) => {
         let temp = [];
+        let typeCheck = [];
         for (let i = 0; i < images.length; i++) {
             if (images[i].description !== id) {
                 temp.push(images[i]);
+                typeCheck.push(images[i].imageType);
+            }
+        }
+        if (!typeCheck.includes('thumbnail')) {
+            if (temp.length > 0) {
+                temp[0].imageType = 'thumbnail';
             }
         }
         if (myRef.current) {
@@ -224,6 +248,10 @@ function UpdateModal() {
         }
         setImages(temp);
     };
+
+    useEffect(() => {
+        setToken(localStorage.getItem('token'));
+    }, []);
 
     return (
         <_modalContainer>
@@ -355,15 +383,17 @@ function UpdateModal() {
                                         name="commentAllow"
                                         value="true"
                                         type="radio"
+                                        checked={commentAllowed ? true : false}
                                         onChange={handleCommentAllow}
                                     ></input>
-                                </span>
+                                </span>{' '}
                                 <span>
                                     비허용
                                     <input
                                         name="commentAllow"
                                         value="false"
                                         type="radio"
+                                        checked={commentAllowed ? false : true}
                                         onChange={handleCommentAllow}
                                     ></input>
                                 </span>
@@ -456,7 +486,7 @@ const _modalContainer = styled.div`
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 10001;
+    z-index: 4999;
 `;
 
 const _dialogBox = styled.dialog`
@@ -470,7 +500,7 @@ const _dialogBox = styled.dialog`
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;
     background-color: white;
-    z-index: 10000;
+    z-index: 4998;
     overflow: hidden;
     margin-top: -100px;
 `;
@@ -480,7 +510,7 @@ const _backdrop = styled.div`
     height: 100vh;
     position: fixed;
     top: 0;
-    z-index: 9999;
+    z-index: 4997;
     background-color: rgba(0, 0, 0, 0.2);
 `;
 

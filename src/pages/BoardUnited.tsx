@@ -108,11 +108,12 @@ const BoardUnited = () => {
 
     useEffect(() => {
         getBoard();
+        setModalSignal(0);
     }, []);
 
     const enterEachBoard = (e: any) => {
         // console.log(e.currentTarget.innerText);
-        setCurrentBoardName(e.currentTarget.innerText);
+        // setCurrentBoardName(e.currentTarget.innerText);
         navigate(`/board/${e.currentTarget.innerText}`);
     };
 
