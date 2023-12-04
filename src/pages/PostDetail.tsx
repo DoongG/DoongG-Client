@@ -5,14 +5,18 @@ import { MdSubdirectoryArrowRight } from 'react-icons/md';
 import { TbHeart } from 'react-icons/tb';
 import { TbHeartBroken } from 'react-icons/tb';
 import { IoCopyOutline } from 'react-icons/io5';
+import { FaArrowRight } from 'react-icons/fa';
 import { BoardStore } from '../store/storeT';
 import { useEffect, useState, useRef } from 'react';
-import { useLocation } from 'react-router';
+import Mascot from '../assets/Mascot-removebg-preview.png';
+import { useLocation, useNavigate } from 'react-router';
 import eyes from '../assets/eyes.png';
 import axios from 'axios';
 
 const PostDetail = () => {
     const location = useLocation();
+
+    const navigate = useNavigate();
     const { onePageData, setOnePageData } = BoardStore();
     const [shareBalloon, setShareBalloon] = useState(false);
     const [copiedCheck, setCopiedCheck] = useState(false);
@@ -31,13 +35,22 @@ const PostDetail = () => {
         setOnePageData([page]);
         // return res.data;
     };
-    useEffect(() => {
+    const plusView = async () => {
+        let pathKey = location.pathname.split('/')[2];
+        let res = await axios({
+            method: 'post',
+            url: `http://localhost:8080/boards/posts/increaseViews/${pathKey}`,
+        });
         getOnePage();
+    };
+
+    useEffect(() => {
+        plusView();
     }, []);
 
     useEffect(() => {
         if (onePageData[0]) {
-            console.log(onePageData[0].comments);
+            console.log(onePageData[0]);
             let newData = onePageData[0];
 
             for (let i = 0; i < newData.comments.length; i++) {
@@ -71,6 +84,18 @@ const PostDetail = () => {
         <_allArea>
             {onePageData && onePageData.length > 0 && (
                 <_content>
+                    <_moveToGallery
+                        onClick={() => {
+                            navigate(
+                                `/board/${onePageData[0]?.board.boardName}`,
+                            );
+                        }}
+                    >
+                        <span style={{ fontSize: '10px' }}>
+                            {onePageData[0]?.board.boardName}으로 이동{' '}
+                        </span>
+                        <FaArrowRight style={{ fontSize: '10px' }} />
+                    </_moveToGallery>
                     <_postTitle>{onePageData[0]?.title}</_postTitle>
                     <_rightSide>
                         <_writer>
@@ -82,7 +107,10 @@ const PostDetail = () => {
                                         width: '30px',
                                         height: '30px',
                                     }}
-                                    src={onePageData[0]?.user?.profileImg}
+                                    src={
+                                        onePageData[0]?.user?.profileImg ||
+                                        Mascot
+                                    }
                                 ></img>
                             </div>
                         </_writer>
@@ -160,7 +188,7 @@ const PostDetail = () => {
                                 style={{ color: 'red', fontSize: '36px' }}
                             />
                             <div style={{ color: 'red' }}>
-                                {onePageData[0]?.dislikeCount}
+                                {onePageData[0]?.likeCount}
                             </div>
                             좋아요
                         </_likeBox>
@@ -251,6 +279,12 @@ const PostDetail = () => {
         </_allArea>
     );
 };
+
+const _moveToGallery = styled.div`
+    margin-bottom: 20px;
+    text-align: end;
+    cursor: pointer;
+`;
 
 const _copiedAlert = styled.div`
     text-align: center;
@@ -461,13 +495,12 @@ const _likeLine = styled.div`
 const _likeBox = styled.div`
     width: 80px;
     height: 80px;
-    border: 1px solid black;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     margin: 5px;
-    cursor: pointer;
+    border-radius: 10px;
 `;
 
 export { PostDetail };

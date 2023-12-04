@@ -90,8 +90,6 @@ const _cardLike = styled.div`
 const _cardInst = styled.div`
     width: 100%;
     display: flex;
-    /* align-items: start;
-    justify-content: start; */
     margin-top: 5px;
 `;
 
@@ -129,37 +127,20 @@ const _cardFooterSection = styled.div`
 const GalleryStyle = () => {
     let path = useLocation();
     const {
-        detailModalOn,
-        setDetailModalOn,
-        onePageData,
         setOnePageData,
+        setSignal,
         signal,
         orderKind,
         setOrderKind,
+        galleryData,
+        setGalleryData,
+        isKeywordExsist,
+        selectedOption,
+        searchCount,
+        setSearchCount,
     } = BoardStore();
-    const [galleryData, setGalleryData] = useState<any>([]);
     const [reference, inView] = useInView();
-    const [loadedData, setLoadedData] = useState<any>([]);
-    const [getCount, setGetCount] = useState(1);
-    const [stop, setStop] = useState(false);
-    // const dataGenerate = () => {
-    //     let addArr: any = [];
-    //     let tempStop = stop;
-    //     for (let i = 12 * getCount; i < 12 * (getCount + 1); i++) {
-    //         if (sampledb[i]) {
-    //             addArr.push(sampledb[i]);
-    //         } else {
-    //             if (tempStop == false) {
-    //                 addArr.push({ status: 'dummy' });
-    //                 tempStop = true;
-    //                 setStop(true);
-    //             }
-    //         }
-    //     }
-    //     console.log(addArr);
-    //     setLoadedData((prevState: any) => prevState.concat(addArr));
-    //     setGetCount((prevState: any) => prevState + 1);
-    // };
+    const [getCount, setGetCount] = useState(0);
 
     const dataGenerate = async () => {
         let whichType = '';
@@ -171,107 +152,85 @@ const GalleryStyle = () => {
                 path.pathname.split('/')[2]
             }?page=1&order=${whichType}`,
         });
-        console.log(res);
-        setGalleryData([res.data]);
+        setGalleryData(res.data.posts);
         setGetCount(getCount + 1);
+        setSignal(false);
     };
 
-    const dataGenerate2 = async () => {
+    const dataGenerate2 = async (counter: number) => {
         let whichType = '';
         if (orderKind === false) whichType = 'latest';
         else whichType = 'views';
-        let res = await axios({
-            method: 'get',
-            url: `http://localhost:8080/boards/${
-                path.pathname.split('/')[2]
-            }?page=${getCount}&order=${whichType}`,
-        });
-
-        console.log(res.data);
-        if (getCount == 1) {
-            setGalleryData([res.data]);
-            setGetCount(getCount + 1);
+        let res;
+        if (isKeywordExsist.length > 0) {
+            res = await axios({
+                method: 'get',
+                url: `http://localhost:8080/boards/search/${
+                    path.pathname.split('/')[2]
+                }?keyword=${isKeywordExsist}&searchType=${selectedOption}&order=${whichType}&pageSize=${12}&page=${
+                    searchCount + 1
+                }`,
+            });
+            setSearchCount(searchCount + 1);
         } else {
-            let renew = galleryData[0];
-            renew.posts = renew.posts.concat(res.data.posts);
-            setGalleryData([renew]);
-            setGetCount(getCount + 1);
+            res = await axios({
+                method: 'get',
+                url: `http://localhost:8080/boards/${
+                    path.pathname.split('/')[2]
+                }?page=${counter}&order=${whichType}`,
+            });
+            setGetCount(counter);
         }
+        // console.log(counter);
+        setGalleryData([...galleryData, ...res.data.posts]);
+    };
+
+    const dataGenerate3 = async () => {
+        let whichType = '';
+        if (orderKind === false) whichType = 'latest';
+        else whichType = 'views';
+        let res;
+        if (isKeywordExsist.length > 0) {
+            res = await axios({
+                method: 'get',
+                url: `http://localhost:8080/boards/search/${
+                    path.pathname.split('/')[2]
+                }?keyword=${isKeywordExsist}&searchType=${selectedOption}&order=${whichType}&pageSize=${12}&page=1`,
+            });
+            console.log(whichType);
+        } else {
+            res = await axios({
+                method: 'get',
+                url: `http://localhost:8080/boards/${
+                    path.pathname.split('/')[2]
+                }?page=1&order=${whichType}`,
+            });
+        }
+        setGalleryData(res.data.posts);
+        setGetCount(1);
+        setSearchCount(1);
     };
 
     useEffect(() => {
         if (inView) {
-            dataGenerate2();
+            dataGenerate2(getCount + 1);
         }
     }, [inView]);
 
     const getOnePost = async (id: number) => {
-        console.log(id);
         let res = await axios({
             method: 'get',
             url: `http://localhost:8080/boards/posts/${id}`,
         });
-
-        console.log(res);
         setOnePageData([res.data]);
+    };
 
-        // const tempData: any = [
-        //   {
-        //     id: id,
-        //     profileImg: fox,
-        //     title:
-        //       "ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ",
-        //     writer: "여우여우여우여우여우여우여우여우여우",
-        //     date: "2023-11-21 02:23",
-        //     likes: 12,
-        //     views: 121,
-        //     content:
-        //       "일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다일단은사실확인이다v",
-        //     comments: [
-        //       {
-        //         id: 1,
-        //         writer: "늑대",
-        //         date: "2023-11-21 02:25",
-        //         content: "뭐래씹",
-        //         childCommentsList: [
-        //           {
-        //             id: 1,
-        //             writer: "늑대",
-        //             date: "2023-11-21 02:25",
-        //             content: "뭐래씹",
-        //           },
-        //           {
-        //             id: 2,
-        //             writer: "늑대",
-        //             date: "2023-11-21 02:25",
-        //             content: "걍뒤져",
-        //           },
-        //         ],
-        //       },
-        //       {
-        //         id: 2,
-        //         writer: "늑대",
-        //         date: "2023-11-21 02:25",
-        //         content: "걍뒤져",
-        //         childCommentsList: [
-        //           {
-        //             id: 1,
-        //             writer: "늑대늑대늑대늑대늑대늑대늑대늑대",
-        //             date: "2023-11-21 02:25",
-        //             content: "뭐래씹",
-        //           },
-        //           {
-        //             id: 2,
-        //             writer: "늑대",
-        //             date: "2023-11-21 02:25",
-        //             content: "걍뒤져",
-        //           },
-        //         ],
-        //       },
-        //     ],
-        //   },
-        // ];
-        // setOnePageData(tempData);
+    const plusView = async (postId: any) => {
+        let res = await axios({
+            method: 'post',
+            url: `http://localhost:8080/boards/posts/increaseViews/${postId}`,
+        });
+        getOnePost(postId);
     };
 
     const thumbnailPicker = (imageArr: any) => {
@@ -286,89 +245,96 @@ const GalleryStyle = () => {
     };
 
     useEffect(() => {
-        console.log(onePageData);
-        if (onePageData.length > 0) {
-            setDetailModalOn(true);
+        if (signal == true) {
+            dataGenerate();
         }
-    }, [onePageData]);
-
-    useEffect(() => {
-        dataGenerate();
     }, [signal]);
 
     useEffect(() => {
-        dataGenerate();
+        dataGenerate3();
     }, [orderKind]);
+
+    // useEffect(() => {
+    //     if (isKeywordExsist.length > 0) {
+    //         setSearchCount(1);
+    //     }
+    // }, [isKeywordExsist]);
 
     return (
         <_allArea>
             <BoardUpperPart></BoardUpperPart>
             <_cardContainer>
-                {galleryData[0]?.posts?.map((x: any) => {
-                    return !x.status ? (
-                        <div>
-                            <_cardBox
-                                onClick={() => {
-                                    getOnePost(x.postId);
-                                }}
-                            >
-                                <_cardLike>
-                                    <FontAwesomeIcon icon={faHeart} />
-                                    {x.likeCount}
-                                </_cardLike>
-                                <_cardDisplay>
-                                    <_card
-                                        id="img"
-                                        src={thumbnailPicker(x.postImages)}
-                                    />
-                                </_cardDisplay>
-                                <_cardInst>
-                                    <_cardLeft>
-                                        <_cardProfileImg
-                                            src={x.user.profileImg || Mascot}
-                                        ></_cardProfileImg>
-                                    </_cardLeft>
-                                    <_cardRight>
-                                        <_cardTitle id="title">
-                                            {x.title}
-                                        </_cardTitle>
-                                        <_cardWriter>
-                                            {x.user.nickname
-                                                ? x.user.nickname
-                                                : '미정'}
-                                        </_cardWriter>
-                                    </_cardRight>
-                                </_cardInst>
-                                <_cardFooter>
-                                    <_cardFooterSection>
-                                        <img
-                                            style={{ width: '15px' }}
-                                            src={eyes}
-                                        ></img>
-                                        {x.views}
-                                    </_cardFooterSection>
-                                    <_cardFooterSection>
-                                        <FaRegComment
-                                            style={{
-                                                fontSize: '12px',
-                                                marginTop: '5px',
-                                            }}
+                {galleryData &&
+                    galleryData.map((x: any) => {
+                        return (
+                            <div>
+                                <_cardBox
+                                    onClick={() => {
+                                        plusView(x.postId);
+                                    }}
+                                >
+                                    <_cardLike>
+                                        <FontAwesomeIcon icon={faHeart} />
+                                        {x.likeCount}
+                                    </_cardLike>
+                                    <_cardDisplay>
+                                        <_card
+                                            id="img"
+                                            src={thumbnailPicker(x.postImages)}
                                         />
-                                        {x.commentCount}
-                                    </_cardFooterSection>
-                                </_cardFooter>
-                            </_cardBox>
-                        </div>
-                    ) : (
-                        <div
-                            style={{
-                                width: '300px',
-                                height: '320px',
-                                margin: '20px',
-                            }}
-                        ></div>
-                    );
-                })}
+                                    </_cardDisplay>
+                                    <_cardInst>
+                                        <_cardLeft>
+                                            <_cardProfileImg
+                                                src={
+                                                    x?.user?.profileImg
+                                                        ? x?.user?.profileImg
+                                                        : Mascot
+                                                }
+                                            ></_cardProfileImg>
+                                        </_cardLeft>
+                                        <_cardRight>
+                                            <_cardTitle id="title">
+                                                {x.title}
+                                            </_cardTitle>
+                                            <_cardWriter>
+                                                {x?.user?.nickname
+                                                    ? x?.user?.nickname
+                                                    : '미정'}
+                                            </_cardWriter>
+                                        </_cardRight>
+                                    </_cardInst>
+                                    <_cardFooter>
+                                        <_cardFooterSection>
+                                            <img
+                                                style={{ width: '15px' }}
+                                                src={eyes}
+                                            ></img>
+                                            {x.views}
+                                        </_cardFooterSection>
+                                        <_cardFooterSection>
+                                            <FaRegComment
+                                                style={{
+                                                    fontSize: '12px',
+                                                    marginTop: '5px',
+                                                }}
+                                            />
+                                            {x.commentCount}
+                                        </_cardFooterSection>
+                                    </_cardFooter>
+                                </_cardBox>
+                            </div>
+                        );
+                        // : (
+                        //     <div
+                        //         style={{
+                        //             width: '300px',
+                        //             height: '320px',
+                        //             margin: '20px',
+                        //         }}
+                        //     ></div>
+                        // );
+                    })}
             </_cardContainer>
             <div ref={reference}>더보기</div>
         </_allArea>

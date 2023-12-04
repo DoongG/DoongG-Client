@@ -26,7 +26,11 @@ function Modal() {
     const [tags, setTags] = useState<any>([]);
     const [images, setImages] = useState<any>([]);
     const [inputImage, setInputImage] = useState<any>(null);
+    const [token, setToken] = useState<string | null>('');
 
+    useEffect(() => {
+        setToken(localStorage.getItem('token'));
+    }, []);
     const handleTitleChange = (e: any) => {
         setTitle(e.currentTarget.value);
     };
@@ -155,11 +159,14 @@ function Modal() {
             method: 'post',
             url: `http://localhost:8080/boardsAuth/createPost`,
             data: data,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         });
         console.log(res);
         if (res.status == 201) {
             alert('글 작성 성공!');
-            setSignal(!signal);
+            setSignal(true);
             setPostModalOn(!postModalOn);
         }
         setTitle('');
@@ -190,11 +197,18 @@ function Modal() {
 
     const imageDelete = (type: any, id: any, url: any) => {
         let temp = [];
+        let typeCheck = [];
         for (let i = 0; i < images.length; i++) {
             console.log(images[i].description);
             console.log(id);
             if (images[i].description !== id) {
                 temp.push(images[i]);
+                typeCheck.push(images[i].imageType);
+            }
+        }
+        if (!typeCheck.includes('thumbnail')) {
+            if (temp.length > 0) {
+                temp[0].imageType = 'thumbnail';
             }
         }
         if (myRef.current) {
@@ -450,7 +464,7 @@ const _modalContainer = styled.div`
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 10001;
+    z-index: 4999;
 `;
 
 const _dialogBox = styled.dialog`
@@ -464,7 +478,7 @@ const _dialogBox = styled.dialog`
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;
     background-color: white;
-    z-index: 10000;
+    z-index: 4998;
     overflow: hidden;
     margin-top: -100px;
 `;
@@ -474,7 +488,7 @@ const _backdrop = styled.div`
     height: 100vh;
     position: fixed;
     top: 0;
-    z-index: 9999;
+    z-index: 4997;
     background-color: rgba(0, 0, 0, 0.2);
 `;
 

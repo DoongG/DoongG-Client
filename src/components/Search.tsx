@@ -2,14 +2,90 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { IoIosClose } from 'react-icons/io';
+import axios from 'axios';
+import { BoardStore } from '../store/storeT';
+import { useLocation, useNavigate } from 'react-router';
 
+const EmptySearchBalloon = styled.div`
+    position: absolute;
+    font-size: 10px;
+    background-color: #ffe066;
+    color: #333;
+    padding: 8px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    animation: fadeOut 4s linear;
+    top: -20px;
+    right: 140px;
+
+    @keyframes fadeOut {
+        0% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+        }
+    }
+`;
+
+const IoIosCloseStyled = styled(IoIosClose)`
+    cursor: pointer;
+    margin-left: 4px;
+    &:hover {
+        color: red; // Optional: Change color on hover
+    }
+`;
+
+const HashTagBox = styled.div`
+    @font-face {
+        font-family: 'omyu_pretty';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2')
+            format('woff2');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'omyu_pretty';
+    display: flex;
+    padding: 0 0 0 2px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 20px;
+    border: 2px solid #daddb1;
+    border-radius: 10px;
+    background-color: #daddb1;
+    margin-top: 3px;
+
+    // Add this part to include the close icon with onClick event
+    > ${IoIosCloseStyled} {
+        cursor: pointer;
+        margin-left: 4px;
+        &:hover {
+            color: red;
+        }
+    }
+`;
 const Search = () => {
-    const [selectedOption, setSelectedOption] = useState('All');
+    const location = useLocation();
+    const navigate = useNavigate();
+    const boardName = location.pathname.split('/')[2];
     const [inputHashTag, setInputHashTag] = useState('');
     const [hashTags, setHashTags] = useState<string[]>([]);
     const [hashTagBoxes, setHashTagBoxes] = useState<JSX.Element[]>([]);
 
     const [showEmptySearchBalloon, setShowEmptySearchBalloon] = useState(false);
+    const {
+        setGalleryData,
+        setListData,
+        styleSwitch,
+        isKeywordExsist,
+        setIsKeywordExsist,
+        selectedOption,
+        setSelectedOption,
+        setOrderKind,
+        setSearchCount,
+        setBoardPostCount,
+    } = BoardStore();
 
     useEffect(() => {
         let timeoutId: NodeJS.Timeout;
@@ -23,47 +99,61 @@ const Search = () => {
         return () => clearTimeout(timeoutId);
     }, [showEmptySearchBalloon]);
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
+        setSearchCount(1);
         const inputElement = document.querySelector('.input_search');
         if (inputElement) {
             const inputValue = (inputElement as HTMLInputElement).value;
+            setIsKeywordExsist(inputValue);
             if (inputValue === '') {
                 setShowEmptySearchBalloon(true);
             } else {
                 // 성공시 로직 작성
+                let res = await axios({
+                    method: 'get',
+                    url: `http://localhost:8080/boards/search/${boardName}?keyword=${inputValue}&searchType=${selectedOption}&order=latest&pageSize=12&page=1`,
+                });
+                console.log(res.data);
+                if (styleSwitch == true) {
+                    setOrderKind(false);
+                    setGalleryData(res.data.posts);
+                } else {
+                    if (location.pathname.includes('search')) {
+                        navigate(
+                            `/boards/search/${
+                                location.pathname.split('/')[3]
+                            }?keyword=${inputValue}&page=${1}&order=latest`,
+                        );
+                    } else {
+                        navigate(
+                            `/boards/search/${
+                                location.pathname.split('/')[2]
+                            }?keyword=${inputValue}&page=${1}&order=latest`,
+                        );
+                    }
+
+                    setOrderKind(false);
+                    setListData(res.data.posts);
+                    setBoardPostCount(res.data.postCount);
+                }
             }
         }
     };
-    const EmptySearchBalloon = styled.div`
-        position: absolute;
-        font-size: 10px;
-        background-color: #ffe066;
-        color: #333;
-        padding: 8px;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        animation: fadeOut 4s linear;
-        top: -20px;
-        right: 140px;
-
-        @keyframes fadeOut {
-            0% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0;
-            }
-        }
-    `;
 
     // 해시태그 지우기
     const removeHashTag = (removedTag: string) => {
-        setHashTags((prevHashTags) => prevHashTags.filter((tag) => tag !== removedTag));
-        setHashTagBoxes((prevBoxes) => prevBoxes.filter((box) => box.key !== removedTag));
+        setHashTags((prevHashTags) =>
+            prevHashTags.filter((tag) => tag !== removedTag),
+        );
+        setHashTagBoxes((prevBoxes) =>
+            prevBoxes.filter((box) => box.key !== removedTag),
+        );
     };
 
     // 해시태그 선택
-    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleSelectChange = (
+        event: React.ChangeEvent<HTMLSelectElement>,
+    ) => {
         setSelectedOption(event.target.value);
 
         // 초기화
@@ -72,43 +162,6 @@ const Search = () => {
             setHashTagBoxes([]);
         }
     };
-
-    const IoIosCloseStyled = styled(IoIosClose)`
-        cursor: pointer;
-        margin-left: 4px;
-        &:hover {
-            color: red; // Optional: Change color on hover
-        }
-    `;
-
-    const HashTagBox = styled.div`
-        @font-face {
-            font-family: 'omyu_pretty';
-            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-        }
-        font-family: 'omyu_pretty';
-        display: flex;
-        padding: 0 0 0 2px;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 20px;
-        border: 2px solid #daddb1;
-        border-radius: 10px;
-        background-color: #daddb1;
-        margin-top: 3px;
-
-        // Add this part to include the close icon with onClick event
-        > ${IoIosCloseStyled} {
-            cursor: pointer;
-            margin-left: 4px;
-            &:hover {
-                color: red;
-            }
-        }
-    `;
 
     // 해시태그 입력 제한 개수
     const maxHashTagCount = 10;
@@ -191,10 +244,14 @@ const Search = () => {
         <_SearchSection>
             <_SearchBox>
                 <_InputContainer>
-                    <_SelectOptionBox value={selectedOption} onChange={handleSelectChange}>
-                        <_SelectOption value="All">전체</_SelectOption>
-                        <_SelectOption value="Title">제목</_SelectOption>
-                        <_SelectOption value="Writer">작성자</_SelectOption>
+                    <_SelectOptionBox
+                        value={selectedOption}
+                        onChange={handleSelectChange}
+                    >
+                        <_SelectOption value="full">전체</_SelectOption>
+                        <_SelectOption value="title">제목</_SelectOption>
+                        <_SelectOption value="content">내용</_SelectOption>
+                        <_SelectOption value="author">작성자</_SelectOption>
                         <_SelectOption value="HashTag">해쉬태그</_SelectOption>
                     </_SelectOptionBox>
                     {selectedOption === 'HashTag' ? (
@@ -203,18 +260,33 @@ const Search = () => {
                                 {hashTagBoxes.map((box) =>
                                     // Add onClick event to the IoIosClose component
                                     React.cloneElement(box, {
-                                        onClick: () => box.key && removeHashTag(box.key),
-                                    })
+                                        onClick: () =>
+                                            box.key && removeHashTag(box.key),
+                                    }),
                                 )}
                             </_HashTagBoxesContainer>
-                            <_InputHashTag value={inputHashTag} onChange={changeHashTagInput} onKeyUp={addHashTag} onKeyDown={keyDownHandler} placeholder="#해시태그(최대 10개) 스페이스바 또는 ,(콤마)로 입력 가능합니다" className="hashTagInput" />
+                            <_InputHashTag
+                                value={inputHashTag}
+                                onChange={changeHashTagInput}
+                                onKeyUp={addHashTag}
+                                onKeyDown={keyDownHandler}
+                                placeholder="#해시태그(최대 10개) 스페이스바 또는 ,(콤마)로 입력 가능합니다"
+                                className="hashTagInput"
+                            />
                         </_HashSection>
                     ) : (
-                        <_InputSearch placeholder="검색어를 입력해주세요" className="input_search" />
+                        <_InputSearch
+                            placeholder="검색어를 입력해주세요"
+                            className="input_search"
+                        />
                     )}
                 </_InputContainer>
                 <_SearchButton onClick={handleSearch}>검색</_SearchButton>
-                {showEmptySearchBalloon && <EmptySearchBalloon>검색어를 입력해 주세요!!</EmptySearchBalloon>}
+                {showEmptySearchBalloon && (
+                    <EmptySearchBalloon>
+                        검색어를 입력해 주세요!!
+                    </EmptySearchBalloon>
+                )}
             </_SearchBox>
         </_SearchSection>
     );
@@ -274,7 +346,8 @@ const _InputSearch = styled.input`
 const _InputHashTag = styled.input`
     @font-face {
         font-family: 'omyu_pretty';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2')
+            format('woff2');
         font-weight: normal;
         font-style: normal;
     }
@@ -309,7 +382,8 @@ const HashTagBoxContainer = styled.div`
 const _SearchButton = styled.button`
     @font-face {
         font-family: 'MBC1961GulimM';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/MBC1961GulimM.woff2') format('woff2');
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/MBC1961GulimM.woff2')
+            format('woff2');
         font-weight: normal;
         font-style: normal;
     }

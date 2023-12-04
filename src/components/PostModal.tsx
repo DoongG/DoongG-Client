@@ -5,6 +5,7 @@ import { MdSubdirectoryArrowRight } from 'react-icons/md';
 import { CiShare2 } from 'react-icons/ci';
 import { IoIosHeart } from 'react-icons/io';
 import { TbHeart } from 'react-icons/tb';
+import { TbHeartFilled } from 'react-icons/tb';
 import { IoCopyOutline } from 'react-icons/io5';
 import { TbHeartBroken } from 'react-icons/tb';
 import eyes from '../assets/eyes.png';
@@ -50,7 +51,14 @@ const PostModal = () => {
     const [recommentContent, setRecommentContent] = useState('');
     const [commentUpdate, setCommentUpdate] = useState(false);
     const [commentUpdateContent, setCommentUpdateContent] = useState('');
+    const [token, setToken] = useState<string | null>('');
     const [liked, setLiked] = useState(false);
+    const [disliked, setDisLiked] = useState(false);
+
+    useEffect(() => {
+        setToken(localStorage.getItem('token'));
+    }, []);
+
     const share = (id: number) => {
         setShareBalloon(!shareBalloon);
     };
@@ -64,6 +72,9 @@ const PostModal = () => {
                 commenterId: 1,
                 //이거 로그인이랑 연동하면 수정
                 content: commentContent,
+            },
+            headers: {
+                Authorization: `Bearer ${token}`,
             },
         });
         alert('댓글작성 성공');
@@ -87,6 +98,9 @@ const PostModal = () => {
                 //이거 로그인이랑 연동하면 수정
                 content: recommentContent,
             },
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         });
         alert('대댓글작성 성공');
         let res2 = await axios({
@@ -99,8 +113,19 @@ const PostModal = () => {
         setRecommentContent('');
     };
 
+    const getLikeHateStatus = async () => {
+        let res = await axios({
+            method: 'get',
+            url: `http://localhost:8080/boards/getReaction?postId=${
+                onePageData[0].postId
+            }&userId=${1}`,
+        });
+        setLiked(res.data.liked);
+        setDisLiked(res.data.disliked);
+    };
+
     useEffect(() => {
-        console.log(onePageData[0].comments);
+        getLikeHateStatus();
         let newData = onePageData[0];
 
         for (let i = 0; i < newData.comments.length; i++) {
@@ -121,8 +146,8 @@ const PostModal = () => {
                 }
             }
         }
-        console.log(newData.comments);
         setCommentsList(newData.comments);
+        setDetailModalOn(true);
     }, [onePageData]);
 
     const postDeleteComment = async (id: any, postId: any) => {
@@ -132,6 +157,9 @@ const PostModal = () => {
                 method: 'post',
                 url: `http://localhost:8080/boardsAuth/deleteComment/${id}`,
                 data: {},
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             });
             let res2 = await axios({
                 method: 'get',
@@ -160,6 +188,9 @@ const PostModal = () => {
                 commenterId: commenterId,
                 content: commentUpdateContent,
             },
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         });
         alert('수정되었습니다');
         let res2 = await axios({
@@ -178,9 +209,12 @@ const PostModal = () => {
                 method: 'post',
                 url: `http://localhost:8080/boardsAuth/deletePost/${postId}`,
                 data: {},
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             });
             alert('삭제되셨습니다');
-            setSignal(!signal);
+            setSignal(true);
             setDetailModalOn(false);
         }
     };
@@ -191,14 +225,18 @@ const PostModal = () => {
             url: `http://localhost:8080/boardsAuth/like`,
             data: {
                 postId: onePageData[0].postId,
-                userId: 1,
+                userId: 1, // 수정해야함
                 liked: true,
                 disliked: false,
             },
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         });
-        console.log(res);
-        if (res.data.liked == false) {
-        }
+        let copy = onePageData.slice(0);
+        copy[0].likeCount = res.data.likes;
+        setLiked(res.data.liked);
+        setOnePageData(copy);
     };
 
     const clickHate = async () => {
@@ -207,29 +245,19 @@ const PostModal = () => {
             url: `http://localhost:8080/boardsAuth/dislike`,
             data: {
                 postId: onePageData[0].postId,
-                userId: 1,
+                userId: 1, // 수정해야함
                 liked: true,
                 disliked: false,
             },
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         });
-        console.log(res);
+        let copy = onePageData.slice(0);
+        copy[0].dislikeCount = res.data.dislikes;
+        setDisLiked(res.data.disliked);
+        setOnePageData(copy);
     };
-
-    const reload = async () => {
-        let res2 = await axios({
-            method: 'get',
-            url: `http://localhost:8080/boards/posts/${onePageData[0]?.postId}`,
-        });
-        console.log(res2);
-
-        setOnePageData([res2.data]);
-    };
-
-    useEffect(() => {
-        if (updateModal == false) {
-            reload();
-        }
-    }, [updateModal]);
 
     return (
         <ModalContainer>
@@ -352,11 +380,17 @@ const PostModal = () => {
                                 clickLike();
                             }}
                         >
-                            <TbHeart
-                                style={{ color: 'red', fontSize: '36px' }}
-                            />
+                            {liked ? (
+                                <TbHeartFilled
+                                    style={{ color: 'red', fontSize: '36px' }}
+                                />
+                            ) : (
+                                <TbHeart
+                                    style={{ color: 'red', fontSize: '36px' }}
+                                />
+                            )}
                             <div style={{ color: 'red' }}>
-                                {onePageData[0]?.likeCount + 1}
+                                {onePageData[0]?.likeCount}
                             </div>
                             <p style={{ margin: 0, padding: 0 }}>좋아요</p>
                         </_likeBox>
@@ -366,266 +400,297 @@ const PostModal = () => {
                             }}
                         >
                             <TbHeartBroken style={{ fontSize: '36px' }} />
-                            <div>{onePageData[0]?.dislikeCount - 1}</div>
+                            <div>{onePageData[0]?.dislikeCount}</div>
                             <p style={{ margin: 0, padding: 0 }}>싫어요</p>
                             <div></div>
                         </_likeBox>
                     </_likeLine>
-                    <h4>댓글 {onePageData[0]?.comments.length}</h4>
-                    <_commentsList>
-                        <hr></hr>
-                        {commentsList.map((x: any, index: number) => {
-                            if (!x.parentCommentId) {
-                                return (
-                                    <div>
-                                        <_oneComment>
-                                            <_commentWriterLine>
-                                                <_eachCommentWriter>
-                                                    {x.commenter.nickname}
-                                                </_eachCommentWriter>
-                                                <_option>
-                                                    <_recomment
-                                                        onClick={() => {
-                                                            postUpdateComment(
-                                                                x.commentId,
-                                                                x?.content,
-                                                            );
-                                                        }}
-                                                    >
-                                                        수정
-                                                    </_recomment>
-                                                    <_recomment
-                                                        onClick={() => {
-                                                            setTargetComment(
-                                                                index,
-                                                            );
-                                                            setRecommentOn(
-                                                                true,
-                                                            );
-                                                        }}
-                                                    >
-                                                        답글
-                                                    </_recomment>
-                                                    {/* 로그인기능완성되면 이 버튼은 댓글작성자 본인에게만 보임 */}
-                                                    <_recomment
-                                                        onClick={() => {
-                                                            postDeleteComment(
-                                                                x.commentId,
-                                                                onePageData[0]
-                                                                    ?.postId,
-                                                            );
-                                                        }}
-                                                    >
-                                                        삭제
-                                                    </_recomment>
-                                                </_option>
-                                            </_commentWriterLine>
-                                            {commentUpdate &&
-                                            targetUpdateComment ==
-                                                x.commentId ? (
-                                                <div
-                                                    style={{ display: 'flex' }}
-                                                >
-                                                    <_recommentBox
-                                                        value={
-                                                            commentUpdateContent
-                                                        }
-                                                        onChange={(e) => {
-                                                            setCommentUpdateContent(
-                                                                e.target.value,
-                                                            );
-                                                        }}
-                                                    ></_recommentBox>
-                                                    <button
-                                                        onClick={() => {
-                                                            postUpdateCommentSend(
-                                                                x.commentId,
-                                                                x.commenter.id,
-                                                                onePageData[0]
-                                                                    ?.postId,
-                                                            );
-                                                        }}
-                                                    >
-                                                        수정
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <div>{x?.content}</div>
-                                            )}
+                    {onePageData[0].commentAllowed == 'true' && (
+                        <>
+                            <h4>댓글 {onePageData[0]?.comments.length}</h4>
+                            <_commentsList>
+                                <hr></hr>
+                                {commentsList.map((x: any, index: number) => {
+                                    if (!x.parentCommentId) {
+                                        return (
                                             <div>
-                                                {x.createdAt.slice(0, 10)}{' '}
-                                                {x.createdAt.slice(11, 16)}{' '}
-                                            </div>
-                                            {x.childCommentsList.map(
-                                                (y: any) => {
-                                                    console.log(x);
-                                                    return (
-                                                        <_recommentList>
-                                                            <MdSubdirectoryArrowRight />
-                                                            <div>
-                                                                <_commentWriterLine2>
-                                                                    <_eachCommentWriter>
-                                                                        {
-                                                                            y
-                                                                                .commenter
-                                                                                .nickname
-                                                                        }
-                                                                    </_eachCommentWriter>
-                                                                    {/* 로그인기능완성되면 이 버튼은 댓글작성자 본인에게만 보임 */}
+                                                <_oneComment>
+                                                    <_commentWriterLine>
+                                                        <_eachCommentWriter>
+                                                            {
+                                                                x.commenter
+                                                                    .nickname
+                                                            }
+                                                        </_eachCommentWriter>
+                                                        <_option>
+                                                            <_recomment
+                                                                onClick={() => {
+                                                                    postUpdateComment(
+                                                                        x.commentId,
+                                                                        x?.content,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                수정
+                                                            </_recomment>
+                                                            <_recomment
+                                                                onClick={() => {
+                                                                    setTargetComment(
+                                                                        index,
+                                                                    );
+                                                                    setRecommentOn(
+                                                                        true,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                답글
+                                                            </_recomment>
+                                                            {/* 로그인기능완성되면 이 버튼은 댓글작성자 본인에게만 보임 */}
+                                                            <_recomment
+                                                                onClick={() => {
+                                                                    postDeleteComment(
+                                                                        x.commentId,
+                                                                        onePageData[0]
+                                                                            ?.postId,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                삭제
+                                                            </_recomment>
+                                                        </_option>
+                                                    </_commentWriterLine>
+                                                    {commentUpdate &&
+                                                    targetUpdateComment ==
+                                                        x.commentId ? (
+                                                        <div
+                                                            style={{
+                                                                display: 'flex',
+                                                            }}
+                                                        >
+                                                            <_recommentBox
+                                                                value={
+                                                                    commentUpdateContent
+                                                                }
+                                                                onChange={(
+                                                                    e,
+                                                                ) => {
+                                                                    setCommentUpdateContent(
+                                                                        e.target
+                                                                            .value,
+                                                                    );
+                                                                }}
+                                                            ></_recommentBox>
+                                                            <button
+                                                                onClick={() => {
+                                                                    postUpdateCommentSend(
+                                                                        x.commentId,
+                                                                        x
+                                                                            .commenter
+                                                                            .id,
+                                                                        onePageData[0]
+                                                                            ?.postId,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                수정
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <div>{x?.content}</div>
+                                                    )}
+                                                    <div>
+                                                        {x.createdAt.slice(
+                                                            0,
+                                                            10,
+                                                        )}{' '}
+                                                        {x.createdAt.slice(
+                                                            11,
+                                                            16,
+                                                        )}{' '}
+                                                    </div>
+                                                    {x.childCommentsList.map(
+                                                        (y: any) => {
+                                                            console.log(x);
+                                                            return (
+                                                                <_recommentList>
+                                                                    <MdSubdirectoryArrowRight />
                                                                     <div
                                                                         style={{
-                                                                            display:
-                                                                                'flex',
+                                                                            marginLeft:
+                                                                                '5px',
                                                                         }}
                                                                     >
-                                                                        <_recomment
-                                                                            onClick={() => {
-                                                                                postUpdateComment(
-                                                                                    y.commentId,
-                                                                                    y?.content,
-                                                                                );
-                                                                            }}
-                                                                        >
-                                                                            수정
-                                                                        </_recomment>
-                                                                        <_recomment
-                                                                            onClick={() => {
-                                                                                postDeleteComment(
-                                                                                    y.commentId,
-                                                                                    onePageData[0]
-                                                                                        ?.postId,
-                                                                                );
-                                                                            }}
-                                                                        >
-                                                                            삭제
-                                                                        </_recomment>
-                                                                    </div>
-                                                                </_commentWriterLine2>
-                                                                {commentUpdate &&
-                                                                targetUpdateComment ==
-                                                                    y.commentId ? (
-                                                                    <div
-                                                                        style={{
-                                                                            display:
-                                                                                'flex',
-                                                                        }}
-                                                                    >
-                                                                        <_recommentBox
-                                                                            value={
-                                                                                commentUpdateContent
-                                                                            }
-                                                                            onChange={(
-                                                                                e,
-                                                                            ) => {
-                                                                                setCommentUpdateContent(
-                                                                                    e
-                                                                                        .target
-                                                                                        .value,
-                                                                                );
-                                                                            }}
-                                                                        ></_recommentBox>
-                                                                        <button
-                                                                            onClick={() => {
-                                                                                postUpdateCommentSend(
-                                                                                    y.commentId,
+                                                                        <_commentWriterLine2>
+                                                                            <_eachCommentWriter>
+                                                                                {
                                                                                     y
                                                                                         .commenter
-                                                                                        .id,
-                                                                                    onePageData[0]
-                                                                                        ?.postId,
-                                                                                );
-                                                                            }}
-                                                                        >
-                                                                            수정
-                                                                        </button>
+                                                                                        .nickname
+                                                                                }
+                                                                            </_eachCommentWriter>
+                                                                            {/* 로그인기능완성되면 이 버튼은 댓글작성자 본인에게만 보임 */}
+                                                                            <div
+                                                                                style={{
+                                                                                    display:
+                                                                                        'flex',
+                                                                                }}
+                                                                            >
+                                                                                <_recomment
+                                                                                    onClick={() => {
+                                                                                        postUpdateComment(
+                                                                                            y.commentId,
+                                                                                            y?.content,
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    수정
+                                                                                </_recomment>
+                                                                                <_recomment
+                                                                                    onClick={() => {
+                                                                                        postDeleteComment(
+                                                                                            y.commentId,
+                                                                                            onePageData[0]
+                                                                                                ?.postId,
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    삭제
+                                                                                </_recomment>
+                                                                            </div>
+                                                                        </_commentWriterLine2>
+                                                                        {commentUpdate &&
+                                                                        targetUpdateComment ==
+                                                                            y.commentId ? (
+                                                                            <div
+                                                                                style={{
+                                                                                    display:
+                                                                                        'flex',
+                                                                                }}
+                                                                            >
+                                                                                <_recommentBox
+                                                                                    value={
+                                                                                        commentUpdateContent
+                                                                                    }
+                                                                                    onChange={(
+                                                                                        e,
+                                                                                    ) => {
+                                                                                        setCommentUpdateContent(
+                                                                                            e
+                                                                                                .target
+                                                                                                .value,
+                                                                                        );
+                                                                                    }}
+                                                                                ></_recommentBox>
+                                                                                <button
+                                                                                    onClick={() => {
+                                                                                        postUpdateCommentSend(
+                                                                                            y.commentId,
+                                                                                            y
+                                                                                                .commenter
+                                                                                                .id,
+                                                                                            onePageData[0]
+                                                                                                ?.postId,
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    수정
+                                                                                </button>
+                                                                            </div>
+                                                                        ) : (
+                                                                            <div>
+                                                                                {
+                                                                                    y.content
+                                                                                }
+                                                                            </div>
+                                                                        )}
+                                                                        <div>
+                                                                            {y.createdAt.slice(
+                                                                                0,
+                                                                                10,
+                                                                            )}{' '}
+                                                                            {y.createdAt.slice(
+                                                                                11,
+                                                                                16,
+                                                                            )}{' '}
+                                                                        </div>
                                                                     </div>
-                                                                ) : (
-                                                                    <div>
-                                                                        {
-                                                                            y.content
-                                                                        }
-                                                                    </div>
-                                                                )}
-                                                                <_date>
-                                                                    {y.createdAt.slice(
-                                                                        0,
-                                                                        10,
-                                                                    )}{' '}
-                                                                    {y.createdAt.slice(
-                                                                        11,
-                                                                        16,
-                                                                    )}{' '}
-                                                                </_date>
-                                                            </div>
-                                                        </_recommentList>
-                                                    );
-                                                },
-                                            )}
-                                            {recommentOn &&
-                                            index == targetComment ? (
-                                                <_recommentSet>
-                                                    <MdSubdirectoryArrowRight />
-                                                    <_recommentBox
-                                                        value={recommentContent}
-                                                        onChange={(e) => {
-                                                            setRecommentContent(
-                                                                e.currentTarget
-                                                                    .value,
+                                                                </_recommentList>
                                                             );
-                                                        }}
-                                                        placeholder="답글쓰기"
-                                                    ></_recommentBox>
-                                                    <button
-                                                        onClick={() => {
-                                                            postRecomment(
-                                                                x.commentId,
-                                                                onePageData[0]
-                                                                    ?.postId,
-                                                            );
-                                                        }}
-                                                    >
-                                                        작성
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            setRecommentOn(
-                                                                !recommentOn,
-                                                            );
-                                                        }}
-                                                    >
-                                                        취소
-                                                    </button>
-                                                </_recommentSet>
-                                            ) : null}
-                                        </_oneComment>
-                                        <hr></hr>
-                                    </div>
-                                );
-                            }
-                        })}
-                    </_commentsList>
-                    <_commentArea>
-                        <_commentWriter>
-                            여우님
-                            <_comment
-                                onClick={() => {
-                                    postComment(onePageData[0]?.postId);
-                                }}
-                            >
-                                작성
-                            </_comment>
-                        </_commentWriter>
-                        <_commentContents
-                            value={commentContent}
-                            onChange={(e) => {
-                                setCommentContent(e.target.value);
-                            }}
-                        ></_commentContents>
-                    </_commentArea>
+                                                        },
+                                                    )}
+                                                    {recommentOn &&
+                                                    index == targetComment ? (
+                                                        <_recommentSet>
+                                                            <MdSubdirectoryArrowRight />
+                                                            <_recommentBox
+                                                                value={
+                                                                    recommentContent
+                                                                }
+                                                                onChange={(
+                                                                    e,
+                                                                ) => {
+                                                                    setRecommentContent(
+                                                                        e
+                                                                            .currentTarget
+                                                                            .value,
+                                                                    );
+                                                                }}
+                                                                placeholder="답글쓰기"
+                                                            ></_recommentBox>
+                                                            <button
+                                                                onClick={() => {
+                                                                    postRecomment(
+                                                                        x.commentId,
+                                                                        onePageData[0]
+                                                                            ?.postId,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                작성
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setRecommentOn(
+                                                                        !recommentOn,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                취소
+                                                            </button>
+                                                        </_recommentSet>
+                                                    ) : null}
+                                                </_oneComment>
+                                                <hr></hr>
+                                            </div>
+                                        );
+                                    }
+                                })}
+                            </_commentsList>
+                            <_commentArea>
+                                <_commentWriter>
+                                    여우님
+                                    <_comment
+                                        onClick={() => {
+                                            postComment(onePageData[0]?.postId);
+                                        }}
+                                    >
+                                        작성
+                                    </_comment>
+                                </_commentWriter>
+                                <_commentContents
+                                    value={commentContent}
+                                    onChange={(e) => {
+                                        setCommentContent(e.target.value);
+                                    }}
+                                ></_commentContents>
+                            </_commentArea>
+                        </>
+                    )}
                 </_content>
             </DialogBox>
             <Backdrop
                 onClick={() => {
+                    // setSignal(!signal);
                     setDetailModalOn(false);
                 }}
             />
@@ -672,7 +737,7 @@ const ModalContainer = styled.div`
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 10000;
+    z-index: 4998;
 `;
 
 const DialogBox = styled.dialog`
@@ -686,7 +751,7 @@ const DialogBox = styled.dialog`
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;
     background-color: white;
-    z-index: 10001;
+    z-index: 4999;
     margin-top: -100px;
 `;
 
@@ -695,7 +760,7 @@ const Backdrop = styled.div`
     height: 100vh;
     position: fixed;
     top: 0;
-    z-index: 9999;
+    z-index: 4997;
     background-color: rgba(0, 0, 0, 0.2);
 `;
 
@@ -870,7 +935,7 @@ const _likeLine = styled.div`
 const _likeBox = styled.div`
     width: 80px;
     height: 80px;
-    border: 1px solid black;
+    border: 1px solid #ccc;
     display: flex;
     flex-direction: column;
     justify-content: center;

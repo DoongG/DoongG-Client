@@ -14,10 +14,10 @@ const RecipeGenerator = () => {
         { id: 1, name: '' },
         { id: 3, name: '' },
     ]);
+    const [foodList, setFoodList] = useState<any>([]);
     const [titleWidth, setTitleWidth] = useState(30);
 
     const handleResize = () => {
-        console.log(window.innerWidth / 25);
         if (window.innerWidth / 10 < 45) {
             setTitleWidth(window.innerWidth / 10);
         }
@@ -32,21 +32,40 @@ const RecipeGenerator = () => {
             recipeMaterial.push(ingredients[i].name);
         }
         setGenerated(true);
-        // let res = await axios({
-        //     method: 'post',
-        //     url: 'http://localhost:8080/foodSearch',
-        //     data: {
-        //         ingredients: recipeMaterial,
-        //     },
-        // });
-        // console.log(res);
-        // setFlip(true);
+        let res = await axios({
+            method: 'post',
+            url: 'http://localhost:8080/food',
+            data: {
+                ingredients: recipeMaterial,
+            },
+        });
+        console.log(res);
+
+        let data = res.data;
+        let foodArr = [];
+        for (let i = 0; i < res.data.length; i++) {
+            foodArr.push({
+                name: res.data[i].rcp_NM,
+                url: res.data[i].att_FILE_NO_MAIN,
+            });
+        }
+        setFoodList(foodArr);
+        setFlip(true);
 
         setTimeout(() => {
             if (buttonRef.current) {
                 buttonRef.current.style.animation = 'none';
             }
         }, 1000);
+    };
+
+    const detailRequest = async (name: string) => {
+        let res = await axios({
+            method: 'get',
+            url: `http://localhost:8080/food/${name}`,
+        });
+
+        console.log(res);
     };
 
     useEffect(() => {
@@ -62,6 +81,16 @@ const RecipeGenerator = () => {
                 <_gameTitle style={{ fontSize: titleWidth + 'px' }}>
                     냉장고 요리사
                 </_gameTitle>
+                {flip && (
+                    <div
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                            setFlip(false);
+                        }}
+                    >
+                        돌아가기
+                    </div>
+                )}
                 {flip == false ? (
                     <>
                         {ingredients.map((x: any) => {
@@ -133,10 +162,50 @@ const RecipeGenerator = () => {
                         >
                             생성
                         </_generateButton>
-                        {generated && <div>안녕</div>}
                     </>
                 ) : (
-                    <div>죽어</div>
+                    <_generatedFoods>
+                        {foodList &&
+                            foodList.map((x: any) => {
+                                return (
+                                    <div
+                                        style={{
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        }}
+                                        onClick={() => {
+                                            detailRequest(x.name);
+                                        }}
+                                    >
+                                        <div
+                                            style={{
+                                                height: '300px',
+                                                width: '75%',
+                                            }}
+                                        >
+                                            <img
+                                                style={{
+                                                    height: '100%',
+                                                    width: '100%',
+                                                }}
+                                                src={x.url}
+                                            />
+                                        </div>
+                                        <div
+                                            style={{
+                                                fontSize: '40px',
+                                                marginBottom: '20px',
+                                            }}
+                                        >
+                                            {x.name}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                    </_generatedFoods>
                 )}
             </_dialogBox>
             <_backdrop
@@ -147,6 +216,11 @@ const RecipeGenerator = () => {
         </_modalContainer>
     );
 };
+
+const _generatedFoods = styled.div`
+    width: 80%;
+    padding: 20px;
+`;
 
 const _gameTitle = styled.div`
     font-weight: 600;
@@ -216,7 +290,7 @@ const _modalContainer = styled.div`
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 10001;
+    z-index: 4999;
 `;
 
 const _dialogBox = styled.dialog`
@@ -238,7 +312,7 @@ const _dialogBox = styled.dialog`
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;
     background-color: white;
-    z-index: 10000;
+    z-index: 4998;
     overflow: hidden;
     margin-top: -100px;
     overflow-y: auto;
@@ -252,7 +326,7 @@ const _backdrop = styled.div`
     height: 100vh;
     position: fixed;
     top: 0;
-    z-index: 9999;
+    z-index: 4997;
     background-color: rgba(0, 0, 0, 0.2);
 `;
 

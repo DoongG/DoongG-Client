@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, {
     Navigation,
@@ -13,6 +13,7 @@ import { BoardStore } from '../store/storeT';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import Mascot from '../assets/Mascot-removebg-preview.png';
 import { useLocation, useParams } from 'react-router';
 
 const _customSwiper = styled(Swiper)`
@@ -40,7 +41,6 @@ const _swiperWrapper = styled.div`
 `;
 
 const _cusomSwiperSlide = styled(SwiperSlide)`
-    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -65,133 +65,83 @@ const _cardTitle = styled.p`
 
 const _cardLike = styled.div`
     position: absolute;
-    margin-top: -180px;
-    margin-left: -80px;
+    margin-left: 10px;
     font-size: 25px;
     color: red;
 `;
 
 export default function ShoppingSlide() {
     let location = useLocation();
+    const prevRef = useRef(null);
+    const nextRef = useRef(null);
     const [specificBoard, setSpecificBoard] = useState('');
-    const tempdb = [
-        {
-            url: ramen,
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            url: ramen,
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            url: ramen,
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            url: ramen,
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            url: ramen,
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            url: ramen,
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            url: ramen,
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            url: ramen,
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            url: ramen,
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            url: ramen,
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            url: ramen,
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            url: ramen,
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            url: ramen,
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            url: ramen,
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-        {
-            url: ramen,
-            title: '미쳐버린개존맛라면레시피와이건히트다ㄹㅇ로',
-            comments: 12,
-            likes: 12,
-            visits: 121,
-        },
-    ];
+    const [carouselData, setCarouselData] = useState<any>([]);
+    const [prevDouble, setPrevDouble] = useState(true);
+    const [nextDouble, setNextDouble] = useState(true);
+    const { setDetailModalOn, setOnePageData, onePageData, signal } =
+        BoardStore();
 
     const getCarouselItems = async () => {
-        //   let res = await axios({
-        //     method: 'get',
-        //     url: `http://localhost:8080/boards/${
-        //         location.pathname.split('/')[2]
-        //     }?page=1&order=${whichType}`,
-        // });
+        console.log(location.pathname);
+        let res;
+        if (location.pathname.includes('search')) {
+            res = await axios({
+                method: 'get',
+                url: `http://localhost:8080/boards/topLiked/${
+                    location.pathname.split('/')[3]
+                }`,
+            });
+        } else {
+            res = await axios({
+                method: 'get',
+                url: `http://localhost:8080/boards/topLiked/${
+                    location.pathname.split('/')[2]
+                }`,
+            });
+        }
+        if (res) {
+            console.log(res.data);
+            setCarouselData(res.data);
+        }
     };
 
-    const { carousel, setCarousel } = BoardStore();
+    const thumbnailPicker = (imageArr: any) => {
+        if (imageArr) {
+            for (let i = 0; i < imageArr.length; i++) {
+                if (imageArr[i].imageType == 'thumbnail') {
+                    return imageArr[i].url;
+                }
+            }
+        }
+        return Mascot;
+    };
+
+    const getOnePage = async (postId: any) => {
+        let res = await axios({
+            method: 'get',
+            url: `http://localhost:8080/boards/posts/${postId}`,
+        });
+        setOnePageData([res.data]);
+    };
+
+    const plusView = async (postId: any) => {
+        let res = await axios({
+            method: 'post',
+            url: `http://localhost:8080/boards/posts/increaseViews/${postId}`,
+        });
+        getOnePage(postId);
+    };
+
+    useEffect(() => {
+        if (onePageData.length > 0) {
+            setDetailModalOn(true);
+        }
+    }, [onePageData]);
+
+    useEffect(() => {
+        getCarouselItems();
+    }, [signal]);
+
     return (
         <>
             <_swiperWrapper>
@@ -221,18 +171,31 @@ export default function ShoppingSlide() {
                         },
                     }}
                 >
-                    {carousel.map((x: any) => {
-                        return (
-                            <_cusomSwiperSlide>
-                                <_cardLike>
-                                    <FontAwesomeIcon icon={faHeart} />
-                                    {x.likes}
-                                </_cardLike>
-                                <_card src={x.url} />
-                                <_cardTitle>{x.title}</_cardTitle>
-                            </_cusomSwiperSlide>
-                        );
-                    })}
+                    {carouselData &&
+                        carouselData.map((x: any) => {
+                            return (
+                                <_cusomSwiperSlide>
+                                    <div
+                                        style={{
+                                            cursor: 'pointer',
+                                            position: 'relative',
+                                        }}
+                                        onClick={(e) => {
+                                            plusView(x.postId);
+                                        }}
+                                    >
+                                        <_cardLike>
+                                            <FontAwesomeIcon icon={faHeart} />
+                                            {x.likeCount}
+                                        </_cardLike>
+                                        <_card
+                                            src={thumbnailPicker(x.postImages)}
+                                        />
+                                        <_cardTitle>{x.title}</_cardTitle>
+                                    </div>
+                                </_cusomSwiperSlide>
+                            );
+                        })}
                 </_customSwiper>
             </_swiperWrapper>
         </>

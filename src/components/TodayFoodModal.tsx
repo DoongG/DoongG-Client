@@ -285,7 +285,7 @@ const _modalContainer = styled.div`
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 10001;
+    z-index: 4999;
 `;
 
 const _dialogBox = styled.dialog`
@@ -296,10 +296,10 @@ const _dialogBox = styled.dialog`
     align-items: center;
     border: none;
     border-radius: 3px;
-    box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
+    box-shadow: 0 0 30px hsla(0, 0%, 11.76470588235294%, 0.185);
     box-sizing: border-box;
     background-color: white;
-    z-index: 10000;
+    z-index: 4998;
     overflow: hidden;
     margin-top: -100px;
 `;
@@ -309,7 +309,7 @@ const _backdrop = styled.div`
     height: 100vh;
     position: fixed;
     top: 0;
-    z-index: 9999;
+    z-index: 4997;
     background-color: rgba(0, 0, 0, 0.2);
 `;
 
