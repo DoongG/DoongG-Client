@@ -140,7 +140,7 @@ const IntroduceHotdeal1 = () => {
                 container.removeEventListener('scroll', handleScroll);
             };
         }
-    }, []); // 의존성 배열 비움
+    }, []);
 
     return (
         <_MainSection ref={containerRef}>

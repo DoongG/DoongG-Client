@@ -486,7 +486,7 @@ const ModalContainer = styled.div`
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 1000;
+    z-index: 10001 !important;
 `;
 
 const DialogBox = styled.dialog`
@@ -500,7 +500,7 @@ const DialogBox = styled.dialog`
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;
     background-color: white;
-    z-index: 1000;
+    z-index: 10000 !important;
 `;
 
 const Backdrop = styled.div`
