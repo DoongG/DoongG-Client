@@ -88,11 +88,11 @@ const ShoppingDetailBuy = ({
     const onClickBuy = () => {
         axios
             .post(
-                'http://localhost:8080/userAuth/buy',
+                'http://3.38.68.222:8080/userAuth/order',
                 {
-                    productID: productId,
+                    productId: productId,
                     quantity: count,
-                    postNumber,
+                    postcode: postNumber,
                     address: postAddress + restAddressWatch,
                 },
                 {

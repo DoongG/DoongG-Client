@@ -4,6 +4,7 @@ import { RoomReviewWrite } from './RoomReviewWrite';
 import { RoomReviewWatch } from './RoomReviewWatch';
 import { IoIosSearch } from 'react-icons/io';
 import DaumPostcode from 'react-daum-postcode';
+import { FaLocationCrosshairs } from 'react-icons/fa6';
 
 import {
     useButtonStore,
@@ -49,18 +50,6 @@ const RoomReviewWriteMap = () => {
         count,
         setCount,
     } = useCenterLatLng();
-
-    // 인포 윈도우 내용
-    let iwContent = '<div style="padding:5px;">자취방 리뷰달기 </div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
-        iwPosition = new kakao.maps.LatLng(centerLat, centerLng),
-        iwRemoveable = true; //삭제 가능
-
-    // 인포윈도우를 생성합니다
-    var infowindow = new kakao.maps.InfoWindow({
-        position: iwPosition,
-        content: iwContent,
-        removable: iwRemoveable,
-    });
 
     // 현재 위치 위도,경도 값 가져오기
     useEffect(() => {
@@ -140,7 +129,6 @@ const RoomReviewWriteMap = () => {
     // 지도 클릭시 마커 생성 이벤트
     useEffect(() => {
         if (map) {
-            infowindow.open(map, marker);
             window.kakao.maps.event.addListener(
                 map,
                 'click',
@@ -158,8 +146,8 @@ const RoomReviewWriteMap = () => {
                                     ? result[0].road_address.address_name
                                     : result[0].address.address_name;
 
-                                setMylat(mouseEvent.latLng.getLat());
-                                setMylng(mouseEvent.latLng.getLng());
+                                // setMylat(mouseEvent.latLng.getLat());
+                                // setMylng(mouseEvent.latLng.getLng());
                                 setCenterLat(mouseEvent.latLng.getLat());
                                 setCenterLng(mouseEvent.latLng.getLng());
                                 setAddress(addr);
@@ -172,13 +160,10 @@ const RoomReviewWriteMap = () => {
 
                                 // 기존 마커를 제거하고 새로운 마커를 넣는다.
 
-                                infowindow.close();
-
                                 // 마커를 클릭한 위치에 표시합니다
                                 marker.setPosition(mouseEvent.latLng);
                                 marker.setMap(map);
                                 // 마커 위에 인포윈도우를 표시합니다. 두번째 파라미터인 marker를 넣어주지 않으면 지도 위에 표시됩니다
-                                infowindow.open(map, marker);
                             }
                         },
                     );
@@ -231,6 +216,7 @@ const RoomReviewWriteMap = () => {
                             result[0].y,
                             result[0].x,
                         );
+
                         setDaumAddress(data.address);
                         setAddress(data.address);
                         map.panTo(currentPos);
@@ -242,6 +228,37 @@ const RoomReviewWriteMap = () => {
                 },
             );
         }
+    };
+
+    // 현위치 이동 함수
+    const onhandleNowPlace = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                setMylat(position.coords.latitude);
+                setMylng(position.coords.longitude);
+                // 주소-좌표 변환 객체를 생성
+                var geocoder = new window.kakao.maps.services.Geocoder();
+                geocoder.coord2Address(
+                    position.coords.longitude,
+                    position.coords.latitude,
+                    (result: any, status: any) => {
+                        if (status === window.kakao.maps.services.Status.OK) {
+                            let addr = !!result[0].road_address
+                                ? result[0].road_address.address_name
+                                : result[0].address.address_name;
+                            setAddress(addr);
+                        }
+                    },
+                );
+            });
+        }
+        // 기존 마커를 제거하고 새로운 마커를 넣는다.
+        let currentPos = new window.kakao.maps.LatLng(mylat, mylng);
+        map.panTo(currentPos);
+        setMap(map);
+        marker.setMap(null);
+        marker.setPosition(currentPos);
+        marker.setMap(map);
     };
 
     return (
@@ -285,10 +302,27 @@ const RoomReviewWriteMap = () => {
                         )}
                     </_inputBox>
                 </_searchAddressInputBox>
+                <_nowIconBox className="nowIcon" onClick={onhandleNowPlace}>
+                    <FaLocationCrosshairs />
+                </_nowIconBox>
             </_kakaoMapWrapper>
         </>
     );
 };
+
+const _nowIconBox = styled.div`
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px rgb(28, 57, 61);
+    color: rgb(28, 57, 61);
+    top: 170px;
+    border: 1px solid #f8f9fa;
+    background-color: #f8f9fa;
+    font-size: 31px;
+    display: flex;
+    position: absolute;
+    right: 8px;
+    z-index: 2;
+`;
 
 const _kakaoMapWrapper = styled.div`
     width: 80%;
@@ -301,7 +335,7 @@ const _buttonWrapper = styled.div`
     right: 0px;
 `;
 const _buttonWrite = styled.button<Props>`
-    margin-right: 1px;
+    margin-right: 5px;
     padding: 5px 10px;
     border-radius: 5px;
     font-weight: 700;
@@ -313,7 +347,7 @@ const _buttonWrite = styled.button<Props>`
         props.button === true ? 'rgb(255, 202, 29)' : 'white'};
 `;
 const _buttonSee = styled.button<Props>`
-    margin-right: 1px;
+    margin-right: 5px;
     padding: 5px 10px;
     border-radius: 5px;
     font-weight: 700;
@@ -324,6 +358,7 @@ const _buttonSee = styled.button<Props>`
         props.button === true ? 'white' : 'rgb(255, 202, 29)'};
 `;
 const _searchAddressInputBox = styled.div`
+    box-shadow: 0px 0px 5px rgb(28, 57, 61);
     left: 16px;
     top: 10px;
     position: absolute;
