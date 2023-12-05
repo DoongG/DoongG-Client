@@ -70,7 +70,7 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
         console.log(token);
         axios
             .post(
-                'http://localhost:8080/roomRivewWrite',
+                'http://3.38.68.222/roomRivewWrite',
                 {
                     address: address,
                     content: content,

@@ -102,7 +102,7 @@ export default function ShoppingListTest() {
         const getAllProduct = async () => {
             try {
                 const res = await axios.get<ApiResponse, any>(
-                    'http://localhost:8080/shop/getAll',
+                    'http://3.38.68.222//shop/getAll',
                 );
                 console.log(res.data);
                 setAllProductList(res.data);
@@ -162,7 +162,7 @@ export default function ShoppingListTest() {
         const getResentProduct = async () => {
             try {
                 const res = await axios.get<ApiResponse, any>(
-                    `http://localhost:8080/shop/getAll/${category}`,
+                    `http://3.38.68.222/shop/getAll/${category}`,
                 );
                 console.log(res.data);
                 setAllProductList(res.data);
