@@ -11,6 +11,7 @@ import {
 } from '../store/shoppingHeaderSelectBarStore';
 import axios from 'axios';
 import DaumPostcode from 'react-daum-postcode';
+import { FaLocationCrosshairs } from 'react-icons/fa6';
 
 const { kakao } = window;
 declare global {
@@ -248,7 +249,6 @@ const RoomReviewWatchMap = () => {
     };
 
     // 주소 검색 후 지도 이동
-    // 주소 검색 후 지도 이동
     const onCompletePost = (data: any) => {
         setOpenPostModal(false);
         if (map) {
@@ -281,6 +281,38 @@ const RoomReviewWatchMap = () => {
             );
         }
     };
+    // 현위치 이동 함수
+    const onhandleNowPlace = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                setMylat(position.coords.latitude);
+                setMylng(position.coords.longitude);
+                // 주소-좌표 변환 객체를 생성
+                var geocoder = new window.kakao.maps.services.Geocoder();
+                geocoder.coord2Address(
+                    position.coords.longitude,
+                    position.coords.latitude,
+                    (result: any, status: any) => {
+                        if (status === window.kakao.maps.services.Status.OK) {
+                            let addr = !!result[0].road_address
+                                ? result[0].road_address.address_name
+                                : result[0].address.address_name;
+                            setAddress(addr);
+                        }
+                    },
+                );
+            });
+        }
+
+        // 기존 마커를 제거하고 새로운 마커를 넣는다.
+        let currentPos = new window.kakao.maps.LatLng(mylat, mylng);
+        map.panTo(currentPos);
+        setMap(map);
+        marker?.setMap(null);
+        marker?.setPosition(currentPos);
+        marker?.setMap(map);
+    };
+
     return (
         <>
             <_kakaoMapWrapper id="map">
@@ -322,11 +354,27 @@ const RoomReviewWatchMap = () => {
                         )}
                     </_inputBox>
                 </_searchAddressInputBox>
+                <_nowIconBox className="nowIcon" onClick={onhandleNowPlace}>
+                    <FaLocationCrosshairs />
+                </_nowIconBox>
             </_kakaoMapWrapper>
         </>
     );
 };
 
+const _nowIconBox = styled.div`
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px rgb(28, 57, 61);
+    color: rgb(28, 57, 61);
+    top: 170px;
+    border: 1px solid #f8f9fa;
+    background-color: #f8f9fa;
+    font-size: 31px;
+    display: flex;
+    position: absolute;
+    right: 8px;
+    z-index: 2;
+`;
 const _kakaoMapWrapper = styled.div`
     width: 80%;
     height: calc(100vh - 50px);
@@ -339,7 +387,7 @@ const _buttonWrapper = styled.div`
     right: 0px;
 `;
 const _buttonWrite = styled.button<Props>`
-    margin-right: 1px;
+    margin-right: 5px;
     padding: 5px 10px;
     border-radius: 5px;
     font-weight: 700;
@@ -351,7 +399,7 @@ const _buttonWrite = styled.button<Props>`
         props.button === true ? 'rgb(255, 202, 29)' : 'white'};
 `;
 const _buttonSee = styled.button<Props>`
-    margin-right: 1px;
+    margin-right: 5px;
     padding: 5px 10px;
     border-radius: 5px;
     font-weight: 700;
@@ -362,6 +410,7 @@ const _buttonSee = styled.button<Props>`
         props.button === true ? 'white' : 'rgb(255, 202, 29)'};
 `;
 const _searchAddressInputBox = styled.div`
+    box-shadow: 0px 0px 5px rgb(28, 57, 61);
     left: 16px;
     top: 10px;
     position: absolute;
