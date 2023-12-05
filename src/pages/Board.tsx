@@ -79,6 +79,8 @@ const Board = () => {
         setGalleryData,
         realBoardName,
         setRealBoardName,
+        isKeywordExsist,
+        setIsKeywordExsist,
     } = BoardStore();
 
     const getBoardData = async () => {
@@ -125,6 +127,7 @@ const Board = () => {
     }, [galleryType]);
 
     useEffect(() => {
+        setIsKeywordExsist('');
         setDetailModalOn(false);
     }, [styleSwitch]);
 
@@ -154,9 +157,20 @@ const Board = () => {
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <_switchButton
                             onClick={() => {
-                                navigate(
-                                    `/board/${location.pathname.split('/')[2]}`,
-                                );
+                                if (location.pathname.includes('search')) {
+                                    navigate(
+                                        `/board/${
+                                            location.pathname.split('/')[3]
+                                        }`,
+                                    );
+                                } else {
+                                    navigate(
+                                        `/board/${
+                                            location.pathname.split('/')[2]
+                                        }`,
+                                    );
+                                }
+
                                 setStyleSwitch(true);
                             }}
                         >
