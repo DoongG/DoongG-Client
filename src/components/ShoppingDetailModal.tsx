@@ -23,6 +23,7 @@ import {
 } from '../store/shoppingHeaderSelectBarStore';
 import { ShoppingDetailSelectBar } from './ShoppingDetailSelectBar';
 import { ShoppingDetailBuy } from './ShoppingDetailBuy';
+import Swal from 'sweetalert2';
 
 interface ShoppingDetailModalProps {
     category: string;
@@ -122,9 +123,19 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
             )
             .then(function (response) {
                 console.log(response);
+                Swal.fire({
+                    // title: 'The Internet?',
+                    text: '장바구니에 추가되었습니다.',
+                    icon: 'success',
+                });
             })
             .catch(function (error) {
-                console.log(error);
+                Swal.fire({
+                    text: '로그인 후 사용해주세요.',
+                    icon: 'error',
+                }).then(function () {
+                    window.location.href = '/';
+                });
             });
     };
 
@@ -333,7 +344,11 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
                             </_plus>
                         </_countBox>
                         <_buyBox className="buyBox">
-                            <_cart className="cart" onClick={onClickCartModal}>
+                            <_cart
+                                className="cart"
+                                id="success"
+                                onClick={onClickCartModal}
+                            >
                                 장바구니 담기
                             </_cart>
                             <_buy className="buy" onClick={onClickbuyModal}>
