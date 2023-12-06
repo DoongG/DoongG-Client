@@ -7,6 +7,7 @@ import originalImg from '../assets/Mascot.jpg';
 import axios from 'axios';
 import { S3 } from 'aws-sdk';
 import ReactS3Client from 'react-aws-s3-typescript';
+import { WhatIWrite } from './WhatIWrite';
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
@@ -14,6 +15,11 @@ interface ModalDefaultType {
 
 interface MyPageModalProps extends PropsWithChildren<ModalDefaultType> {
     user?: User;
+}
+interface Post {
+    postId: number;
+    title: string;
+    content: string;
 }
 
 function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
@@ -190,6 +196,31 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
         setPasswordChangeModalOpen(false);
     };
 
+    const [isWhatIWriteModalOpen, setWhatIWriteModalOpen] = useState(false);
+    const openWhatIWriteModal = () => {
+        setWhatIWriteModalOpen(true);
+        axios
+            .get<Post[]>('http://localhost:8080/userAuth/myPosts', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            .then((response) => {
+                const myPosts = response.data;
+
+                myPosts.forEach((post: Post) => {
+                    console.log(post.title);
+                    console.log(post.content);
+                });
+
+                setWhatIWritePosts(myPosts);
+            });
+    };
+    const [whatIWritePosts, setWhatIWritePosts] = useState<Post[]>([]);
+    const closeWhatIWriteModal = () => {
+        setWhatIWriteModalOpen(false);
+    };
+
     return (
         <ModalContainer>
             <DialogBox>
@@ -240,7 +271,9 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
                     </_ProfileSpesific>
                 </_ProfileSection>
                 <_ButtonHouse>
-                    <_StyledButton2>내가 쓴 게시물</_StyledButton2>
+                    <_StyledButton2 onClick={openWhatIWriteModal}>
+                        내가 쓴 게시물
+                    </_StyledButton2>
                     <_StyledButton2>좋아요</_StyledButton2>
                     <_StyledButton2>자취방 리뷰</_StyledButton2>
                     <_StyledButton2>장바구니</_StyledButton2>
@@ -259,6 +292,12 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
             {isPasswordChangeModalOpen && (
                 <PasswordChangeModal
                     onClickToggleModal={closePasswordChangeModal}
+                />
+            )}
+            {isWhatIWriteModalOpen && (
+                <WhatIWrite
+                    onClickToggleModal={closeWhatIWriteModal}
+                    posts={whatIWritePosts}
                 />
             )}
         </ModalContainer>

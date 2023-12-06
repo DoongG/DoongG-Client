@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import character from '../assets/Mascot-removebg-preview.png';
+import siren from '../assets/siren.png';
+import siren2 from '../assets/siren2.png';
 
 interface PageProps {
     currentPage: number;
@@ -43,6 +45,37 @@ const _Character1 = styled.img`
     bottom: 20%;
     right: 0;
     animation: ${slideLeft} 4s forwards;
+`;
+const sirenAnimation = keyframes`
+    0%, 100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+`;
+
+const siren2Animation = keyframes`
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+`;
+
+const _Siren2 = styled.img`
+    width: 70px;
+    height: 70px;
+    position: absolute;
+    animation: ${siren2Animation} 0.5s infinite alternate; /* siren2 애니메이션 적용 */
+`;
+
+const _Siren = styled.img`
+    width: 70px;
+    height: 70px;
+    position: absolute;
+    animation: ${sirenAnimation} 0.5s infinite alternate; /* siren 애니메이션 적용 */
 `;
 
 const _ExplainTotal = styled.div`
@@ -166,7 +199,11 @@ const IntroduceHotdeal1 = () => {
                         와
                     </_Explain>
                     <_Explain>저렴한 가격으로</_Explain>
-                    <_Explain>구매</_Explain>
+                    <_Explain>
+                        구매
+                        <_Siren src={siren} />
+                        <_Siren2 src={siren2} />
+                    </_Explain>
                 </_ExplainTotal>
                 <_Character1 src={character} />
             </_Page2>
