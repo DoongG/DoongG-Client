@@ -5,6 +5,7 @@ import { RoomReviewWatch } from './RoomReviewWatch';
 import { IoIosSearch } from 'react-icons/io';
 import DaumPostcode from 'react-daum-postcode';
 import { FaLocationCrosshairs } from 'react-icons/fa6';
+import mapMascot from '../assets/mapMascot3.png';
 
 import {
     useButtonStore,
@@ -88,12 +89,24 @@ const RoomReviewWriteMap = () => {
                     };
                     const kakaoMap = new kakao.maps.Map(container, option);
 
+                    let imageSrc = mapMascot, // 마커이미지의 주소입니다
+                        imageSize = new kakao.maps.Size(64, 69), // 마커이미지의 크기입니다
+                        imageOption = { offset: new kakao.maps.Point(27, 69) };
+
+                    // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
+                    let markerImage = new kakao.maps.MarkerImage(
+                        imageSrc,
+                        imageSize,
+                        imageOption,
+                    );
+
                     // 초기 마커 생성
                     const initialMarker = new kakao.maps.Marker({
                         position: new kakao.maps.LatLng(
                             count == 0 ? position.coords.latitude : centerLat,
                             count == 0 ? position.coords.longitude : centerLng,
                         ),
+                        image: markerImage,
                         map: kakaoMap,
                     });
 

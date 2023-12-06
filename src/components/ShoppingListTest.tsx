@@ -248,7 +248,9 @@ export default function ShoppingListTest() {
                                     >
                                         <_productDiv className="productDiv">
                                             <_imgDiv className="imgDiv">
-                                                <_img src={shopping1}></_img>
+                                                <_img
+                                                    src={item.productImage}
+                                                ></_img>
                                                 <_favoriteDiv className="favoriteDiv">
                                                     <img src={eyes} alt="" />
                                                     <p>{item.viewCount}</p>
@@ -530,7 +532,7 @@ const _productListWrapper = styled.div`
     &::before {
         background-color: rgba(0, 0, 0, 0.5);
         border-radius: 5px;
-        top: 30px;
+        top: 20px;
         left: 50px;
         content: '';
         width: 30px;
@@ -566,7 +568,7 @@ const _productListWrapper = styled.div`
     &::after {
         background-color: rgba(0, 0, 0, 0.5);
         border-radius: 5px;
-        top: 30px;
+        top: 20px;
         right: 50px;
         content: '';
         width: 30px;
@@ -896,10 +898,10 @@ const _emptyBox = styled.div`
         }
     }
     @media (max-width: 991px) {
-        font-size: 75px;
+        font-size: 38px;
     }
     @media (max-width: 575px) {
-        font-size: 50px;
+        font-size: 20px;
         height: 265px;
     }
 `;
