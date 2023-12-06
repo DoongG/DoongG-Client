@@ -155,7 +155,10 @@ export default function ShoppingSlideResent() {
                                             <img src={eyes} alt="" />
                                             <p>{item.viewCount}</p>
                                         </_favoriteDiv>
-                                        <img src={shopping1} alt="이미지1" />
+                                        <img
+                                            src={item.productImage}
+                                            alt="이미지1"
+                                        />
                                         <span>{item.productName}</span>
                                         <_productInfos>
                                             <_perDiv className="perDiv">

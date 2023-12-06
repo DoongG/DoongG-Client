@@ -23,6 +23,7 @@ const _selectWrapperBox = styled.div`
     font-family: 'JalnanGothic';
     @media (max-width: 575px) {
         padding: 17px 25px;
+        justify-content: center;
     }
 `;
 
