@@ -32,9 +32,15 @@ function PasswordChangeModal({
     };
 
     const handleChangePW = () => {
+        if (newPassword !== newPasswordCheck) {
+            setPasswordMatchError(true);
+            return;
+        }
+
         const requestData = {
             password: newPassword,
         };
+
         axios
             .post('http://localhost:8080/userAuth/chPw', requestData, {
                 headers: {
@@ -85,6 +91,9 @@ function PasswordChangeModal({
                             }
                         />
                     </_CertificationForm>
+                    {passwordMatchError && (
+                        <ErrorText>비밀번호가 일치하지 않습니다.</ErrorText>
+                    )}
                     <_ChangeButton onClick={handleChangePW}>
                         비밀번호 변경
                     </_ChangeButton>
@@ -102,6 +111,12 @@ function PasswordChangeModal({
         </ModalContainer>
     );
 }
+
+const ErrorText = styled.div`
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+`;
 const _ChangeButton = styled.button`
     @font-face {
         font-family: 'JalnanGothic';
@@ -162,7 +177,7 @@ const ModalContainer = styled.div`
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 1999 !important;
+    z-index: 10002 !important;
 `;
 
 const DialogBox = styled.dialog`
@@ -176,7 +191,7 @@ const DialogBox = styled.dialog`
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;
     background-color: white;
-    z-index: 2000 !important;
+    z-index: 10002 !important;
 `;
 
 const Backdrop = styled.div`
@@ -184,7 +199,7 @@ const Backdrop = styled.div`
     height: 100vh;
     position: fixed;
     top: 0;
-    z-index: 901 !important;
+    z-index: 10001 !important;
     background-color: rgba(0, 0, 0, 0.2);
 `;
 
