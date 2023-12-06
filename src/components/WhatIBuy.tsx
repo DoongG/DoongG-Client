@@ -1,25 +1,22 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { AiOutlineClose } from 'react-icons/ai';
 
-interface ModalDefaultType {
+interface OrderHistoryModalProps {
     onClickToggleModal: () => void;
+    orderHistoryData: {
+        orderId: number;
+        productName: string;
+        productImage: string;
+        productDiscountPrice: number;
+    }[];
 }
 
-// Add a new interface for the data you want to pass
-interface WhatIWriteProps extends PropsWithChildren<ModalDefaultType> {
-    myPosts: { postId: number; title: string; content: string }[];
-}
-
-function WhatIWrite({
+function OrderHistoryModal({
     onClickToggleModal,
-    children,
-    myPosts,
-}: WhatIWriteProps) {
-    const [isModalOpen, setModalOpen] = useState(true);
+    orderHistoryData,
+}: OrderHistoryModalProps) {
     const modalClose = () => {
-        setModalOpen(false);
-
         if (onClickToggleModal) {
             onClickToggleModal();
         }
@@ -31,19 +28,25 @@ function WhatIWrite({
                 <_ModalClose>
                     <AiOutlineClose onClick={modalClose} />
                 </_ModalClose>
-                <_Title>내가 쓴 글</_Title>
-                {/* Render the data received from props */}
-                {myPosts.map((post) => (
-                    <div key={post.postId}>
-                        <h3>{post.title}</h3>
-                        <p>{post.content}</p>
-                    </div>
+                <_Title>주문내역</_Title>
+                {orderHistoryData.map((item) => (
+                    <OrderItem key={item.orderId}>
+                        <ItemImage
+                            src={item.productImage}
+                            alt={item.productName}
+                        />
+                        <ItemDetails>
+                            <ItemName>{item.productName}</ItemName>
+                            <DiscountedPrice>
+                                {item.productDiscountPrice}
+                            </DiscountedPrice>
+                        </ItemDetails>
+                    </OrderItem>
                 ))}
             </DialogBox>
             <Backdrop
                 onClick={(e: React.MouseEvent) => {
                     e.preventDefault();
-
                     if (onClickToggleModal) {
                         onClickToggleModal();
                     }
@@ -53,6 +56,32 @@ function WhatIWrite({
     );
 }
 
+// Additional styled components for rendering each order item
+const OrderItem = styled.div`
+    display: flex;
+    margin: 10px 0;
+`;
+
+const ItemImage = styled.img`
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+`;
+
+const ItemDetails = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
+const ItemName = styled.div`
+    font-size: 18px;
+    font-weight: bold;
+`;
+
+const DiscountedPrice = styled.div`
+    font-size: 14px;
+    color: green;
+`;
 // 모달 닫기 부분
 const _ModalClose = styled.div`
     font-size: 20px;
@@ -108,4 +137,4 @@ const Backdrop = styled.div`
     background-color: rgba(0, 0, 0, 0.2);
 `;
 
-export { WhatIWrite };
+export { OrderHistoryModal };

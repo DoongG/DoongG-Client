@@ -1,22 +1,16 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useState } from 'react';
 import styled from 'styled-components';
 import { AiOutlineClose } from 'react-icons/ai';
 
-interface ModalDefaultType {
+interface MyBagProps
+    extends PropsWithChildren<React.HTMLAttributes<HTMLDivElement>> {
     onClickToggleModal: () => void;
+    cartData: any[];
 }
 
-// Add a new interface for the data you want to pass
-interface WhatIWriteProps extends PropsWithChildren<ModalDefaultType> {
-    myPosts: { postId: number; title: string; content: string }[];
-}
-
-function WhatIWrite({
-    onClickToggleModal,
-    children,
-    myPosts,
-}: WhatIWriteProps) {
+function MyBag({ onClickToggleModal, children, cartData }: MyBagProps) {
     const [isModalOpen, setModalOpen] = useState(true);
+
     const modalClose = () => {
         setModalOpen(false);
 
@@ -31,13 +25,16 @@ function WhatIWrite({
                 <_ModalClose>
                     <AiOutlineClose onClick={modalClose} />
                 </_ModalClose>
-                <_Title>내가 쓴 글</_Title>
-                {/* Render the data received from props */}
-                {myPosts.map((post) => (
-                    <div key={post.postId}>
-                        <h3>{post.title}</h3>
-                        <p>{post.content}</p>
-                    </div>
+                <_Title>장바구니</_Title>
+                {cartData.map((product) => (
+                    <ProductInfo key={product.productID}>
+                        <ProductName>{product.productName}</ProductName>
+                        <ProductImage
+                            src={product.productImage}
+                            alt={product.productName}
+                        />
+                        <ProductPrice>{product.discountedPrice}</ProductPrice>
+                    </ProductInfo>
                 ))}
             </DialogBox>
             <Backdrop
@@ -53,6 +50,13 @@ function WhatIWrite({
     );
 }
 
+const ProductInfo = styled.div``;
+
+const ProductName = styled.div``;
+
+const ProductImage = styled.img``;
+
+const ProductPrice = styled.div``;
 // 모달 닫기 부분
 const _ModalClose = styled.div`
     font-size: 20px;
@@ -108,4 +112,4 @@ const Backdrop = styled.div`
     background-color: rgba(0, 0, 0, 0.2);
 `;
 
-export { WhatIWrite };
+export { MyBag };
