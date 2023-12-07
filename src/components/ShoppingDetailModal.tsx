@@ -112,7 +112,7 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
     const onClickCartModal = () => {
         axios
             .post(
-                `http://localhost:8080/userAuth/addCart`,
+                `${process.env.REACT_APP_API_KEY}/userAuth/addCart`,
                 {
                     productID: productId,
                     quantity: count,
@@ -148,7 +148,7 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
             const getDetailInfos = async () => {
                 try {
                     const res = await axios.get<DetailInfos, any>(
-                        `http://localhost:8080/shop/get/${productId}`,
+                        `${process.env.REACT_APP_API_KEY}/shop/get/${productId}`,
                     );
                     setDetailInfos(res.data);
                     setbeforePrice(res.data.price);

@@ -119,7 +119,6 @@ const RoomReviewWriteMap = () => {
 
                     setMap(kakaoMap);
                     setMarker(initialMarker);
-                    console.log(count);
 
                     setCount(count + 1);
                 },

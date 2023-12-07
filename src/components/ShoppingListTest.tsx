@@ -102,9 +102,8 @@ export default function ShoppingListTest() {
         const getAllProduct = async () => {
             try {
                 const res = await axios.get<ApiResponse, any>(
-                    'http://localhost:8080/shop/getAll',
+                    `${process.env.REACT_APP_API_KEY}/shop/getAll`,
                 );
-                console.log(res.data);
                 setAllProductList(res.data);
             } catch (error) {
                 console.error('데이터를 가져오는 중 오류 발생:', error);
@@ -127,7 +126,6 @@ export default function ShoppingListTest() {
                 imgBar.current.style.animation = 'slideDown 1s  1 forwards ';
                 categoryDiv.current.style.animation = 'listDown 1s 1 forwards ';
                 categoryDiv.current.style.bottom = `-${calculatedHeight}px !important`;
-                // setShouldAnimate(true);
                 // scrollIntoView가 작동하는 시간
                 setTimeout(() => {
                     if (listWrapper.current) {
@@ -162,9 +160,8 @@ export default function ShoppingListTest() {
         const getResentProduct = async () => {
             try {
                 const res = await axios.get<ApiResponse, any>(
-                    `http://localhost:8080/shop/getAll/${category}`,
+                    `${process.env.REACT_APP_API_KEY}/shop/getAll/${category}`,
                 );
-                console.log(res.data);
                 setAllProductList(res.data);
             } catch (error) {
                 console.error('데이터를 가져오는 중 오류 발생:', error);
