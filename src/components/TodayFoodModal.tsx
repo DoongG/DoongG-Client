@@ -256,7 +256,7 @@ const TodayFoodModal = () => {
         '분식',
         '양식',
         '간편식',
-        '기타',
+        '치킨',
     ];
 
     const flip = (category: any) => {
