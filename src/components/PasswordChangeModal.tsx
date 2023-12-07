@@ -16,11 +16,12 @@ function PasswordChangeModal({
     const [newPasswordCheck, setNewPasswordCheck] = useState('');
     const [passwordMatchError, setPasswordMatchError] = useState(false);
     const [token, setToken] = useState<string | null>(null);
+    const [nickname, setNickname] = useState<string | null>('');
 
     useEffect(() => {
-        // 이 부분에서 로컬 스토리지에서 토큰을 가져와 상태로 관리합니다.
-        const storedToken = localStorage.getItem('token');
-        setToken(storedToken);
+        console.log(localStorage.getItem('token'));
+        setToken(localStorage.getItem('token'));
+        setNickname(localStorage.getItem('nickname'));
     }, []);
 
     const modalClose = () => {
@@ -41,6 +42,9 @@ function PasswordChangeModal({
             password: newPassword,
         };
 
+        console.log(requestData);
+        console.log(token);
+
         axios
             .post('http://localhost:8080/userAuth/chPw', requestData, {
                 headers: {
@@ -54,6 +58,7 @@ function PasswordChangeModal({
 
                 if (result) {
                     alert('성공');
+                    window.location.replace('/');
                 }
             })
             .catch((error) => {

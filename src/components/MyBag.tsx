@@ -1,6 +1,10 @@
 import React, { PropsWithChildren, useState } from 'react';
 import styled from 'styled-components';
-import { AiOutlineClose } from 'react-icons/ai';
+import {
+    AiOutlineClose,
+    AiOutlineArrowLeft,
+    AiOutlineArrowRight,
+} from 'react-icons/ai';
 
 interface MyBagProps
     extends PropsWithChildren<React.HTMLAttributes<HTMLDivElement>> {
@@ -10,6 +14,7 @@ interface MyBagProps
 
 function MyBag({ onClickToggleModal, children, cartData }: MyBagProps) {
     const [isModalOpen, setModalOpen] = useState(true);
+    const [currentIndex, setCurrentIndex] = useState(0);
 
     const modalClose = () => {
         setModalOpen(false);
@@ -19,6 +24,16 @@ function MyBag({ onClickToggleModal, children, cartData }: MyBagProps) {
         }
     };
 
+    const handleArrowClick = (direction: 'left' | 'right') => {
+        const newIndex =
+            direction === 'left'
+                ? Math.max(currentIndex - 1, 0)
+                : Math.min(currentIndex + 1, cartData.length - 4);
+        setCurrentIndex(newIndex);
+    };
+
+    console.log(cartData);
+
     return (
         <ModalContainer>
             <DialogBox>
@@ -26,16 +41,32 @@ function MyBag({ onClickToggleModal, children, cartData }: MyBagProps) {
                     <AiOutlineClose onClick={modalClose} />
                 </_ModalClose>
                 <_Title>장바구니</_Title>
-                {cartData.map((product) => (
-                    <ProductInfo key={product.productID}>
-                        <ProductName>{product.productName}</ProductName>
-                        <ProductImage
-                            src={product.productImage}
-                            alt={product.productName}
-                        />
-                        <ProductPrice>{product.discountedPrice}</ProductPrice>
-                    </ProductInfo>
-                ))}
+                <CarouselContainer>
+                    <ArrowButton onClick={() => handleArrowClick('left')}>
+                        <AiOutlineArrowLeft />
+                    </ArrowButton>
+                    <ItemsContainer>
+                        {cartData
+                            .slice(currentIndex, currentIndex + 4)
+                            .map((product) => (
+                                <ProductInfo key={product.productID}>
+                                    <ProductImage
+                                        src={product.productImage}
+                                        alt={product.productName}
+                                    />
+                                    <ProductName>
+                                        {product.productName}
+                                    </ProductName>
+                                    <ProductPrice>
+                                        {product.discountedPrice}원
+                                    </ProductPrice>
+                                </ProductInfo>
+                            ))}
+                    </ItemsContainer>
+                    <ArrowButton onClick={() => handleArrowClick('right')}>
+                        <AiOutlineArrowRight />
+                    </ArrowButton>
+                </CarouselContainer>
             </DialogBox>
             <Backdrop
                 onClick={(e: React.MouseEvent) => {
@@ -50,13 +81,64 @@ function MyBag({ onClickToggleModal, children, cartData }: MyBagProps) {
     );
 }
 
-const ProductInfo = styled.div``;
+const ItemsContainer = styled.div`
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+`;
 
-const ProductName = styled.div``;
+const ArrowButton = styled.div`
+    display: flex;
+    font-size: 20px;
+    margin: 0 10px;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+        cursor: pointer;
+    }
+`;
 
-const ProductImage = styled.img``;
+const ProductInfo = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+`;
 
-const ProductPrice = styled.div``;
+const ProductName = styled.div`
+    margin-top: 10px;
+    font-weight: bold;
+`;
+
+const ProductImage = styled.img`
+    max-width: 120px;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+`;
+
+const ProductPrice = styled.div`
+    margin-top: 5px;
+    font-weight: bold;
+`;
+
+// Carousel Container
+const CarouselContainer = styled.div`
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    &::-webkit-scrollbar {
+        display: none; /* Safari and Chrome */
+    }
+`;
+
 // 모달 닫기 부분
 const _ModalClose = styled.div`
     font-size: 20px;
@@ -91,7 +173,7 @@ const ModalContainer = styled.div`
 
 const DialogBox = styled.dialog`
     width: 800px;
-    height: 300px;
+    height: 400px;
     display: flex;
     flex-direction: column;
     align-items: center;

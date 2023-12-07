@@ -178,11 +178,6 @@ function LoginModal({
                             회원가입
                         </_GoSignUpText>
                     </_GoSignUp>
-                    <_Line />
-                    <_SocialLogin>
-                        <_SocialImg src={KakaoImg} />
-                        <_SocialImg src={Google} />
-                    </_SocialLogin>
                 </_DialogBox>
             </_DialogBoxOut>
             <_Backdrop
@@ -355,7 +350,7 @@ const _ModalContainer = styled.div`
 
 const _DialogBox = styled.dialog`
     width: 400px;
-    height: 600px;
+    height: 500px;
     display: flex;
     flex-direction: column;
     align-items: center;
