@@ -103,8 +103,8 @@ const BoardUnited = () => {
     const getBoard = async () => {
         let res = await axios({
             method: 'get',
-            // url: `http://localhost:8080/boards`,
-            url: `http://localhost:8080/boards`,
+            // url: `${process.env.REACT_APP_API_KEY}/boards`,
+            url: `${process.env.REACT_APP_API_KEY}/boards`,
         });
         setAllBoard(res.data);
     };

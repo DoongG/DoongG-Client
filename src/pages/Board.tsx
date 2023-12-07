@@ -61,7 +61,7 @@ const _boardTitle = styled.div`
     }
     font-family: 'GangwonEduPowerExtraBoldA';
     font-weight: 700;
-    font-size: 50px;
+    font-size: 5vw;
 `;
 
 // 특정 게시판 하나 컴포넌트
@@ -103,21 +103,21 @@ const Board = () => {
             const judgement = location.pathname.split('/')[3];
             res = await axios({
                 method: 'get',
-                // url: `http://localhost:8080/boards/${judgement}`,
-                url: `http://localhost:8080/boards/${judgement}`,
+                // url: `${process.env.REACT_APP_API_KEY}/boards/${judgement}`,
+                url: `${process.env.REACT_APP_API_KEY}/boards/${judgement}`,
             });
         } else {
             const judgement = location.pathname.split('/')[2];
             res = await axios({
                 method: 'get',
-                // url: `http://localhost:8080/boards/${judgement}`,
-                url: `http://localhost:8080/boards/${judgement}`,
+                // url: `${process.env.REACT_APP_API_KEY}/boards/${judgement}`,
+                url: `${process.env.REACT_APP_API_KEY}/boards/${judgement}`,
             });
         }
         if (res) {
             console.log(res.data);
             // 여기에 보드아이디도 하나 정해줘야함
-            // setBoardId(res.data.boardId);
+            setBoardId(res.data.boardId);
             setRealBoardName(res.data.boardName);
             setGalleryType(res.data.boardDefaultType);
             setBoardPostCount(res.data.postCount);
@@ -153,8 +153,8 @@ const Board = () => {
     const getOnePageData = async () => {
         let res = await axios({
             method: 'get',
-            // url: `http://localhost:8080/boards/posts/${modalSignal}`,
-            url: `http://localhost:8080/boards/posts/${modalSignal}`,
+            // url: `${process.env.REACT_APP_API_KEY}/boards/posts/${modalSignal}`,
+            url: `${process.env.REACT_APP_API_KEY}/boards/posts/${modalSignal}`,
         });
         setOnePageData([res.data]);
         setDetailModalOn(true);

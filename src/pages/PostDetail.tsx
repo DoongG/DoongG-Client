@@ -31,7 +31,7 @@ const PostDetail = () => {
         console.log(pathKey);
         let res = await axios({
             method: 'get',
-            url: `http://localhost:8080/boards/posts/${pathKey}`,
+            url: `${process.env.REACT_APP_API_KEY}/boards/posts/${pathKey}`,
         });
         let page = res.data;
         console.log(res.data);
@@ -44,7 +44,7 @@ const PostDetail = () => {
         let pathKey = location.pathname.split('/')[2];
         let res = await axios({
             method: 'post',
-            url: `http://localhost:8080/boards/posts/increaseViews/${pathKey}`,
+            url: `${process.env.REACT_APP_API_KEY}/boards/posts/increaseViews/${pathKey}`,
         });
         getOnePage();
     };

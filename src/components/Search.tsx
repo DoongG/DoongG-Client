@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { IoIosClose } from 'react-icons/io';
@@ -67,6 +67,7 @@ const HashTagBox = styled.div`
     }
 `;
 const Search = () => {
+    const hashtagRef = useRef(null);
     const location = useLocation();
     const navigate = useNavigate();
     const boardName = location.search.includes('keyword')
@@ -106,10 +107,56 @@ const Search = () => {
     // 검색 요청 함수
     const handleSearch = async () => {
         setSearchCount(1);
+        console.log(hashTagBoxes);
+        if (hashTagBoxes.length > 0) {
+            let completeString = '';
+            for (let i = 0; i < hashTagBoxes.length; i++) {
+                completeString =
+                    completeString + 'hashtags=' + hashTagBoxes[i].key + '&';
+            }
+            console.log(
+                `${
+                    process.env.REACT_APP_API_KEY
+                }/boards/hashtagSearch/${boardName}?${completeString}searchType=${selectedOption}&order=${
+                    orderKind ? 'views' : 'latest'
+                }&pageSize=12&page=1`,
+            );
+            let res = await axios({
+                method: 'get',
+                url: `${
+                    process.env.REACT_APP_API_KEY
+                }/boards/hashtagSearch/${boardName}?${completeString}searchType=${selectedOption}&order=${
+                    orderKind ? 'views' : 'latest'
+                }&pageSize=12&page=1`,
+            });
+            console.log(res.data);
+            if (styleSwitch == true) {
+                setOrderKind(false);
+                setGalleryData(res.data.posts);
+            } else {
+                if (location.pathname.includes('search')) {
+                    navigate(
+                        `/boards/search/${
+                            location.pathname.split('/')[3]
+                        }?${completeString}page=${1}&order=latest`,
+                    );
+                } else {
+                    navigate(
+                        `/boards/search/${
+                            location.pathname.split('/')[2]
+                        }?${completeString}page=${1}&order=latest`,
+                    );
+                }
+
+                // setOrderKind(false);
+                console.log(res.data);
+                setListData(res.data.posts);
+                setBoardPostCount(res.data.postCount);
+            }
+        }
         const inputElement = document.querySelector('.input_search');
         if (inputElement) {
             const inputValue = (inputElement as HTMLInputElement).value;
-            console.log(inputValue);
             setIsKeywordExsist(inputValue);
             if (inputValue === '') {
                 setShowEmptySearchBalloon(true);
@@ -130,10 +177,9 @@ const Search = () => {
                         orderKind ? 'views' : 'latest'
                     }&pageSize=12&page=1`,
                 });
-                console.log(res.data);
                 if (styleSwitch == true) {
                     setOrderKind(false);
-                    setGalleryData(res.data.posts);
+                    setGalleryData(res.data.content);
                 } else {
                     if (location.pathname.includes('search')) {
                         navigate(
@@ -150,8 +196,9 @@ const Search = () => {
                     }
 
                     // setOrderKind(false);
-                    setListData(res.data.posts);
-                    setBoardPostCount(res.data.postCount);
+                    console.log(res.data);
+                    setListData(res.data.content);
+                    setBoardPostCount(res.data.totalElements);
                 }
             }
         }
@@ -269,7 +316,7 @@ const Search = () => {
                         <_SelectOption value="title">제목</_SelectOption>
                         <_SelectOption value="content">내용</_SelectOption>
                         <_SelectOption value="author">작성자</_SelectOption>
-                        <_SelectOption value="HashTag">해쉬태그</_SelectOption>
+                        {/* <_SelectOption value="HashTag">해쉬태그</_SelectOption> */}
                     </_SelectOptionBox>
                     {selectedOption === 'HashTag' ? (
                         <_HashSection>
@@ -289,6 +336,7 @@ const Search = () => {
                                 onKeyDown={keyDownHandler}
                                 placeholder="#해시태그(최대 10개) 스페이스바 또는 ,(콤마)로 입력 가능합니다"
                                 className="hashTagInput"
+                                ref={hashtagRef}
                             />
                         </_HashSection>
                     ) : (

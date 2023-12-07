@@ -5,6 +5,8 @@ import ramen from '../assets/ramen1.jpg';
 import fox from '../assets/fox.jpg';
 import { IoMdPhotos } from 'react-icons/io';
 import { BoardUpperPart } from './BoardUpperPart';
+import { IoIosArrowBack } from 'react-icons/io';
+import { IoIosArrowForward } from 'react-icons/io';
 import axios from 'axios';
 import { useLocation, useParams } from 'react-router';
 
@@ -67,6 +69,11 @@ const ListStyle = () => {
         isKeywordExsist,
         realBoardName,
     } = BoardStore();
+    const [pages, setPages] = useState<any>([]);
+    const [nowPage, setNowPage] = useState(0);
+    const [prevPages, setPrevPages] = useState(false);
+    const [nextPages, setNextPages] = useState(false);
+    const [colorPage, setColorPage] = useState(1);
     const navigate = useNavigate();
     const path = useLocation();
 
@@ -103,54 +110,60 @@ const ListStyle = () => {
             }
             if (keyword.length > 0) {
                 console.log(
-                    `http://localhost:8080/boards/search/${
+                    `${process.env.REACT_APP_API_KEY}/boards/search/${
                         path.pathname.split('/')[3]
                     }?keyword=${keyword}&page=${page}&order=${order}`,
                 );
                 res = await axios({
                     method: 'get',
-                    url: `http://localhost:8080/boards/search/${
+                    url: `${process.env.REACT_APP_API_KEY}/boards/search/${
                         path.pathname.split('/')[3]
                     }?keyword=${keyword}&page=${page}&order=${order}`,
                 });
+                console.log(res?.data);
+                setListData(res?.data.content);
             } else {
                 console.log(
-                    `http://localhost:8080/boards/${
+                    `${process.env.REACT_APP_API_KEY}/boards/${
                         path.pathname.split('/')[2]
                     }?page=${page}&order=${order}`,
                 );
                 res = await axios({
                     method: 'get',
-                    url: `http://localhost:8080/boards/${
+                    url: `${process.env.REACT_APP_API_KEY}/boards/${
                         path.pathname.split('/')[2]
                     }?page=${page}&order=${order}`,
                 });
+                console.log(res?.data);
+                setListData(res?.data.posts);
             }
         } else {
             if (page == 1) {
                 res = await axios({
                     method: 'get',
-                    url: `http://localhost:8080/boards/${
+                    url: `${process.env.REACT_APP_API_KEY}/boards/${
                         path.pathname.split('/')[2]
                     }?order=${whichType}`,
                 });
             } else {
                 res = await axios({
                     method: 'get',
-                    url: `http://localhost:8080/boards/${
+                    url: `${process.env.REACT_APP_API_KEY}/boards/${
                         path.pathname.split('/')[2]
                     }?page=${page}&order=${whichType}`,
                 });
             }
+            console.log(res?.data);
+            setListData(res?.data.posts);
         }
-
-        setListData(res?.data.posts);
     };
 
     // 정렬 유형이 바뀔 때 마다 새 데이터 요청하는 이펙트
     useEffect(() => {
         if (isMounted.current) {
             getListData(1);
+            setNowPage(1);
+            setColorPage(1);
         } else {
             isMounted.current = true;
         }
@@ -160,15 +173,18 @@ const ListStyle = () => {
     const getListDataAfterPosting = async () => {
         let res = await axios({
             method: 'get',
-            url: `http://localhost:8080/boards/${
+            url: `${process.env.REACT_APP_API_KEY}/boards/${
                 path.search.includes('keyword')
                     ? path.pathname.split('/')[3]
                     : path.pathname.split('/')[2]
             }?page=1`,
         });
         console.log(res.data);
+        setBoardPostCount(res.data.postCount);
         setListData(res.data.posts);
         setSignal(false);
+        setNowPage(1);
+        setColorPage(1);
         navigate(`/board/${realBoardName}`);
     };
 
@@ -181,10 +197,13 @@ const ListStyle = () => {
             for (let i = 0; i < arr.length; i++) {
                 if (arr[i].split('=')[0] == 'page') {
                     getListData(+arr[i].split('=')[1]);
+                    console.log(+arr[i].split('=')[1]);
+                    setColorPage(+arr[i].split('=')[1]);
                 }
             }
         } else {
             getListData(1);
+            setColorPage(1);
         }
     }, []);
 
@@ -196,51 +215,51 @@ const ListStyle = () => {
     }, [signal]);
 
     // 페이지네이션
-    const pagination = (num: number) => {
-        let whichType = 'latest';
-        if (orderKind === false) whichType = 'latest';
-        else whichType = 'views';
-
-        let pages = Math.ceil(num / 12);
+    const pagination = (num: number, pageSection: number) => {
+        let pagesNum = Math.ceil(num / 12);
+        console.log('이게어케나오지', pagesNum);
         let data = [];
-        for (let i = 1; i <= pages; i++) {
-            data.push(i);
+        for (let i = pageSection; i <= pageSection + 9; i++) {
+            if (pagesNum >= i) {
+                data.push(i);
+            }
         }
-
-        return (
-            <div
-                style={{
-                    margin: '10px',
-                    width: '60%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                }}
-            >
-                {data.map((x) => {
-                    return (
-                        <span
-                            style={{
-                                cursor: 'pointer',
-                                margin: '0px 10px 0px 10px',
-                            }}
-                            onClick={(e) => {
-                                let completeURL = '';
-                                if (isKeywordExsist) {
-                                    completeURL += `/boards/search/${realBoardName}?keyword=${isKeywordExsist}&page=${x}&order=${whichType}`;
-                                } else {
-                                    completeURL += `/board/${realBoardName}?page=${x}&order=${whichType}`;
-                                }
-                                navigate(completeURL);
-                                getListData(x);
-                            }}
-                        >
-                            {x}
-                        </span>
-                    );
-                })}
-            </div>
-        );
+        if (pageSection !== 1) {
+            setPrevPages(true);
+        } else {
+            setPrevPages(false);
+        }
+        if (pageSection + 9 < pagesNum) {
+            setNextPages(true);
+        } else {
+            setNextPages(false);
+        }
+        setPages(data);
     };
+
+    useEffect(() => {
+        console.log(boardPostCount);
+        pagination(boardPostCount, 1);
+        // setColorPage(1);
+        if (path.search) {
+            let temp = path.search.slice(1);
+            let arr = temp.split('&');
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i].split('=')[0] == 'page') {
+                    setColorPage(+arr[i].split('=')[1]);
+                }
+            }
+        } else {
+            setColorPage(1);
+        }
+    }, [boardPostCount]);
+
+    useEffect(() => {
+        console.log(nowPage);
+        if ((nowPage - 1) % 10 == 0) {
+            pagination(boardPostCount, nowPage);
+        }
+    }, [nowPage]);
 
     // 게시글 하나 가져오는 함수
     const getOnePost = async (id: number) => {
@@ -248,7 +267,7 @@ const ListStyle = () => {
 
         let res = await axios({
             method: 'get',
-            url: `http://localhost:8080/boards/posts/${id}`,
+            url: `${process.env.REACT_APP_API_KEY}/boards/posts/${id}`,
         });
 
         setOnePageData([res.data]);
@@ -258,7 +277,7 @@ const ListStyle = () => {
     const plusView = async (postId: any) => {
         let res = await axios({
             method: 'post',
-            url: `http://localhost:8080/boards/posts/increaseViews/${postId}`,
+            url: `${process.env.REACT_APP_API_KEY}/boards/posts/increaseViews/${postId}`,
         });
         getOnePost(postId);
     };
@@ -318,7 +337,112 @@ const ListStyle = () => {
                     })}
             </_listRow>
             {/* {pagination(boardPostCount !== 0 ? boardPostCount : 1)} */}
-            {pagination(20)}
+            <div
+                style={{
+                    margin: '10px',
+                    width: '60%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                }}
+            >
+                {pages.map((x: number) => {
+                    return (
+                        <>
+                            {x !== 1 && (x - 1) % 10 == 0 && prevPages && (
+                                <span>
+                                    <IoIosArrowBack
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={() => {
+                                            setColorPage(x - 1);
+                                            setNowPage(x - 10);
+                                            let completeURL = '';
+                                            if (isKeywordExsist) {
+                                                completeURL += `/boards/search/${realBoardName}?keyword=${isKeywordExsist}&page=${
+                                                    x - 1
+                                                }&order=${
+                                                    orderKind
+                                                        ? 'views'
+                                                        : 'latest'
+                                                }`;
+                                            } else {
+                                                completeURL += `/board/${realBoardName}?page=${
+                                                    x - 1
+                                                }&order=${
+                                                    orderKind
+                                                        ? 'views'
+                                                        : 'latest'
+                                                }`;
+                                            }
+                                            navigate(completeURL);
+                                            getListData(x - 1);
+                                        }}
+                                    />
+                                </span>
+                            )}
+                            <span
+                                style={{
+                                    color: colorPage == x ? 'blue' : 'black',
+                                    fontWeight: colorPage == x ? 700 : 400,
+                                    cursor: 'pointer',
+                                    margin: '0px 10px 0px 10px',
+                                }}
+                                onClick={(e) => {
+                                    setColorPage(x);
+                                    setNowPage(x);
+                                    let completeURL = '';
+                                    if (isKeywordExsist) {
+                                        completeURL += `/boards/search/${realBoardName}?keyword=${isKeywordExsist}&page=${x}&order=${
+                                            orderKind ? 'views' : 'latest'
+                                        }`;
+                                    } else {
+                                        completeURL += `/board/${realBoardName}?page=${x}&order=${
+                                            orderKind ? 'views' : 'latest'
+                                        }`;
+                                    }
+                                    navigate(completeURL);
+                                    getListData(x);
+                                }}
+                            >
+                                {x}
+                            </span>
+                            {x % 10 == 0 && nextPages == true && (
+                                <span>
+                                    <IoIosArrowForward
+                                        onClick={() => {
+                                            setColorPage(x + 1);
+                                            setNowPage(x + 1);
+                                            let completeURL = '';
+                                            if (isKeywordExsist) {
+                                                completeURL += `/boards/search/${realBoardName}?keyword=${isKeywordExsist}&page=${
+                                                    x + 1
+                                                }&order=${
+                                                    orderKind
+                                                        ? 'views'
+                                                        : 'latest'
+                                                }`;
+                                            } else {
+                                                completeURL += `/board/${realBoardName}?page=${
+                                                    x + 1
+                                                }&order=${
+                                                    orderKind
+                                                        ? 'views'
+                                                        : 'latest'
+                                                }`;
+                                            }
+                                            navigate(completeURL);
+                                            getListData(x + 1);
+                                        }}
+                                        style={{
+                                            marginTop: '-3px',
+                                            cursor: 'pointer',
+                                        }}
+                                    />
+                                </span>
+                            )}
+                        </>
+                    );
+                })}
+            </div>
         </_listContainer>
     );
 };

@@ -166,8 +166,8 @@ function Modal() {
             content: content,
             views: 0,
             board: {
-                // boardId: boardId,
-                boardId: 1,
+                boardId: boardId,
+                // boardId: 1,
             },
             // user: {
             //     id: 1,
@@ -180,7 +180,7 @@ function Modal() {
         console.log(data);
         let res = await axios({
             method: 'post',
-            url: `http://localhost:8080/boardsAuth/createPost`,
+            url: `${process.env.REACT_APP_API_KEY}/boardsAuth/createPost`,
             data: data,
             headers: {
                 Authorization: `Bearer ${token}`,
