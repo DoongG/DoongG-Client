@@ -186,7 +186,7 @@ const IntroduceHotdeal1 = () => {
                         와
                     </_Explain>
                     <_Explain>함께하는</_Explain>
-                    <_Explain>자취생 LIFE</_Explain>
+                    <_Explain>자취 LIFE</_Explain>
                 </_ExplainTotal>
                 <_Character1 src={character} />
             </_Page1>
@@ -250,7 +250,6 @@ const IntroduceHotdeal1 = () => {
                     onClick={() => handlePageClick(4)}
                     className={currentPage === 4 ? 'selected' : ''}
                 ></li>
-                <li></li>
             </_PageNum>
         </_MainSection>
     );
