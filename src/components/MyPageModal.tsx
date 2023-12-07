@@ -258,13 +258,13 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
         setMyBagModalOpen(true);
 
         axios
-            .post('http://localhost:8080/userAuth/getCart', {
+            .get('http://localhost:8080/userAuth/getCart', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             })
             .then((response) => {
-                console.log(response.data);
+                setCartData(response.data);
             });
     };
 
@@ -431,7 +431,8 @@ const _StyledButton2 = styled.a`
     font-family: 'JalnanGothic';
     display: flex;
     font-size: 15px;
-    margin: 15px 20px;
+    width: 180px;
+    margin: 15px 10px;
     padding: 5px 15px;
     background-color: rgb(28, 57, 61);
     border: 2px solid rgb(28, 57, 61);
@@ -521,7 +522,7 @@ const _ProfileImg = styled.img`
 `;
 const _ProfileSection = styled.div`
     justify-content: space-around;
-    width: 400px;
+    width: 410px;
     display: flex;
     align-items: center;
     text-align: left;
@@ -557,6 +558,7 @@ const _ProfileEmail = styled.div`
 `;
 const _ProfileSpesific = styled.div`
     width: 160px;
+    margin-right: 20px;
     display: inline-block;
 `;
 
