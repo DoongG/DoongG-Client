@@ -5,17 +5,23 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { useButtonHoverd } from '../store/shoppingHeaderSelectBarStore';
 
 interface Props {
     address: string;
     mylat: number;
     mylng: number;
 }
+interface CssProps {
+    isButtonHovered: boolean;
+}
 const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
     const [content, setContent] = useState('');
     const [modalShow, setModalShow] = useState(false);
     // false = input이 클릭되어 있지 않을 때, true = input이 클릭되어 있을 때
     let [isInputClicked, setIsInputClicked] = useState(false);
+    // 글쓰는 컴포넌트 활성화 상태
+    const { isButtonHovered, setIsButtonHovered } = useButtonHoverd();
 
     // content 변경함수
     const onChangeContent: React.ChangeEventHandler<HTMLTextAreaElement> = (
@@ -95,7 +101,10 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
 
     return (
         <>
-            <_reviewComponent className="reviewComponent">
+            <_reviewComponent
+                className="reviewComponent"
+                isButtonHovered={isButtonHovered}
+            >
                 <form>
                     <_reviewBox className="reviewBox">
                         <div className="titleBox">
@@ -159,9 +168,10 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
         </>
     );
 };
-const _reviewComponent = styled.div`
+const _reviewComponent = styled.div<CssProps>`
     background-color: white;
     width: 20%;
+    ${(props) => props.isButtonHovered && `opacity: 0.5;`}
     @media (max-width: 991px) {
         width: 25%;
     }

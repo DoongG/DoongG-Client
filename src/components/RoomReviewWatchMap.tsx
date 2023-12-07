@@ -334,26 +334,32 @@ const RoomReviewWatchMap = () => {
                         전체 리뷰 보기
                     </_buttonSee>
                 </_buttonWrapper>
-                <_searchAddressInputBox className="Hello">
-                    <_inputBox className="inputBox" onClick={onSearchAddress}>
-                        <input
-                            type="text"
-                            id="addr"
-                            placeholder="주소를 입력해주세요"
-                            value={daumAddress}
-                        />
-                        <_iconBox className="iconBox">
-                            <_customIcon />
-                        </_iconBox>
-                        {openPostModal && (
-                            <_DaumPostcode
-                                onComplete={onCompletePost} // 값을 선택할 경우 실행되는 이벤트
-                                autoClose={false} // 값을 선택할 경우 사용되는 DOM을 제거하여 자동 닫힘 설정
-                                defaultQuery="" // 팝업을 열때 기본적으로 입력되는 검색어
+                {map && (
+                    <_searchAddressInputBox className="Hello">
+                        <_inputBox
+                            className="inputBox"
+                            onClick={onSearchAddress}
+                        >
+                            <input
+                                type="text"
+                                id="addr"
+                                placeholder="주소를 입력해주세요"
+                                value={daumAddress}
                             />
-                        )}
-                    </_inputBox>
-                </_searchAddressInputBox>
+                            <_iconBox className="iconBox">
+                                <_customIcon />
+                            </_iconBox>
+                            {openPostModal && (
+                                <_DaumPostcode
+                                    onComplete={onCompletePost} // 값을 선택할 경우 실행되는 이벤트
+                                    autoClose={false} // 값을 선택할 경우 사용되는 DOM을 제거하여 자동 닫힘 설정
+                                    defaultQuery="" // 팝업을 열때 기본적으로 입력되는 검색어
+                                />
+                            )}
+                        </_inputBox>
+                    </_searchAddressInputBox>
+                )}
+
                 <_nowIconBox className="nowIcon" onClick={onhandleNowPlace}>
                     <FaLocationCrosshairs />
                 </_nowIconBox>

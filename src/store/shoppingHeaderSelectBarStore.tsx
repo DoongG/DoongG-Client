@@ -157,7 +157,7 @@ const useCenterLatLng = create<CenterLatLng>((set) => ({
 export { useCenterLatLng };
 
 //___________________________________________________________________________________________
-// changed productId
+// 상품 상세 페이지에서 데이터를 받아오기 위한 (changed productId)
 interface ProductId {
     productId: number;
     setProductId: (state: number) => void;
@@ -167,3 +167,19 @@ const useProductId = create<ProductId>((set) => ({
     setProductId: (state) => set({ productId: state }),
 }));
 export { useProductId };
+
+//___________________________________________________________________________________________
+// 카카오 맵 옆에 컴포넌트 관련 버튼 호버& 클릭
+interface IsButtonHovered {
+    isButtonHovered: boolean;
+    isButtonClicked: boolean;
+    setIsButtonHovered: (state: boolean) => void;
+    setIsButtonClicked: (state: boolean) => void;
+}
+const useButtonHoverd = create<IsButtonHovered>((set) => ({
+    isButtonHovered: false,
+    isButtonClicked: false,
+    setIsButtonHovered: (state) => set({ isButtonHovered: state }),
+    setIsButtonClicked: (state) => set({ isButtonClicked: state }),
+}));
+export { useButtonHoverd };

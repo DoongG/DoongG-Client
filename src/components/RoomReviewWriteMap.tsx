@@ -5,9 +5,10 @@ import { RoomReviewWatch } from './RoomReviewWatch';
 import { IoIosSearch } from 'react-icons/io';
 import DaumPostcode from 'react-daum-postcode';
 import { FaLocationCrosshairs } from 'react-icons/fa6';
-import mapMascot from '../assets/mapMascot3.png';
+import mapMascot from '../assets/mapMascot4.png';
 
 import {
+    useButtonHoverd,
     useButtonStore,
     useCenterLatLng,
     useReviewDateStore,
@@ -23,6 +24,9 @@ declare global {
 interface Props {
     button: boolean;
 }
+interface CssProps {
+    isButtonHovered: boolean;
+}
 const RoomReviewWriteMap = () => {
     const [map, setMap] = useState<any>();
     const [marker, setMarker] = useState<any>();
@@ -37,6 +41,9 @@ const RoomReviewWriteMap = () => {
     // 클릭한 곳의 내용
     const { address, mylat, mylng, setAddress, setMylat, setMylng } =
         useReviewDateStore();
+
+    // 글쓰는 컴포넌트 활성화 상태
+    const { isButtonHovered, setIsButtonHovered } = useButtonHoverd();
 
     // 주소 입력 모달 상태 state
     const [daumAddress, setDaumAddress] = useState('');
@@ -318,10 +325,54 @@ const RoomReviewWriteMap = () => {
                 <_nowIconBox className="nowIcon" onClick={onhandleNowPlace}>
                     <FaLocationCrosshairs />
                 </_nowIconBox>
+                {/* <_openCloseButton
+                    className="openCloseButton"
+                    onMouseEnter={() => setIsButtonHovered(true)}
+                    onMouseLeave={() => setIsButtonHovered(false)}
+                    onClick={}
+                >
+                    <_openCloseTopDiv
+                        isButtonHovered={isButtonHovered}
+                    ></_openCloseTopDiv>
+                    <_openCloseBottomDiv
+                        isButtonHovered={isButtonHovered}
+                    ></_openCloseBottomDiv>
+                </_openCloseButton> */}
             </_kakaoMapWrapper>
         </>
     );
 };
+
+const _openCloseButton = styled.div`
+    position: absolute;
+    top: 45%;
+    right: 6px;
+    z-index: 2;
+    display: flex;
+    width: 20px;
+    flex-direction: column;
+    align-items: center;
+`;
+const _openCloseTopDiv = styled.div<CssProps>`
+    width: 4px;
+    height: 15px;
+    background-color: grey;
+    transform: translateY(0.15rem) rotate(0deg) translateZ(0px);
+    transition: all 0.25s ease-out;
+    ${(props) =>
+        props.isButtonHovered &&
+        ` transform: translateY(0.15rem) rotate(-15deg) translateZ(0px); background-color:black;`}
+`;
+const _openCloseBottomDiv = styled.div<CssProps>`
+    width: 4px;
+    height: 15px;
+    background-color: grey;
+    transform: translateY(-0.15rem) rotate(0deg) translateZ(0px);
+    transition: all 0.25s ease-out;
+    ${(props) =>
+        props.isButtonHovered &&
+        `transform: translateY(-0.15rem) rotate(15deg) translateZ(0px); background-color:black;`}
+`;
 
 const _nowIconBox = styled.div`
     border-radius: 5px;
