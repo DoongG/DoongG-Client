@@ -6,6 +6,7 @@ import { FaUser, FaSignOutAlt } from 'react-icons/fa';
 import { FiLogIn } from 'react-icons/fi';
 import { MyPageModal } from '../components/MyPageModal';
 import { User } from './data/User';
+import logo from '../assets/logo-removebg-preview.png';
 import profileImg from '../assets/Mascot.jpg';
 import { useSpring, animated } from 'react-spring';
 import axios from 'axios';
@@ -120,7 +121,15 @@ const Header = () => {
     return (
         <_headerArea>
             <_Logo>
-                <h4 style={{ color: 'white', fontWeight: '500' }}>DoongG</h4>
+                <img
+                    src={logo}
+                    style={{
+                        width: '70px',
+                        height: '60px',
+                        marginLeft: '20px',
+                        // marginTop: '10px',
+                    }}
+                />
             </_Logo>
             <_Menu>
                 <_MenuSpecific
