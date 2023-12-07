@@ -263,7 +263,6 @@ const TodayFoodModal = () => {
         for (let i = 0; i < foodDB.length; i++) {
             if (foodDB[i].name == category) {
                 let res = foodDB[i].pack.func(foodDB[i].pack.arr);
-                console.log(res);
                 setTarget(res);
                 return;
             }
@@ -277,7 +276,6 @@ const TodayFoodModal = () => {
     }, [target]);
 
     const handleResize = () => {
-        console.log(window.innerWidth / 25);
         if (window.innerWidth / 10 < 45) {
             setTitleWidth(window.innerWidth / 10);
         }
@@ -472,6 +470,10 @@ const _dialogBox = styled.dialog`
     z-index: 4998;
     overflow: hidden;
     margin-top: -100px;
+    @media (max-width: 820px) {
+        width: 80vw;
+        height: 80vh;
+    }
 `;
 
 const _backdrop = styled.div`
