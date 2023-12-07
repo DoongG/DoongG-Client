@@ -115,14 +115,18 @@ const Search = () => {
                 setShowEmptySearchBalloon(true);
             } else {
                 console.log(
-                    `http://localhost:8080/boards/search/${boardName}?keyword=${inputValue}&searchType=${selectedOption}&order=${
+                    `${
+                        process.env.REACT_APP_API_KEY
+                    }/boards/search/${boardName}?keyword=${inputValue}&searchType=${selectedOption}&order=${
                         orderKind ? 'views' : 'latest'
                     }&pageSize=12&page=1`,
                 );
                 // 성공시 로직 작성
                 let res = await axios({
                     method: 'get',
-                    url: `http://localhost:8080/boards/search/${boardName}?keyword=${inputValue}&searchType=${selectedOption}&order=${
+                    url: `${
+                        process.env.REACT_APP_API_KEY
+                    }/boards/search/${boardName}?keyword=${inputValue}&searchType=${selectedOption}&order=${
                         orderKind ? 'views' : 'latest'
                     }&pageSize=12&page=1`,
                 });
