@@ -107,20 +107,13 @@ const Search = () => {
     // 검색 요청 함수
     const handleSearch = async () => {
         setSearchCount(1);
-        console.log(hashTagBoxes);
         if (hashTagBoxes.length > 0) {
             let completeString = '';
             for (let i = 0; i < hashTagBoxes.length; i++) {
                 completeString =
                     completeString + 'hashtags=' + hashTagBoxes[i].key + '&';
             }
-            console.log(
-                `${
-                    process.env.REACT_APP_API_KEY
-                }/boards/hashtagSearch/${boardName}?${completeString}searchType=${selectedOption}&order=${
-                    orderKind ? 'views' : 'latest'
-                }&pageSize=12&page=1`,
-            );
+
             let res = await axios({
                 method: 'get',
                 url: `${
@@ -129,7 +122,6 @@ const Search = () => {
                     orderKind ? 'views' : 'latest'
                 }&pageSize=12&page=1`,
             });
-            console.log(res.data);
             if (styleSwitch == true) {
                 setOrderKind(false);
                 setGalleryData(res.data.posts);
@@ -149,7 +141,6 @@ const Search = () => {
                 }
 
                 // setOrderKind(false);
-                console.log(res.data);
                 setListData(res.data.posts);
                 setBoardPostCount(res.data.postCount);
             }
@@ -161,13 +152,6 @@ const Search = () => {
             if (inputValue === '') {
                 setShowEmptySearchBalloon(true);
             } else {
-                console.log(
-                    `${
-                        process.env.REACT_APP_API_KEY
-                    }/boards/search/${boardName}?keyword=${inputValue}&searchType=${selectedOption}&order=${
-                        orderKind ? 'views' : 'latest'
-                    }&pageSize=12&page=1`,
-                );
                 // 성공시 로직 작성
                 let res = await axios({
                     method: 'get',
@@ -196,7 +180,6 @@ const Search = () => {
                     }
 
                     // setOrderKind(false);
-                    console.log(res.data);
                     setListData(res.data.content);
                     setBoardPostCount(res.data.totalElements);
                 }

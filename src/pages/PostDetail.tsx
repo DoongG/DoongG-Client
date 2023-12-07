@@ -26,15 +26,12 @@ const PostDetail = () => {
 
     // 게시물 데이터 하나 요청
     const getOnePage = async () => {
-        console.log(location.pathname);
         let pathKey = location.pathname.split('/')[2];
-        console.log(pathKey);
         let res = await axios({
             method: 'get',
             url: `${process.env.REACT_APP_API_KEY}/boards/posts/${pathKey}`,
         });
         let page = res.data;
-        console.log(res.data);
         setOnePageData([page]);
         // return res.data;
     };
@@ -65,7 +62,6 @@ const PostDetail = () => {
             for (let i = 0; i < newData.comments.length; i++) {
                 if (newData.comments[i].parentCommentId) {
                     for (let j = 0; j < newData.comments.length; j++) {
-                        console.log();
                         if (
                             newData.comments[j].commentId ==
                             newData.comments[i].parentCommentId

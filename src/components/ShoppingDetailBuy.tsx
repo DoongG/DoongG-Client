@@ -63,7 +63,6 @@ const ShoppingDetailBuy = ({
 
     // 결제 모달 닫는 함수
     const closeModal = () => {
-        console.log('모달 닫기');
 
         setTimeout(() => {
             isOpenBuyModal && setIsOpenBuyModal(!isOpenBuyModal);
@@ -98,7 +97,6 @@ const ShoppingDetailBuy = ({
             postcode: postNumber,
             address: postAddress + restAddressWatch,
         };
-        console.log('requestData', requestData);
         axios
             .post(
                 `${process.env.REACT_APP_API_KEY}/userAuth/order`,
@@ -123,7 +121,6 @@ const ShoppingDetailBuy = ({
                 });
             })
             .catch(function (error) {
-                console.log(error);
                 Swal.fire({
                     text: '로그인 후 사용해주세요.',
                     icon: 'error',

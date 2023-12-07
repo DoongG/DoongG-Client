@@ -202,7 +202,7 @@ const GalleryStyle = () => {
                     path.pathname.split('/')[2]
                 }?keyword=${isKeywordExsist}&searchType=${selectedOption}&order=${whichType}&pageSize=${12}&page=1`,
             });
-            console.log(whichType);
+
             setGalleryData(res.data.content);
         } else {
             res = await axios({

@@ -79,7 +79,6 @@ const RoomReviewWatchMap = () => {
             })
             .catch(function (error) {
                 // 에러 핸들링
-                console.log(error);
             })
             .finally(function () {
                 // 항상 실행되는 영역
@@ -181,7 +180,6 @@ const RoomReviewWatchMap = () => {
                         // false -> 출력X
                         return lb.contain(l1);
                     });
-                    // console.log(selectedMarker);
                     setVisibleMarker(selectedMarker);
                 }
             } else {
@@ -220,12 +218,9 @@ const RoomReviewWatchMap = () => {
                     });
                     setVisibleMarker(selectedMarker);
                 }
-
-                // console.log(selectedMarker);
             });
         }
     }, [map]);
-    // console.log(visibleMarker);
 
     // 지도 중심 좌표
     useEffect(() => {

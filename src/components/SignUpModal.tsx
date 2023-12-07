@@ -101,7 +101,6 @@ function SignUpModal({
             const requestData = {
                 email,
             };
-            console.log(requestData);
 
             axios
                 .post(
@@ -121,9 +120,7 @@ function SignUpModal({
                         alert('중복되는 이메일입니다.');
                     }
                 })
-                .catch((error) => {
-                    console.log(error);
-                });
+                .catch((error) => {});
         }
     };
     // 이메일 형식 검사 함수
@@ -207,7 +204,6 @@ function SignUpModal({
                     } else {
                         authNum = result;
                         alert('인증번호가 발송되었습니다.');
-                        console.log(authNum);
                         // document
                         //     .getElementById('phonenumber')
                         //     ?.setAttribute('disabled', 'true');
@@ -285,7 +281,6 @@ function SignUpModal({
     const [checkboxResult, setCheckboxResult] = useState(false);
 
     useEffect(() => {
-        console.log(selectAllChecked);
         setCheckboxResult(selectAllChecked);
     }, [selectAllChecked]);
     const handleSelectAllChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -294,8 +289,6 @@ function SignUpModal({
         setFirstChecked(isChecked);
         setSecondChecked(isChecked);
         setThirdChecked(isChecked);
-
-        console.log(isChecked);
     };
 
     const signup = () => {
@@ -327,7 +320,6 @@ function SignUpModal({
                             )
                             .then((response) => {
                                 const result = response.data;
-                                console.log(typeof result);
                                 if (result) {
                                     alert('회원가입 완료!');
                                     window.location.replace('/');

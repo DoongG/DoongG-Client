@@ -115,7 +115,6 @@ const Board = () => {
             });
         }
         if (res) {
-            console.log(res.data);
             // 여기에 보드아이디도 하나 정해줘야함
             setBoardId(res.data.boardId);
             setRealBoardName(res.data.boardName);

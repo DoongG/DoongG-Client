@@ -73,7 +73,6 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
 
     // 주소,리뷰 post 함수
     const submitAddress = () => {
-        console.log(token);
         axios
             .post(
                 `${process.env.REACT_APP_API_KEY}/roomRivewWrite`,
@@ -93,9 +92,7 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
                 setContent('');
                 setModalShow(false);
             })
-            .catch(function (error) {
-                console.log(error);
-            });
+            .catch(function (error) {});
     };
 
     return (

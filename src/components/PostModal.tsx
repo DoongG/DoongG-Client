@@ -60,7 +60,6 @@ const PostModal = () => {
 
     // 렌더링시 토큰 등록 이펙트
     useEffect(() => {
-        console.log(localStorage.getItem('token'));
         setToken(localStorage.getItem('token'));
         setNickname(localStorage.getItem('nickname'));
     }, []);
@@ -72,7 +71,6 @@ const PostModal = () => {
 
     // 댓글 작성 함수
     const postComment = async (postId: any) => {
-        console.log(commentContent);
         if (!localStorage.getItem('token')) {
             alert('세션이 만료되었습니다');
             return;
@@ -96,7 +94,6 @@ const PostModal = () => {
             // url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
             url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
         });
-        console.log(res2);
         setOnePageData([res2.data]);
 
         setCommentContent('');
@@ -104,7 +101,6 @@ const PostModal = () => {
 
     // 대댓글 작성
     const postRecomment = async (commentId: any, postId: any) => {
-        console.log(recommentContent);
         if (!localStorage.getItem('token')) {
             alert('세션이 만료되었습니다');
             return;
@@ -128,7 +124,6 @@ const PostModal = () => {
             // url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
             url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
         });
-        console.log(res2);
         setOnePageData([res2.data]);
         setRecommentOn(!recommentOn);
         setRecommentContent('');
@@ -148,24 +143,15 @@ const PostModal = () => {
                         )}`,
                     },
                 });
-                console.log(res);
                 setLiked(res.data.liked);
                 setDisLiked(res.data.disliked);
-            } catch (e) {
-                console.log(e);
-            }
+            } catch (e) {}
             setDetailModalOn(true);
         }
     };
 
     // 게시물 데이터 하나 받아왔을 때 기본 세팅
     useEffect(() => {
-        // if (token) {
-        //     console.log(token);
-        //     getLikeHateStatus();
-        // } else {
-        //     console.log('nope');
-        // }
         let newData = onePageData[0];
 
         for (let i = 0; i < newData.comments.length; i++) {
@@ -174,7 +160,6 @@ const PostModal = () => {
         for (let i = 0; i < newData.comments.length; i++) {
             if (newData.comments[i].parentCommentId) {
                 for (let j = 0; j < newData.comments.length; j++) {
-                    console.log();
                     if (
                         newData.comments[j].commentId ==
                         newData.comments[i].parentCommentId
@@ -219,7 +204,6 @@ const PostModal = () => {
                 // url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
                 url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
             });
-            console.log(res2);
             setOnePageData([res2.data]);
         }
     };
@@ -259,7 +243,6 @@ const PostModal = () => {
             // url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
             url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
         });
-        console.log(res2);
         setCommentUpdate(!commentUpdate);
         setOnePageData([res2.data]);
     };
@@ -307,7 +290,6 @@ const PostModal = () => {
                 Authorization: `Bearer ${token}`,
             },
         });
-        console.log(res);
         let copy = onePageData.slice(0);
         copy[0].likeCount = res.data.likes;
         setLiked(res.data.liked);
@@ -334,7 +316,6 @@ const PostModal = () => {
                 Authorization: `Bearer ${token}`,
             },
         });
-        console.log(res);
         let copy = onePageData.slice(0);
         copy[0].dislikeCount = res.data.dislikes;
         setDisLiked(res.data.disliked);
@@ -621,7 +602,6 @@ const PostModal = () => {
                                                     </div>
                                                     {x.childCommentsList.map(
                                                         (y: any) => {
-                                                            console.log(x);
                                                             return (
                                                                 <_recommentList>
                                                                     <MdSubdirectoryArrowRight />

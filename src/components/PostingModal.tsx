@@ -38,13 +38,11 @@ function Modal() {
 
     // 제목 핸들러
     const handleTitleChange = (e: any) => {
-        console.log(e.currentTarget.value.length);
         if (e.currentTarget.value.length <= 50) setTitle(e.currentTarget.value);
         else alert('최대 50글자까지 가능합니다');
     };
     // 댓글 허용 여부 핸들러
     const handleCommentAllow = (e: any) => {
-        console.log(e.currentTarget.value);
         if (e.currentTarget.value == 'true') {
             setCommentAllowed(true);
         } else {
@@ -92,7 +90,6 @@ function Modal() {
     const imageSender = async (input: any, images: any) => {
         if (input) {
             const file: any = input.files?.[0];
-            console.log(file);
             try {
                 const s3 = new ReactS3Client(config);
                 let fullName = file.name.split('.')[0] + Date.now();
@@ -102,7 +99,6 @@ function Modal() {
                     const range: any = editor.getSelection();
                     editor.insertEmbed(range.index, 'image', res.location);
                     editor.setSelection(range.index + 1);
-                    console.log(images);
                     const eachImage = {
                         url: res.location,
                         imageType: images.length > 0 ? 'contents' : 'thumbnail',
@@ -110,9 +106,7 @@ function Modal() {
                     };
                     setImages((prevList: any) => [...prevList, eachImage]);
                 }
-            } catch (error) {
-                console.log(error);
-            }
+            } catch (error) {}
         }
     };
 
@@ -177,7 +171,6 @@ function Modal() {
             hashtags: tagTempArr,
             postImages: images,
         };
-        console.log(data);
         let res = await axios({
             method: 'post',
             url: `${process.env.REACT_APP_API_KEY}/boardsAuth/createPost`,
@@ -186,7 +179,6 @@ function Modal() {
                 Authorization: `Bearer ${token}`,
             },
         });
-        console.log(res);
         if (res.status == 201) {
             alert('글 작성 성공!');
             setSignal(true);
@@ -224,8 +216,6 @@ function Modal() {
         let temp = [];
         let typeCheck = [];
         for (let i = 0; i < images.length; i++) {
-            console.log(images[i].description);
-            console.log(id);
             if (images[i].description !== id) {
                 temp.push(images[i]);
                 typeCheck.push(images[i].imageType);

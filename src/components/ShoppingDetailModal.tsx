@@ -124,7 +124,6 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
                 },
             )
             .then(function (response) {
-                console.log(response);
                 Swal.fire({
                     // title: 'The Internet?',
                     text: '장바구니에 추가되었습니다.',
@@ -143,7 +142,6 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
 
     // 상품 정보 가져오는 함수
     useEffect(() => {
-        console.log('productID,', productId);
         if (productId !== 0) {
             const getDetailInfos = async () => {
                 try {
@@ -247,7 +245,6 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
         after: number | undefined,
     ) => {
         if (before !== undefined && after !== undefined) {
-            console.log('a');
             setCount(count + 1);
             setAfterPrice(afterPrice + after);
             setbeforePrice(beforePrice + before);

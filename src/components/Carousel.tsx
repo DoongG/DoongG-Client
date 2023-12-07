@@ -85,7 +85,6 @@ export default function HotSlide() {
 
     // 캐러셀에 로드할 데이터들 요청하는 함수
     const getCarouselItems = async () => {
-        console.log(location.pathname);
         let res;
         if (location.pathname.includes('search')) {
             res = await axios({
@@ -103,7 +102,6 @@ export default function HotSlide() {
             });
         }
         if (res) {
-            console.log(res.data);
             setCarouselData(res.data);
         }
     };

@@ -47,7 +47,6 @@ const RecipeGenerator = () => {
                 ingredients: recipeMaterial,
             },
         });
-        console.log(res);
 
         let data = res.data;
         let foodArr = [];
@@ -73,7 +72,6 @@ const RecipeGenerator = () => {
             method: 'get',
             url: `${process.env.REACT_APP_API_KEY}/food/${name}`,
         });
-        console.log(res);
         setDetailPage(res.data);
         setDetailDesc(true);
     };

@@ -46,38 +46,6 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
     const _ProfileImgSrc = user ? user.profileImg || originalImg : '';
     const _ProfileEmailText = user ? user.email : '';
 
-    // const s3 = new S3({
-    //     region,
-    //     accessKeyId,
-    //     secretAccessKey,
-    // });
-    // const handleImageUpload = async (file: File): Promise<String> => {
-    //     const imageName = `${Date.now()}-${file.name}`;
-    //     const params = {
-    //         Bucket: bucketName,
-    //         Key: imageName,
-    //         Body: file,
-    //         ContentType: file.type,
-    //     };
-    //     await s3.upload(params).promise();
-    //     return imageName;
-    // };
-    // const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-
-    // fileInput.addEventListener('change', async (event) => {
-    //     const file = (event.target as HTMLInputElement).files?.[0];
-    //     if (file) {
-    //         try {
-    //             const imageName = await handleImageUpload(file);
-    //             console.log('Imageuplosdto s3', imageName);
-
-    //             const imageUrl = generateImageUrl(imageName);
-    //         } catch (error) {
-    //             console.error(error);
-    //         }
-    //     }
-    // });
-
     const config: any = {
         bucketName: 'doongg-bucket',
         region: 'ap-northeast-2',
@@ -93,7 +61,6 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
             const s3 = new ReactS3Client(config);
             let fullName = file.name.split('.')[0] + Date.now();
             const res = await s3.uploadFile(file, fullName);
-            console.log('Uploaded Image URL:', res.location);
 
             const requestData = {
                 profileImg: res.location,
@@ -126,7 +93,6 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
                     );
 
                     const updatedUser = userResponse.data;
-                    console.log('Updated User Info:', updatedUser);
 
                     // 화면에 변경된 이미지 반영
                     const newImageUrl = updatedUser.profileImg;
@@ -181,9 +147,7 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
                 alert('성공적으로 닉네임이 변경되었습니다~^^');
                 setEditedNickname(requestData.nickname);
             }
-        } catch (error) {
-            console.log(error);
-        }
+        } catch (error) {}
     };
 
     const openPasswordChangeModal = () => {
@@ -206,7 +170,6 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
                 },
             })
             .then((response) => {
-                console.log(response.data);
                 // Set the retrieved data in the state
                 setMyPosts(response.data);
             });
@@ -228,7 +191,6 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
             })
             .then((response) => {
                 setMyRoomReviewData(response.data);
-                console.log(response.data);
             });
     };
 
@@ -245,8 +207,6 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
                 },
             })
             .then((response) => {
-                console.log(response.data);
-
                 setOrderHistoryData(response.data);
             });
     };
