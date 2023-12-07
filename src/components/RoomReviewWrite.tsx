@@ -76,7 +76,7 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
         console.log(token);
         axios
             .post(
-                'http://localhost:8080/roomRivewWrite',
+                `${process.env.REACT_APP_API_KEY}/roomRivewWrite`,
                 {
                     address: address,
                     content: content,
@@ -90,7 +90,6 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
                 },
             )
             .then(function (response) {
-                console.log(response);
                 setContent('');
                 setModalShow(false);
             })

@@ -89,7 +89,6 @@ const ShoppingDetailBuy = ({
     const addCommas = (num: number) => {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     };
-    console.log(token);
 
     // 상품 결제 함수
     const onClickBuy = () => {
@@ -102,7 +101,7 @@ const ShoppingDetailBuy = ({
         console.log('requestData', requestData);
         axios
             .post(
-                'http://localhost:8080/userAuth/order',
+                `${process.env.REACT_APP_API_KEY}/userAuth/order`,
                 // requestData,
                 {
                     productId: productId,
@@ -117,7 +116,6 @@ const ShoppingDetailBuy = ({
                 },
             )
             .then(function (response) {
-                console.log(response);
                 Swal.fire({
                     // title: 'The Internet?',
                     text: '구매완료',

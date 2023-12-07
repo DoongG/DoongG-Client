@@ -68,7 +68,7 @@ export default function ShoppingSlideResent() {
         const getResentProduct = async () => {
             try {
                 const res = await axios.get<ApiResponse, any>(
-                    'http://localhost:8080/shop/best',
+                    `${process.env.REACT_APP_API_KEY}/shop/best`,
                 );
 
                 setResentProductList(res.data);

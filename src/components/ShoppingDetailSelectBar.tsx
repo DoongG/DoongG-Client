@@ -1,25 +1,6 @@
 import styled from 'styled-components';
 import { useShoppingDetailSelectBarStore } from '../store/shoppingHeaderSelectBarStore';
 
-const tempDB = [
-    {
-        name: '조진형',
-        createAt: '2023.05.07',
-        content:
-            '가성비 좋구~ 배송 무지 빠릅니다. 처음 해보는분들도 누구나 할수있도록 자세한 설명을 해주셔서 쉽게 할수 있었어요. 현관, 욕실, 뒤베란다, 앞베란다를 설명서대로 하니까 모두잘되었어요.감사합니다.',
-    },
-    {
-        name: '심재운',
-        createAt: '2023.03.10',
-        content: '가성비최고입니다♡♡',
-    },
-    {
-        name: '류승기',
-        createAt: '2023.01.22',
-        content: 'I am 신뢰에요',
-    },
-];
-
 interface Props {
     isSelect: string;
 }
@@ -43,7 +24,6 @@ const ShoppingDetailSelectBar: React.FC<DefaultProps> = ({
     const handleButtonClick = (button: string) => {
         setIsSelect(button);
     };
-    console.log(description, review);
 
     return (
         <>

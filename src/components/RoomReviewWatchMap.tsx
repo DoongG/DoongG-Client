@@ -72,7 +72,7 @@ const RoomReviewWatchMap = () => {
     useEffect(() => {
         // 지정된 ID를 가진 유저에 대한 요청
         axios
-            .get('http://localhost:8080/roomRivew/getAll')
+            .get(`${process.env.REACT_APP_API_KEY}/roomRivew/getAll`)
             .then(function (response) {
                 // 성공 핸들링
                 setMarkers(response.data);
