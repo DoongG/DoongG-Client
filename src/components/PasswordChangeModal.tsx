@@ -46,11 +46,15 @@ function PasswordChangeModal({
         console.log(token);
 
         axios
-            .post('http://localhost:8080/userAuth/chPw', requestData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
+            .post(
+                '${process.env.REACT_APP_API_KEY}/userAuth/chPw',
+                requestData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 },
-            })
+            )
             .then((response) => {
                 const result = response.data;
 

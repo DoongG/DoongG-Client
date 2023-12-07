@@ -56,7 +56,10 @@ function FindIDModal({
         };
 
         axios
-            .post('http://localhost:8080/user/findEmail', requestData)
+            .post(
+                '${process.env.REACT_APP_API_KEY}/user/findEmail',
+                requestData,
+            )
             .then((response) => {
                 const result = response.data;
                 if (!result) {
