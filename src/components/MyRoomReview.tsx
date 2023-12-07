@@ -1,6 +1,8 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { AiOutlineClose } from 'react-icons/ai';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
@@ -29,6 +31,34 @@ function MyRoomReview({
         const storedToken = localStorage.getItem('token');
         setToken(storedToken);
     }, []);
+    // 리뷰 삭제 버튼
+    const onDeleteBtn = (reviewId: number) => {
+        Swal.fire({
+            title: '삭제하시겠습니까?',
+            showDenyButton: true,
+            confirmButtonText: '삭제하기',
+            denyButtonText: `취소하기`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                Swal.fire('삭제되었습니다.', '', 'success');
+                axios
+                    .post(
+                        `${process.env.REACT_APP_API_KEY}/roomRivewDelete/{reviewId}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                        },
+                    )
+                    .catch(function (error) {
+                        Swal.fire('취소되었습니다.', '', 'info');
+                    });
+            } else if (result.isDenied) {
+                Swal.fire('취소되었습니다.', '', 'info');
+            }
+        });
+    };
     return (
         <ModalContainer>
             <DialogBox>
@@ -38,6 +68,13 @@ function MyRoomReview({
                 <_Title>내가 쓴 리뷰</_Title>
                 {myRoomReviewData.map((review) => (
                     <_MyReview key={review.id}>
+                        <_DeleteBox
+                            className="DeleteBox"
+                            onClick={() => onDeleteBtn(review.id)}
+                        >
+                            <div>삭제</div>
+                            <AiOutlineClose />
+                        </_DeleteBox>
                         <_Address>주소: {review.address}</_Address>
                         <_Content>후기: {review.content}</_Content>
                     </_MyReview>
@@ -55,7 +92,26 @@ function MyRoomReview({
         </ModalContainer>
     );
 }
+
+const _DeleteBox = styled.div`
+    border-radius: 5px;
+    padding: 0px 5px;
+    right: 20px;
+    position: absolute;
+    border: 1px solid rgb(28, 57, 61);
+    display: flex;
+    align-items: center;
+    cursor: default;
+    & > div {
+        margin-right: 3px;
+    }
+    &:hover {
+        background-color: lightgrey;
+    }
+`;
+
 const _MyReview = styled.div`
+    position: relative;
     text-align: left;
     padding: 15px;
     width: 400px;

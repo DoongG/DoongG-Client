@@ -86,6 +86,8 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
     const [count, setCount] = useState(1);
     const [beforePrice, setbeforePrice] = useState(0);
     const [afterPrice, setAfterPrice] = useState(0);
+    const [productName, setProductName] = useState('');
+    const [productImage, setProductImage] = useState('');
 
     // 제품 상세 정보 상태
     const [detailInfos, setDetailInfos] = useState<DetailInfos | null>(null);
@@ -110,7 +112,7 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
     const onClickCartModal = () => {
         axios
             .post(
-                'http://localhost:8080/userAuth/addCart',
+                `http://localhost:8080/userAuth/addCart`,
                 {
                     productID: productId,
                     quantity: count,
@@ -133,9 +135,7 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
                 Swal.fire({
                     text: '로그인 후 사용해주세요.',
                     icon: 'error',
-                }).then(function () {
-                    window.location.href = '/';
-                });
+                }).then(function () {});
             });
     };
 
@@ -153,6 +153,8 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
                     setDetailInfos(res.data);
                     setbeforePrice(res.data.price);
                     setAfterPrice(res.data.discountedPrice);
+                    setProductName(res.data.productName);
+                    setProductImage(res.data.productImage);
                 } catch (error) {
                     console.error('데이터를 가져오는 중 오류 발생:', error);
                 }
@@ -198,7 +200,6 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
     }, [isOpenBuyModal]);
 
     // title에 제대로된 타입을 넘겨줌
-    const decodedTitle = decodeURIComponent(title as string);
 
     // 천 단위 쉼표 추가 함수
     const addCommas = (num: number | undefined) => {
@@ -284,7 +285,7 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
                 </_headerWrapper>
                 <_productInfoBox className="productInfoBox">
                     <_imgBox className="imgBox">
-                        <img src={fox} alt="" />
+                        <img src={detailInfos?.productImage} alt="" />
                     </_imgBox>
                     <_productInfos className="productInfos">
                         <_category className="category">
@@ -377,6 +378,8 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
                     cost={afterPrice}
                     count={count}
                     productId={productId}
+                    productName={productName}
+                    productImage={productImage}
                 ></ShoppingDetailBuy>
             )}
         </>

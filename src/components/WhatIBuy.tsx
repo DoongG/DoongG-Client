@@ -7,7 +7,7 @@ interface OrderHistoryModalProps {
     orderHistoryData: {
         orderId: number;
         productName: string;
-        productImage: string;
+        productImg: string;
         productDiscountPrice: number;
     }[];
 }
@@ -21,7 +21,7 @@ function OrderHistoryModal({
             onClickToggleModal();
         }
     };
-
+    console.log(orderHistoryData);
     return (
         <ModalContainer>
             <DialogBox>
@@ -32,7 +32,7 @@ function OrderHistoryModal({
                 {orderHistoryData.map((item) => (
                     <OrderItem key={item.orderId}>
                         <ItemImage
-                            src={item.productImage}
+                            src={item.productImg}
                             alt={item.productName}
                         />
                         <ItemDetails>

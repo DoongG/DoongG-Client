@@ -6,12 +6,16 @@ import { useForm } from 'react-hook-form';
 import DaumPostcode from 'react-daum-postcode';
 import fox from '../assets/fox.jpg';
 import axios from 'axios';
+import Swal from 'sweetalert2';
+import { CLOSING } from 'ws';
 
 interface ModalDefaultType {
     onClickbuyModal: () => void;
     cost: number;
     count: number;
     productId: number;
+    productName: string;
+    productImage: string;
 }
 interface ValidProps {
     valid: boolean;
@@ -22,6 +26,8 @@ const ShoppingDetailBuy = ({
     cost,
     count,
     productId,
+    productName,
+    productImage,
 }: PropsWithChildren<ModalDefaultType>) => {
     const { isOpenBuyModal, setIsOpenBuyModal } = useBuyModalStore();
     // 주소 찾는 모달 상태
@@ -83,12 +89,21 @@ const ShoppingDetailBuy = ({
     const addCommas = (num: number) => {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     };
+    console.log(token);
 
     // 상품 결제 함수
     const onClickBuy = () => {
+        const requestData = {
+            productId: productId,
+            quantity: count,
+            postcode: postNumber,
+            address: postAddress + restAddressWatch,
+        };
+        console.log('requestData', requestData);
         axios
             .post(
                 'http://localhost:8080/userAuth/order',
+                // requestData,
                 {
                     productId: productId,
                     quantity: count,
@@ -103,9 +118,18 @@ const ShoppingDetailBuy = ({
             )
             .then(function (response) {
                 console.log(response);
+                Swal.fire({
+                    // title: 'The Internet?',
+                    text: '구매완료',
+                    icon: 'success',
+                });
             })
             .catch(function (error) {
                 console.log(error);
+                Swal.fire({
+                    text: '로그인 후 사용해주세요.',
+                    icon: 'error',
+                }).then(function () {});
             });
     };
     return (
@@ -192,13 +216,13 @@ const ShoppingDetailBuy = ({
                             <_productImgBox className="productImgBox">
                                 <_productImg
                                     className="productImg"
-                                    src={fox}
+                                    src={productImage}
                                     alt=""
                                 />
                             </_productImgBox>
                             <_productContent className="productContent">
                                 <_productTitle className="productTitle">
-                                    사막여우
+                                    {productName}
                                 </_productTitle>
                                 <_producCostBox className="productCostBox">
                                     <div className="productCost">
@@ -252,7 +276,24 @@ const ShoppingDetailBuy = ({
                         }
                         onClick={onClickBuy}
                     >
-                        <button type="button">결제하기</button>
+                        <_payButton
+                            valid={
+                                watch('name') &&
+                                !errors.name &&
+                                watch('restAddress') &&
+                                !errors.restAddress
+                            }
+                            disabled={
+                                !(
+                                    watch('name') &&
+                                    !errors.name &&
+                                    watch('restAddress') &&
+                                    !errors.restAddress
+                                )
+                            }
+                        >
+                            결제하기
+                        </_payButton>
                     </_payButtonBox>
                 </form>
             </_shoppingDetailBuy>
@@ -562,7 +603,7 @@ const _totalCost = styled.div`
 `;
 
 const _payButtonBox = styled.div<ValidProps>`
-    background-color: #e5e5e5 !important;
+    /* background-color: #e5e5e5 !important; */
     margin-top: 10px;
     border: ${(props) => (props.valid ? '1px solid black' : '1px solid grey')};
     border-radius: 10px;
@@ -570,17 +611,22 @@ const _payButtonBox = styled.div<ValidProps>`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    button {
-        border: none;
-        color: ${(props) => (props.valid ? 'black' : 'grey')};
-        background-color: #e5e5e5;
-        width: 100%;
-        text-align: center;
-        border-radius: 3px;
-        font-size: 17px;
-        font-weight: 700;
-        width: 100%;
-        cursor: ${(props) => (props.valid ? 'pointer' : 'not-allowed')};
+    cursor: ${(props) => (props.valid ? 'pointer' : 'not-allowed')};
+`;
+const _payButton = styled.button<ValidProps>`
+    background-color: white;
+    border: none;
+    color: ${(props) => (props.valid ? 'black' : 'grey')};
+    /* background-color: #e5e5e5; */
+    width: 100%;
+    text-align: center;
+    border-radius: 3px;
+    font-size: 17px;
+    font-weight: 700;
+    width: 100%;
+    cursor: ${(props) => (props.valid ? 'pointer' : 'not-allowed')};
+    &:disabled {
+        cursor: not-allowed;
     }
 `;
 const _inValidIcon = styled.div`
