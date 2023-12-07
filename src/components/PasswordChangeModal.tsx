@@ -41,10 +41,9 @@ function PasswordChangeModal({
             password: newPassword,
         };
 
-
         axios
             .post(
-                '${process.env.REACT_APP_API_KEY}/userAuth/chPw',
+                `${process.env.REACT_APP_API_KEY}/userAuth/chPw`,
                 requestData,
                 {
                     headers: {
@@ -55,14 +54,12 @@ function PasswordChangeModal({
             .then((response) => {
                 const result = response.data;
 
-
                 if (result) {
                     alert('성공');
                     window.location.replace('/');
                 }
             })
-            .catch((error) => {
-            });
+            .catch((error) => {});
     };
 
     return (

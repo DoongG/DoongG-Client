@@ -69,7 +69,7 @@ function LoginModal({
 
         // axios를 사용하여 로그인 요청
         axios
-            .post('${process.env.REACT_APP_API_KEY}/user/login', requestData)
+            .post(`${process.env.REACT_APP_API_KEY}/user/login`, requestData)
             .then((response) => {
                 const result = response.data;
 

@@ -94,7 +94,7 @@ const Header = () => {
             return;
         }
         axios
-            .get('${process.env.REACT_APP_API_KEY}/userAuth', {
+            .get(`${process.env.REACT_APP_API_KEY}/userAuth`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',

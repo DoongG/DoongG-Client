@@ -69,7 +69,7 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
             // 서버에 이미지 URL 전송 및 DB 저장
             try {
                 const response = await axios.post(
-                    '${process.env.REACT_APP_API_KEY}/userAuth/chProImg',
+                    `${process.env.REACT_APP_API_KEY}/userAuth/chProImg`,
                     requestData,
                     {
                         headers: {
@@ -83,7 +83,7 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
                 if (result) {
                     // 성공적으로 이미지가 업데이트되었으면, 사용자 정보 다시 불러오기
                     const userResponse = await axios.get(
-                        '${process.env.REACT_APP_API_KEY}/userAuth',
+                        `${process.env.REACT_APP_API_KEY}/userAuth`,
                         {
                             headers: {
                                 Authorization: `Bearer ${token}`,
@@ -132,7 +132,7 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
 
         try {
             const response = await axios.post(
-                '${process.env.REACT_APP_API_KEY}/userAuth/chNick',
+                `${process.env.REACT_APP_API_KEY}/userAuth/chNick`,
                 requestData,
                 {
                     headers: {
@@ -164,7 +164,7 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
     const openWhatIWriteModal = () => {
         setWhatIWriteModalOpen(true);
         axios
-            .get('${process.env.REACT_APP_API_KEY}/userAuth/myPosts', {
+            .get(`${process.env.REACT_APP_API_KEY}/userAuth/myPosts`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -184,7 +184,7 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
     const openMyRoomReviewModal = () => {
         setMyRoomReviewModalOpen(true);
         axios
-            .get('${process.env.REACT_APP_API_KEY}/MyRoomRivew', {
+            .get(`${process.env.REACT_APP_API_KEY}/MyRoomRivew`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -201,7 +201,7 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
         setOrderHistoryModalOpen(true);
 
         axios
-            .get('${process.env.REACT_APP_API_KEY}/userAuth/myOrders', {
+            .get(`${process.env.REACT_APP_API_KEY}/userAuth/myOrders`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -218,7 +218,7 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
         setMyBagModalOpen(true);
 
         axios
-            .get('${process.env.REACT_APP_API_KEY}/userAuth/getCart', {
+            .get(`${process.env.REACT_APP_API_KEY}/userAuth/getCart`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
