@@ -56,7 +56,7 @@ function FindIDModal({
 
         axios
             .post(
-                '${process.env.REACT_APP_API_KEY}/user/findEmail',
+                `${process.env.REACT_APP_API_KEY}/user/findEmail`,
                 requestData,
             )
             .then((response) => {

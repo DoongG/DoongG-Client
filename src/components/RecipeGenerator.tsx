@@ -42,7 +42,7 @@ const RecipeGenerator = () => {
         setGenerated(true);
         let res = await axios({
             method: 'post',
-            url: '${process.env.REACT_APP_API_KEY}/food',
+            url: `${process.env.REACT_APP_API_KEY}/food`,
             data: {
                 ingredients: recipeMaterial,
             },

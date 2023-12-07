@@ -40,7 +40,7 @@ function FindPWModal({ onClickToggleModal }: ModalDefaultType) {
         };
         axios
             .post(
-                '${process.env.REACT_APP_API_KEY}/user/emailAuth',
+                `${process.env.REACT_APP_API_KEY}/user/emailAuth`,
                 requestData,
             )
             .then((response) => {
@@ -76,7 +76,7 @@ function FindPWModal({ onClickToggleModal }: ModalDefaultType) {
         };
 
         axios
-            .post('${process.env.REACT_APP_API_KEY}/user/resetPw', requestData)
+            .post(`${process.env.REACT_APP_API_KEY}/user/resetPw`, requestData)
             .then((response) => {
                 const result = response.data;
 

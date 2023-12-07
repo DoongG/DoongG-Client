@@ -104,7 +104,7 @@ function SignUpModal({
 
             axios
                 .post(
-                    '${process.env.REACT_APP_API_KEY}/user/emailCheck',
+                    `${process.env.REACT_APP_API_KEY}/user/emailCheck`,
                     requestData,
                 )
                 .then((response) => {
@@ -163,7 +163,7 @@ function SignUpModal({
 
             axios
                 .post(
-                    '${process.env.REACT_APP_API_KEY}/user/nicknameCheck',
+                    `${process.env.REACT_APP_API_KEY}/user/nicknameCheck`,
                     requestData,
                 )
                 .then((res) => {
@@ -193,7 +193,7 @@ function SignUpModal({
 
             axios
                 .post(
-                    '${process.env.REACT_APP_API_KEY}/user/smsAuth',
+                    `${process.env.REACT_APP_API_KEY}/user/smsAuth`,
                     requestData,
                 )
                 .then((response) => {
@@ -315,7 +315,7 @@ function SignUpModal({
                         };
                         axios
                             .post(
-                                '${process.env.REACT_APP_API_KEY}/user/join',
+                                `${process.env.REACT_APP_API_KEY}/user/join`,
                                 requestData,
                             )
                             .then((response) => {
