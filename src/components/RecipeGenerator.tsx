@@ -1,9 +1,13 @@
 import { styled } from 'styled-components';
 import { BoardStore } from '../store/storeT';
+import { IoIosClose } from 'react-icons/io';
 import { useEffect, useRef, useState } from 'react';
 import ReactCardFlip from 'react-card-flip';
-import axios from 'axios';
+import MascotCook from '../assets/Mascot-Cook.png';
+import Refrigerator from '../assets/refrigerator.png';
 
+import axios from 'axios';
+// 냉장고 요리사 컴포넌트
 const RecipeGenerator = () => {
     const buttonRef = useRef<any>(null);
     const { game2ModalOn, setGame2ModalOn } = BoardStore();
@@ -15,14 +19,18 @@ const RecipeGenerator = () => {
         { id: 3, name: '' },
     ]);
     const [foodList, setFoodList] = useState<any>([]);
-    const [titleWidth, setTitleWidth] = useState(30);
+    const [titleWidth, setTitleWidth] = useState(40);
+    const [detailPage, setDetailPage] = useState<any>(null);
+    const [detailDesc, setDetailDesc] = useState(false);
 
+    // 반응형 리사이징
     const handleResize = () => {
         if (window.innerWidth / 10 < 45) {
             setTitleWidth(window.innerWidth / 10);
         }
     };
 
+    // 레시피 요청 함수
     const recipeRequest = async () => {
         if (buttonRef.current) {
             buttonRef.current.style.animation = 'jelly 0.5s';
@@ -59,15 +67,18 @@ const RecipeGenerator = () => {
         }, 1000);
     };
 
+    // 레시피 상세 정보 요청
     const detailRequest = async (name: string) => {
         let res = await axios({
             method: 'get',
             url: `http://localhost:8080/food/${name}`,
         });
-
         console.log(res);
+        setDetailPage(res.data);
+        setDetailDesc(true);
     };
 
+    // 리사이징을 위한 이벤트리스너 등록 이펙트
     useEffect(() => {
         window.addEventListener('resize', handleResize);
         return () => {
@@ -78,10 +89,50 @@ const RecipeGenerator = () => {
     return (
         <_modalContainer>
             <_dialogBox>
-                <_gameTitle style={{ fontSize: titleWidth + 'px' }}>
-                    냉장고 요리사
-                </_gameTitle>
-                {flip && (
+                <div
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'end',
+                    }}
+                >
+                    <IoIosClose
+                        style={{
+                            cursor: 'pointer',
+                            fontSize: '20px',
+                            marginBottom: '10px',
+                        }}
+                        onClick={() => {
+                            setGame2ModalOn(false);
+                        }}
+                    />
+                </div>
+                <div style={{ display: 'flex', marginTop: '100px' }}>
+                    <img
+                        style={{
+                            width: titleWidth + 'px',
+                            height: titleWidth + 'px',
+                            margin: '5px',
+                        }}
+                        src={Refrigerator}
+                    ></img>
+                    <_gameTitle
+                        style={{
+                            fontSize: titleWidth + 'px',
+                        }}
+                    >
+                        냉장고 요리사
+                    </_gameTitle>
+                    <img
+                        style={{
+                            width: titleWidth + 'px',
+                            height: titleWidth + 'px',
+                            margin: '5px',
+                        }}
+                        src={MascotCook}
+                    ></img>
+                </div>
+                {flip == true && !detailDesc && (
                     <div
                         style={{ cursor: 'pointer' }}
                         onClick={() => {
@@ -163,7 +214,7 @@ const RecipeGenerator = () => {
                             생성
                         </_generateButton>
                     </>
-                ) : (
+                ) : !detailDesc ? (
                     <_generatedFoods>
                         {foodList &&
                             foodList.map((x: any) => {
@@ -206,6 +257,73 @@ const RecipeGenerator = () => {
                                 );
                             })}
                     </_generatedFoods>
+                ) : (
+                    <div style={{ width: '100%' }}>
+                        <div
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                                setDetailDesc(false);
+                            }}
+                        >
+                            돌아가기
+                        </div>
+                        <br></br>
+                        <div>
+                            <h1>&lt;{detailPage.rcp_NM}&gt;</h1>
+                        </div>
+                        <div
+                            style={{
+                                width: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                flexDirection: 'column',
+                            }}
+                        >
+                            <img
+                                style={{ width: '60%' }}
+                                src={detailPage.att_FILE_NO_MAIN}
+                            ></img>
+                            <br></br>
+                            <_fontCover
+                                style={{ width: '60%', textAlign: 'start' }}
+                            >
+                                {detailPage.rcp_PARTS_DTLS}
+                            </_fontCover>
+                            <br></br>
+                            <br></br>
+                            <div>
+                                <h1>&lt;조리법&gt;</h1>
+                            </div>
+                            <br></br>
+                        </div>
+                        {detailPage.manual.map((manual: any, index: number) => {
+                            return (
+                                <>
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            width: '!00%',
+                                        }}
+                                    >
+                                        <img
+                                            style={{ maxWidth: '200px' }}
+                                            src={detailPage.manual_img[index]}
+                                        ></img>
+                                        <_fontCover
+                                            style={{
+                                                // width: '50%',
+                                                textAlign: 'start',
+                                                padding: '0px 5px 0px 5px',
+                                            }}
+                                        >
+                                            {manual}
+                                        </_fontCover>
+                                    </div>
+                                    <br></br>
+                                </>
+                            );
+                        })}
+                    </div>
                 )}
             </_dialogBox>
             <_backdrop
@@ -216,6 +334,18 @@ const RecipeGenerator = () => {
         </_modalContainer>
     );
 };
+
+const _fontCover = styled.div`
+    @font-face {
+        font-family: 'Jeongnimsaji-R';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/Jeongnimsaji-R.woff2')
+            format('woff2');
+        font-weight: 700;
+        font-style: normal;
+    }
+    font-size: 20px;
+    font-family: 'Jeongnimsaji-R';
+`;
 
 const _generatedFoods = styled.div`
     width: 80%;
@@ -307,9 +437,10 @@ const _dialogBox = styled.dialog`
     display: flex;
     flex-direction: column;
     align-items: center;
+    /* border: 50px solid #1c393d;
+    border-radius: 30px; */
     border: none;
-    border-radius: 3px;
-    box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
+    box-shadow: 0 0 30px #1e1e1e2f;
     box-sizing: border-box;
     background-color: white;
     z-index: 4998;

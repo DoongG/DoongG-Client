@@ -47,6 +47,7 @@ const _titleTd = styled.td`
     flex-direction: row;
 `;
 
+// 리스트 유형 게시판 컴포넌트
 const ListStyle = () => {
     const isMounted = useRef(false);
     const {
@@ -74,6 +75,7 @@ const ListStyle = () => {
         else return 'pattern2';
     };
 
+    // 게시글 요청
     const getListData = async (page: any) => {
         let whichType = 'latest';
         if (orderKind === false) whichType = 'latest';
@@ -145,6 +147,7 @@ const ListStyle = () => {
         setListData(res?.data.posts);
     };
 
+    // 정렬 유형이 바뀔 때 마다 새 데이터 요청하는 이펙트
     useEffect(() => {
         if (isMounted.current) {
             getListData(1);
@@ -153,11 +156,14 @@ const ListStyle = () => {
         }
     }, [orderKind]);
 
+    // 글을 쓴 뒤에 새 게시글들 목록을 요청하는 함수
     const getListDataAfterPosting = async () => {
         let res = await axios({
             method: 'get',
             url: `http://localhost:8080/boards/${
-                path.pathname.split('/')[2]
+                path.search.includes('keyword')
+                    ? path.pathname.split('/')[3]
+                    : path.pathname.split('/')[2]
             }?page=1`,
         });
         console.log(res.data);
@@ -166,6 +172,7 @@ const ListStyle = () => {
         navigate(`/board/${realBoardName}`);
     };
 
+    // 렌더링시 데이터 받아오는 이펙트
     useEffect(() => {
         console.log(path);
         if (path.search) {
@@ -181,12 +188,14 @@ const ListStyle = () => {
         }
     }, []);
 
+    // 글이 작성된 후에 데이터 목록을 다시 가져오는 요청을 보내는 함수가 발동되는 이펙트
     useEffect(() => {
         if (signal) {
             getListDataAfterPosting();
         }
     }, [signal]);
 
+    // 페이지네이션
     const pagination = (num: number) => {
         let whichType = 'latest';
         if (orderKind === false) whichType = 'latest';
@@ -233,6 +242,7 @@ const ListStyle = () => {
         );
     };
 
+    // 게시글 하나 가져오는 함수
     const getOnePost = async (id: number) => {
         console.log(id);
 
@@ -244,6 +254,7 @@ const ListStyle = () => {
         setOnePageData([res.data]);
     };
 
+    // 조회수 1 증가
     const plusView = async (postId: any) => {
         let res = await axios({
             method: 'post',
