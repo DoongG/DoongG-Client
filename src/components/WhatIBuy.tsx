@@ -1,6 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import { AiOutlineClose } from 'react-icons/ai';
+import {
+    AiOutlineClose,
+    AiOutlineArrowLeft,
+    AiOutlineArrowRight,
+} from 'react-icons/ai';
 
 interface OrderHistoryModalProps {
     onClickToggleModal: () => void;
@@ -16,12 +20,24 @@ function OrderHistoryModal({
     onClickToggleModal,
     orderHistoryData,
 }: OrderHistoryModalProps) {
+    const [currentIndex, setCurrentIndex] = React.useState(0);
+
     const modalClose = () => {
         if (onClickToggleModal) {
             onClickToggleModal();
         }
     };
+
+    const handleArrowClick = (direction: 'left' | 'right') => {
+        const newIndex =
+            direction === 'left'
+                ? Math.max(currentIndex - 1, 0)
+                : Math.min(currentIndex + 1, orderHistoryData.length - 4);
+        setCurrentIndex(newIndex);
+    };
+
     console.log(orderHistoryData);
+
     return (
         <ModalContainer>
             <DialogBox>
@@ -29,20 +45,32 @@ function OrderHistoryModal({
                     <AiOutlineClose onClick={modalClose} />
                 </_ModalClose>
                 <_Title>주문내역</_Title>
-                {orderHistoryData.map((item) => (
-                    <OrderItem key={item.orderId}>
-                        <ItemImage
-                            src={item.productImg}
-                            alt={item.productName}
-                        />
-                        <ItemDetails>
-                            <ItemName>{item.productName}</ItemName>
-                            <DiscountedPrice>
-                                {item.productDiscountPrice}
-                            </DiscountedPrice>
-                        </ItemDetails>
-                    </OrderItem>
-                ))}
+                <CarouselContainer>
+                    <ArrowButton onClick={() => handleArrowClick('left')}>
+                        <AiOutlineArrowLeft />
+                    </ArrowButton>
+                    <ItemsContainer>
+                        {orderHistoryData
+                            .slice(currentIndex, currentIndex + 4)
+                            .map((item) => (
+                                <ProductInfo key={item.orderId}>
+                                    <ProductImage
+                                        src={item.productImg}
+                                        alt={item.productName}
+                                    />
+                                    <ProductName>
+                                        {item.productName}
+                                    </ProductName>
+                                    <ProductPrice>
+                                        {item.productDiscountPrice}원
+                                    </ProductPrice>
+                                </ProductInfo>
+                            ))}
+                    </ItemsContainer>
+                    <ArrowButton onClick={() => handleArrowClick('right')}>
+                        <AiOutlineArrowRight />
+                    </ArrowButton>
+                </CarouselContainer>
             </DialogBox>
             <Backdrop
                 onClick={(e: React.MouseEvent) => {
@@ -55,8 +83,64 @@ function OrderHistoryModal({
         </ModalContainer>
     );
 }
+const ItemsContainer = styled.div`
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+`;
 
-// Additional styled components for rendering each order item
+const ArrowButton = styled.div`
+    display: flex;
+    font-size: 20px;
+    margin: 0 10px;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+        cursor: pointer;
+    }
+`;
+
+const ProductInfo = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+`;
+
+const ProductName = styled.div`
+    margin-top: 10px;
+    font-weight: bold;
+`;
+
+const ProductImage = styled.img`
+    max-width: 120px;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+`;
+
+const ProductPrice = styled.div`
+    margin-top: 5px;
+    font-weight: bold;
+`;
+
+// Carousel Container
+const CarouselContainer = styled.div`
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    &::-webkit-scrollbar {
+        display: none; /* Safari and Chrome */
+    }
+`;
+
 const OrderItem = styled.div`
     display: flex;
     margin: 10px 0;
@@ -116,7 +200,7 @@ const ModalContainer = styled.div`
 
 const DialogBox = styled.dialog`
     width: 800px;
-    height: 300px;
+    height: 400px;
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -3,6 +3,7 @@ import { BoardStore } from '../store/storeT';
 import { useEffect, useRef, useState } from 'react';
 import { IoIosClose } from 'react-icons/io';
 import ReactCardFlip from 'react-card-flip';
+import WhatToEatLogo from '../assets/Mascot-EatWhat.png';
 
 const TodayFoodModal = () => {
     const refer = useRef<any>(null);
@@ -314,8 +315,10 @@ const TodayFoodModal = () => {
                     />
                 </div>
                 <_gameSpace>
-                    <_gameTitle style={{ fontSize: titleWidth + 'px' }}>
+                    <_gameTitle style={{ fontSize: '30px', width: '400px' }}>
+                        <img src={WhatToEatLogo} style={{ width: '70px' }} />
                         오늘 뭐 먹지
+                        <img src={WhatToEatLogo} style={{ width: '70px' }} />
                     </_gameTitle>
                     <_itemSpace>
                         {sampledb.map((x, index) => {
@@ -379,6 +382,7 @@ const TodayFoodModal = () => {
 };
 
 const _gameTitle = styled.div`
+    margin-top: -80px;
     font-weight: 600;
 `;
 
@@ -455,13 +459,13 @@ const _modalContainer = styled.div`
 `;
 
 const _dialogBox = styled.dialog`
-    width: 85%;
-    height: 100%;
+    width: 50vw;
+    height: 70vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     border: none;
-    border-radius: 3px;
+    border-radius: 10px;
     box-shadow: 0 0 30px hsla(0, 0%, 11.76470588235294%, 0.185);
     box-sizing: border-box;
     background-color: white;

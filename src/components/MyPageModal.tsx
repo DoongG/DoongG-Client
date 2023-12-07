@@ -81,8 +81,8 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
     const config: any = {
         bucketName: 'doongg-bucket',
         region: 'ap-northeast-2',
-        accessKeyId: 'AKIAV64KNCLEKO47QYL4',
-        secretAccessKey: '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',
+        accessKeyId: process.env.REACT_APP_ACCESS_KEY_ID,
+        secretAccessKey: process.env.REACT_APP_SECRET_ACCESS_KEY,
     };
     // s3 업로드후 로딩 하는 로직
     const handleImageUpload = async (
