@@ -151,7 +151,7 @@ const GalleryStyle = () => {
         else whichType = 'views';
         let res = await axios({
             method: 'get',
-            url: `http://localhost:8080/boards/${
+            url: `${process.env.REACT_APP_API_KEY}/boards/${
                 path.pathname.split('/')[2]
             }?page=1&order=${whichType}`,
         });
@@ -169,23 +169,24 @@ const GalleryStyle = () => {
         if (isKeywordExsist.length > 0) {
             res = await axios({
                 method: 'get',
-                url: `http://localhost:8080/boards/search/${
+                url: `${process.env.REACT_APP_API_KEY}/boards/search/${
                     path.pathname.split('/')[2]
                 }?keyword=${isKeywordExsist}&searchType=${selectedOption}&order=${whichType}&pageSize=${12}&page=${
                     searchCount + 1
                 }`,
             });
             setSearchCount(searchCount + 1);
+            setGalleryData([...galleryData, ...res.data.content]);
         } else {
             res = await axios({
                 method: 'get',
-                url: `http://localhost:8080/boards/${
+                url: `${process.env.REACT_APP_API_KEY}/boards/${
                     path.pathname.split('/')[2]
                 }?page=${counter}&order=${whichType}`,
             });
             setGetCount(counter);
+            setGalleryData([...galleryData, ...res.data.posts]);
         }
-        setGalleryData([...galleryData, ...res.data.posts]);
     };
 
     // 정렬 기준이 들어간 요청이 들어간 함수
@@ -197,20 +198,21 @@ const GalleryStyle = () => {
         if (isKeywordExsist.length > 0) {
             res = await axios({
                 method: 'get',
-                url: `http://localhost:8080/boards/search/${
+                url: `${process.env.REACT_APP_API_KEY}/boards/search/${
                     path.pathname.split('/')[2]
                 }?keyword=${isKeywordExsist}&searchType=${selectedOption}&order=${whichType}&pageSize=${12}&page=1`,
             });
             console.log(whichType);
+            setGalleryData(res.data.content);
         } else {
             res = await axios({
                 method: 'get',
-                url: `http://localhost:8080/boards/${
+                url: `${process.env.REACT_APP_API_KEY}/boards/${
                     path.pathname.split('/')[2]
                 }?page=1&order=${whichType}`,
             });
+            setGalleryData(res.data.posts);
         }
-        setGalleryData(res.data.posts);
         setGetCount(1);
         setSearchCount(1);
     };
@@ -226,7 +228,7 @@ const GalleryStyle = () => {
     const getOnePost = async (id: number) => {
         let res = await axios({
             method: 'get',
-            url: `http://localhost:8080/boards/posts/${id}`,
+            url: `${process.env.REACT_APP_API_KEY}/boards/posts/${id}`,
         });
         setOnePageData([res.data]);
     };
@@ -235,7 +237,7 @@ const GalleryStyle = () => {
     const plusView = async (postId: any) => {
         let res = await axios({
             method: 'post',
-            url: `http://localhost:8080/boards/posts/increaseViews/${postId}`,
+            url: `${process.env.REACT_APP_API_KEY}/boards/posts/increaseViews/${postId}`,
         });
         getOnePost(postId);
     };

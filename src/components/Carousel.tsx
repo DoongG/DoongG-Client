@@ -90,14 +90,14 @@ export default function HotSlide() {
         if (location.pathname.includes('search')) {
             res = await axios({
                 method: 'get',
-                url: `http://localhost:8080/boards/topLiked/${
+                url: `${process.env.REACT_APP_API_KEY}/boards/topLiked/${
                     location.pathname.split('/')[3]
                 }`,
             });
         } else {
             res = await axios({
                 method: 'get',
-                url: `http://localhost:8080/boards/topLiked/${
+                url: `${process.env.REACT_APP_API_KEY}/boards/topLiked/${
                     location.pathname.split('/')[2]
                 }`,
             });
@@ -124,7 +124,7 @@ export default function HotSlide() {
     const getOnePage = async (postId: any) => {
         let res = await axios({
             method: 'get',
-            url: `http://localhost:8080/boards/posts/${postId}`,
+            url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
         });
         setOnePageData([res.data]);
     };
@@ -133,7 +133,7 @@ export default function HotSlide() {
     const plusView = async (postId: any) => {
         let res = await axios({
             method: 'post',
-            url: `http://localhost:8080/boards/posts/increaseViews/${postId}`,
+            url: `${process.env.REACT_APP_API_KEY}/boards/posts/increaseViews/${postId}`,
         });
         getOnePage(postId);
     };

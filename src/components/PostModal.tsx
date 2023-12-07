@@ -79,8 +79,8 @@ const PostModal = () => {
         }
         let res = await axios({
             method: 'post',
-            // url: `http://localhost:8080/boardsAuth/createComment/${postId}`,
-            url: `http://localhost:8080/boardsAuth/createComment/${postId}`,
+            // url: `${process.env.REACT_APP_API_KEY}/boardsAuth/createComment/${postId}`,
+            url: `${process.env.REACT_APP_API_KEY}/boardsAuth/createComment/${postId}`,
             data: {
                 // commenterId: 1,
                 //이거 로그인이랑 연동하면 수정
@@ -93,8 +93,8 @@ const PostModal = () => {
         alert('댓글작성 성공');
         let res2 = await axios({
             method: 'get',
-            // url: `http://localhost:8080/boards/posts/${postId}`,
-            url: `http://localhost:8080/boards/posts/${postId}`,
+            // url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
+            url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
         });
         console.log(res2);
         setOnePageData([res2.data]);
@@ -111,8 +111,8 @@ const PostModal = () => {
         }
         let res = await axios({
             method: 'post',
-            // url: `http://localhost:8080/boardsAuth/replies/${commentId}`,
-            url: `http://localhost:8080/boardsAuth/replies/${commentId}`,
+            // url: `${process.env.REACT_APP_API_KEY}/boardsAuth/replies/${commentId}`,
+            url: `${process.env.REACT_APP_API_KEY}/boardsAuth/replies/${commentId}`,
             data: {
                 // commenterId: 1,
                 //이거 로그인이랑 연동하면 수정
@@ -125,8 +125,8 @@ const PostModal = () => {
         alert('대댓글작성 성공');
         let res2 = await axios({
             method: 'get',
-            // url: `http://localhost:8080/boards/posts/${postId}`,
-            url: `http://localhost:8080/boards/posts/${postId}`,
+            // url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
+            url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
         });
         console.log(res2);
         setOnePageData([res2.data]);
@@ -136,26 +136,26 @@ const PostModal = () => {
 
     // 좋아요 싫어요 현상태 데이터 요청
     const getLikeHateStatus = async () => {
-        if (!localStorage.getItem('token')) {
-            alert('로그인 된 상태가 아닙니다');
-            return;
+        if (localStorage.getItem('token')) {
+            try {
+                let res = await axios({
+                    method: 'get',
+                    // url: `${process.env.REACT_APP_API_KEY}/boardsAuth/getReaction?postId=${onePageData[0].postId}`, // 이거 수정해야함
+                    url: `${process.env.REACT_APP_API_KEY}/boardsAuth/getReaction?postId=${onePageData[0].postId}`, // 이거 수정해야함
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            'token',
+                        )}`,
+                    },
+                });
+                console.log(res);
+                setLiked(res.data.liked);
+                setDisLiked(res.data.disliked);
+            } catch (e) {
+                console.log(e);
+            }
+            setDetailModalOn(true);
         }
-        try {
-            let res = await axios({
-                method: 'get',
-                // url: `http://localhost:8080/boardsAuth/getReaction?postId=${onePageData[0].postId}`, // 이거 수정해야함
-                url: `http://localhost:8080/boardsAuth/getReaction?postId=${onePageData[0].postId}`, // 이거 수정해야함
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-            });
-            console.log(res);
-            setLiked(res.data.liked);
-            setDisLiked(res.data.disliked);
-        } catch (e) {
-            console.log(e);
-        }
-        setDetailModalOn(true);
     };
 
     // 게시물 데이터 하나 받아왔을 때 기본 세팅
@@ -207,8 +207,8 @@ const PostModal = () => {
         if (confirmer) {
             let res = await axios({
                 method: 'post',
-                // url: `http://localhost:8080/boardsAuth/deleteComment/${id}`,
-                url: `http://localhost:8080/boardsAuth/deleteComment/${id}`,
+                // url: `${process.env.REACT_APP_API_KEY}/boardsAuth/deleteComment/${id}`,
+                url: `${process.env.REACT_APP_API_KEY}/boardsAuth/deleteComment/${id}`,
                 data: {},
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -216,8 +216,8 @@ const PostModal = () => {
             });
             let res2 = await axios({
                 method: 'get',
-                // url: `http://localhost:8080/boards/posts/${postId}`,
-                url: `http://localhost:8080/boards/posts/${postId}`,
+                // url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
+                url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
             });
             console.log(res2);
             setOnePageData([res2.data]);
@@ -243,8 +243,8 @@ const PostModal = () => {
         }
         let res = await axios({
             method: 'post',
-            // url: `http://localhost:8080/boardsAuth/updateComment/${commentId}`,
-            url: `http://localhost:8080/boardsAuth/updateComment/${commentId}`,
+            // url: `${process.env.REACT_APP_API_KEY}/boardsAuth/updateComment/${commentId}`,
+            url: `${process.env.REACT_APP_API_KEY}/boardsAuth/updateComment/${commentId}`,
             data: {
                 // commenterId: commenterId,
                 content: commentUpdateContent,
@@ -256,8 +256,8 @@ const PostModal = () => {
         alert('수정되었습니다');
         let res2 = await axios({
             method: 'get',
-            // url: `http://localhost:8080/boards/posts/${postId}`,
-            url: `http://localhost:8080/boards/posts/${postId}`,
+            // url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
+            url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
         });
         console.log(res2);
         setCommentUpdate(!commentUpdate);
@@ -274,8 +274,8 @@ const PostModal = () => {
         if (confirmer) {
             let res = await axios({
                 method: 'post',
-                // url: `http://localhost:8080/boardsAuth/deletePost/${postId}`,
-                url: `http://localhost:8080/boardsAuth/deletePost/${postId}`,
+                // url: `${process.env.REACT_APP_API_KEY}/boardsAuth/deletePost/${postId}`,
+                url: `${process.env.REACT_APP_API_KEY}/boardsAuth/deletePost/${postId}`,
                 data: {},
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -295,8 +295,8 @@ const PostModal = () => {
         }
         let res = await axios({
             method: 'post',
-            // url: `http://localhost:8080/boardsAuth/like`,
-            url: `http://localhost:8080/boardsAuth/like`,
+            // url: `${process.env.REACT_APP_API_KEY}/boardsAuth/like`,
+            url: `${process.env.REACT_APP_API_KEY}/boardsAuth/like`,
             data: {
                 postId: onePageData[0].postId,
                 // userId: 1, // 수정해야함
@@ -322,8 +322,8 @@ const PostModal = () => {
         }
         let res = await axios({
             method: 'post',
-            // url: `http://localhost:8080/boardsAuth/dislike`,
-            url: `http://localhost:8080/boardsAuth/dislike`,
+            // url: `${process.env.REACT_APP_API_KEY}/boardsAuth/dislike`,
+            url: `${process.env.REACT_APP_API_KEY}/boardsAuth/dislike`,
             data: {
                 postId: onePageData[0].postId,
                 // userId: 1, // 수정해야함
@@ -408,7 +408,7 @@ const PostModal = () => {
                                     onClick={async (e) => {
                                         e.stopPropagation();
                                         await navigator.clipboard.writeText(
-                                            `http://localhost:3000/posts/${onePageData[0]?.postId}`,
+                                            `http://doongg.site/posts/${onePageData[0]?.postId}`,
                                         );
                                         setCopiedCheck(true);
                                         setTimeout(() => {
@@ -418,7 +418,7 @@ const PostModal = () => {
                                 >
                                     <div style={{ display: 'flex' }}>
                                         <p style={{ margin: '5px' }}>
-                                            http://localhost:3000/posts/
+                                            http://doongg.site/posts/
                                             {onePageData[0]?.postId}
                                         </p>
                                         <div

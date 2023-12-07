@@ -170,8 +170,8 @@ function UpdateModal() {
             content: content,
             views: 0,
             board: {
-                // boardId: boardId,
-                boardId: 1,
+                boardId: boardId,
+                // boardId: 1,
             },
             // user: {
             //     id: 1,
@@ -183,7 +183,7 @@ function UpdateModal() {
         };
         let res = await axios({
             method: 'post',
-            url: `http://localhost:8080/boardsAuth/updatePost/${updatePostId}`,
+            url: `${process.env.REACT_APP_API_KEY}/boardsAuth/updatePost/${updatePostId}`,
             data: data,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -193,7 +193,7 @@ function UpdateModal() {
 
         let res2 = await axios({
             method: 'get',
-            url: `http://localhost:8080/boards/posts/${onePageData[0]?.postId}`,
+            url: `${process.env.REACT_APP_API_KEY}/boards/posts/${onePageData[0]?.postId}`,
         });
         console.log(res2);
         setOnePageData([res2.data]);
