@@ -57,6 +57,8 @@ const _cardTitle = styled.p`
     width: 150px;
     overflow: hidden;
     white-space: normal;
+    word-wrap: break-word;
+    word-break: break-all;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -70,7 +72,7 @@ const _cardLike = styled.div`
     color: red;
 `;
 
-export default function ShoppingSlide() {
+export default function HotSlide() {
     let location = useLocation();
     const prevRef = useRef(null);
     const nextRef = useRef(null);
@@ -81,6 +83,7 @@ export default function ShoppingSlide() {
     const { setDetailModalOn, setOnePageData, onePageData, signal } =
         BoardStore();
 
+    // 캐러셀에 로드할 데이터들 요청하는 함수
     const getCarouselItems = async () => {
         console.log(location.pathname);
         let res;
@@ -105,6 +108,7 @@ export default function ShoppingSlide() {
         }
     };
 
+    // 썸네일 고르는 로직 함수
     const thumbnailPicker = (imageArr: any) => {
         if (imageArr) {
             for (let i = 0; i < imageArr.length; i++) {
@@ -116,6 +120,7 @@ export default function ShoppingSlide() {
         return Mascot;
     };
 
+    // 게시글 데이터 하나 요청하는 함수
     const getOnePage = async (postId: any) => {
         let res = await axios({
             method: 'get',
@@ -124,6 +129,7 @@ export default function ShoppingSlide() {
         setOnePageData([res.data]);
     };
 
+    // 조회수 1추가
     const plusView = async (postId: any) => {
         let res = await axios({
             method: 'post',
@@ -132,12 +138,14 @@ export default function ShoppingSlide() {
         getOnePage(postId);
     };
 
+    // 페이지 하나 불러오면 모달이 켜지는 이펙트
     useEffect(() => {
         if (onePageData.length > 0) {
             setDetailModalOn(true);
         }
     }, [onePageData]);
 
+    // 글이 수정되거나 했을 때 캐러셀 데이터 새로 불러오는 이펙트
     useEffect(() => {
         getCarouselItems();
     }, [signal]);
@@ -163,11 +171,17 @@ export default function ShoppingSlide() {
                             //   spaceBetween: 10,
                         },
                         // 768px 이상일 때
-                        750: {
+                        768: {
                             slidesPerView: 3,
                         },
-                        375: {
+                        600: {
                             slidesPerView: 2,
+                        },
+                        375: {
+                            slidesPerView: 1,
+                        },
+                        100: {
+                            slidesPerView: 1,
                         },
                     }}
                 >

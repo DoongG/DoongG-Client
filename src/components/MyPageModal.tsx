@@ -8,6 +8,9 @@ import axios from 'axios';
 import { S3 } from 'aws-sdk';
 import ReactS3Client from 'react-aws-s3-typescript';
 import { WhatIWrite } from './WhatIWrite';
+import { MyRoomReview } from './MyRoomReview';
+import { OrderHistoryModal } from './WhatIBuy';
+import { MyBag } from './MyBag';
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
@@ -15,11 +18,6 @@ interface ModalDefaultType {
 
 interface MyPageModalProps extends PropsWithChildren<ModalDefaultType> {
     user?: User;
-}
-interface Post {
-    postId: number;
-    title: string;
-    content: string;
 }
 
 function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
@@ -197,28 +195,81 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
     };
 
     const [isWhatIWriteModalOpen, setWhatIWriteModalOpen] = useState(false);
+    const [myPosts, setMyPosts] = useState<any[]>([]);
+
     const openWhatIWriteModal = () => {
         setWhatIWriteModalOpen(true);
         axios
-            .get<Post[]>('http://localhost:8080/userAuth/myPosts', {
+            .get('http://localhost:8080/userAuth/myPosts', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             })
             .then((response) => {
-                const myPosts = response.data;
-
-                myPosts.forEach((post: Post) => {
-                    console.log(post.title);
-                    console.log(post.content);
-                });
-
-                setWhatIWritePosts(myPosts);
+                console.log(response.data);
+                // Set the retrieved data in the state
+                setMyPosts(response.data);
             });
     };
-    const [whatIWritePosts, setWhatIWritePosts] = useState<Post[]>([]);
     const closeWhatIWriteModal = () => {
         setWhatIWriteModalOpen(false);
+    };
+
+    const [isMyRoomReviewModalOpen, setMyRoomReviewModalOpen] = useState(false);
+    const [myRoomReviewData, setMyRoomReviewData] = useState<any[]>([]);
+
+    const openMyRoomReviewModal = () => {
+        setMyRoomReviewModalOpen(true);
+        axios
+            .get('http://localhost:8080/MyRoomRivew', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            .then((response) => {
+                setMyRoomReviewData(response.data);
+                console.log(response.data);
+            });
+    };
+
+    const [isOrderHistoryModalOpen, setOrderHistoryModalOpen] = useState(false);
+    const [orderHistoryData, setOrderHistoryData] = useState<any[]>([]);
+
+    const openOrderHistoryModal = () => {
+        setOrderHistoryModalOpen(true);
+
+        axios
+            .get('http://localhost:8080/userAuth/myOrders', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            .then((response) => {
+                console.log(response.data);
+
+                setOrderHistoryData(response.data);
+            });
+    };
+
+    const [isMyBagModalOpen, setMyBagModalOpen] = useState(false);
+    const [cartData, setCartData] = useState<any[]>([]);
+
+    const openMyBagModal = () => {
+        setMyBagModalOpen(true);
+
+        axios
+            .post('http://localhost:8080/userAuth/getCart', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            .then((response) => {
+                console.log(response.data);
+            });
+    };
+
+    const closeMyBagModal = () => {
+        setMyBagModalOpen(false);
     };
 
     return (
@@ -274,10 +325,15 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
                     <_StyledButton2 onClick={openWhatIWriteModal}>
                         내가 쓴 게시물
                     </_StyledButton2>
-                    <_StyledButton2>좋아요</_StyledButton2>
-                    <_StyledButton2>자취방 리뷰</_StyledButton2>
-                    <_StyledButton2>장바구니</_StyledButton2>
-                    <_StyledButton2>주문내역</_StyledButton2>
+                    <_StyledButton2 onClick={openMyRoomReviewModal}>
+                        자취방 리뷰
+                    </_StyledButton2>
+                    <_StyledButton2 onClick={openMyBagModal}>
+                        장바구니
+                    </_StyledButton2>
+                    <_StyledButton2 onClick={openOrderHistoryModal}>
+                        주문내역
+                    </_StyledButton2>
                 </_ButtonHouse>
             </DialogBox>
             <Backdrop
@@ -297,7 +353,25 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
             {isWhatIWriteModalOpen && (
                 <WhatIWrite
                     onClickToggleModal={closeWhatIWriteModal}
-                    posts={whatIWritePosts}
+                    myPosts={myPosts}
+                />
+            )}
+            {isMyRoomReviewModalOpen && (
+                <MyRoomReview
+                    onClickToggleModal={() => setMyRoomReviewModalOpen(false)}
+                    myRoomReviewData={myRoomReviewData}
+                />
+            )}
+            {isOrderHistoryModalOpen && (
+                <OrderHistoryModal
+                    onClickToggleModal={() => setOrderHistoryModalOpen(false)}
+                    orderHistoryData={orderHistoryData}
+                />
+            )}
+            {isMyBagModalOpen && (
+                <MyBag
+                    onClickToggleModal={closeMyBagModal}
+                    cartData={cartData}
                 />
             )}
         </ModalContainer>

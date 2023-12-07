@@ -67,13 +67,15 @@ const _card = styled.img`
 `;
 
 const _cardTitle = styled.p`
-    width: 90%;
+    width: 200px;
     overflow: hidden;
-    white-space: normal;
     text-overflow: ellipsis;
+    word-wrap: break-word;
+    word-break: break-all;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    /* white-space: normal; */
     text-align: start;
     margin: 2px 2px 2px 0px;
 `;
@@ -124,6 +126,7 @@ const _cardFooterSection = styled.div`
     margin: 0px 5px 0px 5px;
 `;
 
+// 갤러리 유형의 게시판 컴포넌트
 const GalleryStyle = () => {
     let path = useLocation();
     const {
@@ -157,6 +160,7 @@ const GalleryStyle = () => {
         setSignal(false);
     };
 
+    // 게시판 데이터 요청하는 함수
     const dataGenerate2 = async (counter: number) => {
         let whichType = '';
         if (orderKind === false) whichType = 'latest';
@@ -181,10 +185,10 @@ const GalleryStyle = () => {
             });
             setGetCount(counter);
         }
-        // console.log(counter);
         setGalleryData([...galleryData, ...res.data.posts]);
     };
 
+    // 정렬 기준이 들어간 요청이 들어간 함수
     const dataGenerate3 = async () => {
         let whichType = '';
         if (orderKind === false) whichType = 'latest';
@@ -211,12 +215,14 @@ const GalleryStyle = () => {
         setSearchCount(1);
     };
 
+    // 무한 스크롤이 동작하기 위한 인터섹트옵저버 로직이 들어간 라이브러리 기능이 들어간 이펙트
     useEffect(() => {
         if (inView) {
             dataGenerate2(getCount + 1);
         }
     }, [inView]);
 
+    // 게시글 하나 요청하는 함수
     const getOnePost = async (id: number) => {
         let res = await axios({
             method: 'get',
@@ -225,6 +231,7 @@ const GalleryStyle = () => {
         setOnePageData([res.data]);
     };
 
+    // 조회수 1 증가 함수
     const plusView = async (postId: any) => {
         let res = await axios({
             method: 'post',
@@ -233,6 +240,7 @@ const GalleryStyle = () => {
         getOnePost(postId);
     };
 
+    // 썸네일 고르는 로직 함수
     const thumbnailPicker = (imageArr: any) => {
         if (imageArr) {
             for (let i = 0; i < imageArr.length; i++) {
@@ -244,12 +252,14 @@ const GalleryStyle = () => {
         return Mascot;
     };
 
+    // 글이 수정되거나 했을 때 게시판 데이터 새로 불러오는 이펙트
     useEffect(() => {
         if (signal == true) {
             dataGenerate();
         }
     }, [signal]);
 
+    // 게시글 정렬 기준이 바꼈을 때 데이터 새로 불러오는 이펙트
     useEffect(() => {
         dataGenerate3();
     }, [orderKind]);

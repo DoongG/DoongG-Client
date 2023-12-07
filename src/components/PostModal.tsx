@@ -8,6 +8,7 @@ import { TbHeart } from 'react-icons/tb';
 import { TbHeartFilled } from 'react-icons/tb';
 import { IoCopyOutline } from 'react-icons/io5';
 import { TbHeartBroken } from 'react-icons/tb';
+import { IoIosClose } from 'react-icons/io';
 import eyes from '../assets/eyes.png';
 import axios from 'axios';
 import Mascot from '../assets/Mascot-removebg-preview.png';
@@ -28,6 +29,7 @@ const _modal = styled.div`
     background-color: red;
 `;
 
+// 게시물 컴포넌트
 const PostModal = () => {
     const {
         detailModalOn,
@@ -54,22 +56,33 @@ const PostModal = () => {
     const [token, setToken] = useState<string | null>('');
     const [liked, setLiked] = useState(false);
     const [disliked, setDisLiked] = useState(false);
+    const [nickname, setNickname] = useState<string | null>('');
 
+    // 렌더링시 토큰 등록 이펙트
     useEffect(() => {
+        console.log(localStorage.getItem('token'));
         setToken(localStorage.getItem('token'));
+        setNickname(localStorage.getItem('nickname'));
     }, []);
 
+    // 공유 버튼 모달 띄우기
     const share = (id: number) => {
         setShareBalloon(!shareBalloon);
     };
 
+    // 댓글 작성 함수
     const postComment = async (postId: any) => {
         console.log(commentContent);
+        if (!localStorage.getItem('token')) {
+            alert('세션이 만료되었습니다');
+            return;
+        }
         let res = await axios({
             method: 'post',
+            // url: `http://localhost:8080/boardsAuth/createComment/${postId}`,
             url: `http://localhost:8080/boardsAuth/createComment/${postId}`,
             data: {
-                commenterId: 1,
+                // commenterId: 1,
                 //이거 로그인이랑 연동하면 수정
                 content: commentContent,
             },
@@ -80,6 +93,7 @@ const PostModal = () => {
         alert('댓글작성 성공');
         let res2 = await axios({
             method: 'get',
+            // url: `http://localhost:8080/boards/posts/${postId}`,
             url: `http://localhost:8080/boards/posts/${postId}`,
         });
         console.log(res2);
@@ -88,13 +102,19 @@ const PostModal = () => {
         setCommentContent('');
     };
 
+    // 대댓글 작성
     const postRecomment = async (commentId: any, postId: any) => {
         console.log(recommentContent);
+        if (!localStorage.getItem('token')) {
+            alert('세션이 만료되었습니다');
+            return;
+        }
         let res = await axios({
             method: 'post',
+            // url: `http://localhost:8080/boardsAuth/replies/${commentId}`,
             url: `http://localhost:8080/boardsAuth/replies/${commentId}`,
             data: {
-                commenterId: 1,
+                // commenterId: 1,
                 //이거 로그인이랑 연동하면 수정
                 content: recommentContent,
             },
@@ -105,6 +125,7 @@ const PostModal = () => {
         alert('대댓글작성 성공');
         let res2 = await axios({
             method: 'get',
+            // url: `http://localhost:8080/boards/posts/${postId}`,
             url: `http://localhost:8080/boards/posts/${postId}`,
         });
         console.log(res2);
@@ -113,19 +134,38 @@ const PostModal = () => {
         setRecommentContent('');
     };
 
+    // 좋아요 싫어요 현상태 데이터 요청
     const getLikeHateStatus = async () => {
-        let res = await axios({
-            method: 'get',
-            url: `http://localhost:8080/boards/getReaction?postId=${
-                onePageData[0].postId
-            }&userId=${1}`,
-        });
-        setLiked(res.data.liked);
-        setDisLiked(res.data.disliked);
+        if (!localStorage.getItem('token')) {
+            alert('로그인 된 상태가 아닙니다');
+            return;
+        }
+        try {
+            let res = await axios({
+                method: 'get',
+                // url: `http://localhost:8080/boardsAuth/getReaction?postId=${onePageData[0].postId}`, // 이거 수정해야함
+                url: `http://localhost:8080/boardsAuth/getReaction?postId=${onePageData[0].postId}`, // 이거 수정해야함
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+            console.log(res);
+            setLiked(res.data.liked);
+            setDisLiked(res.data.disliked);
+        } catch (e) {
+            console.log(e);
+        }
+        setDetailModalOn(true);
     };
 
+    // 게시물 데이터 하나 받아왔을 때 기본 세팅
     useEffect(() => {
-        getLikeHateStatus();
+        // if (token) {
+        //     console.log(token);
+        //     getLikeHateStatus();
+        // } else {
+        //     console.log('nope');
+        // }
         let newData = onePageData[0];
 
         for (let i = 0; i < newData.comments.length; i++) {
@@ -147,14 +187,27 @@ const PostModal = () => {
             }
         }
         setCommentsList(newData.comments);
-        setDetailModalOn(true);
+        setToken(localStorage.getItem('token'));
+        setNickname(localStorage.getItem('nickname'));
+        // getLikeHateStatus();
+        // setDetailModalOn(true);
     }, [onePageData]);
 
+    useEffect(() => {
+        getLikeHateStatus();
+    }, [token]);
+
+    // 댓글 삭제 요청
     const postDeleteComment = async (id: any, postId: any) => {
+        if (!localStorage.getItem('token')) {
+            alert('로그인 된 상태가 아닙니다');
+            return;
+        }
         let confirmer = window.confirm('댓글을 삭제하시겠습니까?');
         if (confirmer) {
             let res = await axios({
                 method: 'post',
+                // url: `http://localhost:8080/boardsAuth/deleteComment/${id}`,
                 url: `http://localhost:8080/boardsAuth/deleteComment/${id}`,
                 data: {},
                 headers: {
@@ -163,6 +216,7 @@ const PostModal = () => {
             });
             let res2 = await axios({
                 method: 'get',
+                // url: `http://localhost:8080/boards/posts/${postId}`,
                 url: `http://localhost:8080/boards/posts/${postId}`,
             });
             console.log(res2);
@@ -170,22 +224,29 @@ const PostModal = () => {
         }
     };
 
+    // 댓글 수정 창 띄우기
     const postUpdateComment = (commentId: any, content: any) => {
         setTargetUpdateComment(commentId);
         setCommentUpdate(!commentUpdate);
         setCommentUpdateContent(content);
     };
 
+    // 댓글 수정 요청
     const postUpdateCommentSend = async (
         commentId: any,
         commenterId: any,
         postId: any,
     ) => {
+        if (!localStorage.getItem('token')) {
+            alert('로그인 된 상태가 아닙니다');
+            return;
+        }
         let res = await axios({
             method: 'post',
+            // url: `http://localhost:8080/boardsAuth/updateComment/${commentId}`,
             url: `http://localhost:8080/boardsAuth/updateComment/${commentId}`,
             data: {
-                commenterId: commenterId,
+                // commenterId: commenterId,
                 content: commentUpdateContent,
             },
             headers: {
@@ -195,6 +256,7 @@ const PostModal = () => {
         alert('수정되었습니다');
         let res2 = await axios({
             method: 'get',
+            // url: `http://localhost:8080/boards/posts/${postId}`,
             url: `http://localhost:8080/boards/posts/${postId}`,
         });
         console.log(res2);
@@ -202,11 +264,17 @@ const PostModal = () => {
         setOnePageData([res2.data]);
     };
 
+    // 게시글 삭제 요청
     const postDeletePost = async (postId: any) => {
+        if (!localStorage.getItem('token')) {
+            alert('로그인 된 상태가 아닙니다');
+            return;
+        }
         let confirmer = window.confirm('게시글을 삭제하시겠습니까?');
         if (confirmer) {
             let res = await axios({
                 method: 'post',
+                // url: `http://localhost:8080/boardsAuth/deletePost/${postId}`,
                 url: `http://localhost:8080/boardsAuth/deletePost/${postId}`,
                 data: {},
                 headers: {
@@ -219,13 +287,19 @@ const PostModal = () => {
         }
     };
 
+    // 좋아요 눌렀을 때 함수
     const clickLike = async () => {
+        if (!localStorage.getItem('token')) {
+            alert('로그인 상태에서만 가능합니다');
+            return;
+        }
         let res = await axios({
             method: 'post',
+            // url: `http://localhost:8080/boardsAuth/like`,
             url: `http://localhost:8080/boardsAuth/like`,
             data: {
                 postId: onePageData[0].postId,
-                userId: 1, // 수정해야함
+                // userId: 1, // 수정해야함
                 liked: true,
                 disliked: false,
             },
@@ -233,19 +307,26 @@ const PostModal = () => {
                 Authorization: `Bearer ${token}`,
             },
         });
+        console.log(res);
         let copy = onePageData.slice(0);
         copy[0].likeCount = res.data.likes;
         setLiked(res.data.liked);
         setOnePageData(copy);
     };
 
+    // 싫어요 눌렀을 때 함수
     const clickHate = async () => {
+        if (!localStorage.getItem('token')) {
+            alert('로그인 상태에서만 가능합니다');
+            return;
+        }
         let res = await axios({
             method: 'post',
+            // url: `http://localhost:8080/boardsAuth/dislike`,
             url: `http://localhost:8080/boardsAuth/dislike`,
             data: {
                 postId: onePageData[0].postId,
-                userId: 1, // 수정해야함
+                // userId: 1, // 수정해야함
                 liked: true,
                 disliked: false,
             },
@@ -253,6 +334,7 @@ const PostModal = () => {
                 Authorization: `Bearer ${token}`,
             },
         });
+        console.log(res);
         let copy = onePageData.slice(0);
         copy[0].dislikeCount = res.data.dislikes;
         setDisLiked(res.data.disliked);
@@ -262,6 +344,24 @@ const PostModal = () => {
     return (
         <ModalContainer>
             <DialogBox>
+                <div
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'end',
+                    }}
+                >
+                    <IoIosClose
+                        style={{
+                            cursor: 'pointer',
+                            fontSize: '20px',
+                            marginBottom: '10px',
+                        }}
+                        onClick={() => {
+                            setDetailModalOn(false);
+                        }}
+                    />
+                </div>
                 <_content>
                     <_postTitle>{onePageData[0].title}</_postTitle>
                     <_rightSide>
@@ -340,23 +440,26 @@ const PostModal = () => {
                             ) : null}
                         </_share>
                     </_dateLine>
-                    <_dateLine>
-                        <_recomment
-                            onClick={() => {
-                                setUpdatePostId(onePageData[0]?.postId);
-                                setUpdateModal(true);
-                            }}
-                        >
-                            수정
-                        </_recomment>
-                        <_recomment
-                            onClick={() => {
-                                postDeletePost(onePageData[0]?.postId);
-                            }}
-                        >
-                            삭제
-                        </_recomment>
-                    </_dateLine>
+                    {nickname == onePageData[0].user.nickname && (
+                        <_dateLine>
+                            <_recomment
+                                onClick={() => {
+                                    setUpdatePostId(onePageData[0]?.postId);
+                                    setUpdateModal(true);
+                                }}
+                            >
+                                수정
+                            </_recomment>
+                            <_recomment
+                                onClick={() => {
+                                    postDeletePost(onePageData[0]?.postId);
+                                }}
+                            >
+                                삭제
+                            </_recomment>
+                        </_dateLine>
+                    )}
+
                     <br></br>
                     <_realContent
                         dangerouslySetInnerHTML={{
@@ -423,40 +526,48 @@ const PostModal = () => {
                                                             }
                                                         </_eachCommentWriter>
                                                         <_option>
-                                                            <_recomment
-                                                                onClick={() => {
-                                                                    postUpdateComment(
-                                                                        x.commentId,
-                                                                        x?.content,
-                                                                    );
-                                                                }}
-                                                            >
-                                                                수정
-                                                            </_recomment>
-                                                            <_recomment
-                                                                onClick={() => {
-                                                                    setTargetComment(
-                                                                        index,
-                                                                    );
-                                                                    setRecommentOn(
-                                                                        true,
-                                                                    );
-                                                                }}
-                                                            >
-                                                                답글
-                                                            </_recomment>
-                                                            {/* 로그인기능완성되면 이 버튼은 댓글작성자 본인에게만 보임 */}
-                                                            <_recomment
-                                                                onClick={() => {
-                                                                    postDeleteComment(
-                                                                        x.commentId,
-                                                                        onePageData[0]
-                                                                            ?.postId,
-                                                                    );
-                                                                }}
-                                                            >
-                                                                삭제
-                                                            </_recomment>
+                                                            {token && (
+                                                                <_recomment
+                                                                    onClick={() => {
+                                                                        setTargetComment(
+                                                                            index,
+                                                                        );
+                                                                        setRecommentOn(
+                                                                            true,
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    답글
+                                                                </_recomment>
+                                                            )}
+                                                            {nickname ==
+                                                                onePageData[0]
+                                                                    .user
+                                                                    .nickname && (
+                                                                <>
+                                                                    <_recomment
+                                                                        onClick={() => {
+                                                                            postUpdateComment(
+                                                                                x.commentId,
+                                                                                x?.content,
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        수정
+                                                                    </_recomment>
+                                                                    <_recomment
+                                                                        onClick={() => {
+                                                                            postDeleteComment(
+                                                                                x.commentId,
+                                                                                onePageData[0]
+                                                                                    ?.postId,
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        삭제
+                                                                    </_recomment>
+                                                                </>
+                                                            )}
                                                         </_option>
                                                     </_commentWriterLine>
                                                     {commentUpdate &&
@@ -528,35 +639,39 @@ const PostModal = () => {
                                                                                         .nickname
                                                                                 }
                                                                             </_eachCommentWriter>
-                                                                            {/* 로그인기능완성되면 이 버튼은 댓글작성자 본인에게만 보임 */}
-                                                                            <div
-                                                                                style={{
-                                                                                    display:
-                                                                                        'flex',
-                                                                                }}
-                                                                            >
-                                                                                <_recomment
-                                                                                    onClick={() => {
-                                                                                        postUpdateComment(
-                                                                                            y.commentId,
-                                                                                            y?.content,
-                                                                                        );
+                                                                            {nickname ==
+                                                                                onePageData[0]
+                                                                                    .user
+                                                                                    .nickname && (
+                                                                                <div
+                                                                                    style={{
+                                                                                        display:
+                                                                                            'flex',
                                                                                     }}
                                                                                 >
-                                                                                    수정
-                                                                                </_recomment>
-                                                                                <_recomment
-                                                                                    onClick={() => {
-                                                                                        postDeleteComment(
-                                                                                            y.commentId,
-                                                                                            onePageData[0]
-                                                                                                ?.postId,
-                                                                                        );
-                                                                                    }}
-                                                                                >
-                                                                                    삭제
-                                                                                </_recomment>
-                                                                            </div>
+                                                                                    <_recomment
+                                                                                        onClick={() => {
+                                                                                            postUpdateComment(
+                                                                                                y.commentId,
+                                                                                                y?.content,
+                                                                                            );
+                                                                                        }}
+                                                                                    >
+                                                                                        수정
+                                                                                    </_recomment>
+                                                                                    <_recomment
+                                                                                        onClick={() => {
+                                                                                            postDeleteComment(
+                                                                                                y.commentId,
+                                                                                                onePageData[0]
+                                                                                                    ?.postId,
+                                                                                            );
+                                                                                        }}
+                                                                                    >
+                                                                                        삭제
+                                                                                    </_recomment>
+                                                                                </div>
+                                                                            )}
                                                                         </_commentWriterLine2>
                                                                         {commentUpdate &&
                                                                         targetUpdateComment ==
@@ -666,24 +781,28 @@ const PostModal = () => {
                                     }
                                 })}
                             </_commentsList>
-                            <_commentArea>
-                                <_commentWriter>
-                                    여우님
-                                    <_comment
-                                        onClick={() => {
-                                            postComment(onePageData[0]?.postId);
+                            {nickname && (
+                                <_commentArea>
+                                    <_commentWriter>
+                                        {nickname}
+                                        <_comment
+                                            onClick={() => {
+                                                postComment(
+                                                    onePageData[0]?.postId,
+                                                );
+                                            }}
+                                        >
+                                            작성
+                                        </_comment>
+                                    </_commentWriter>
+                                    <_commentContents
+                                        value={commentContent}
+                                        onChange={(e) => {
+                                            setCommentContent(e.target.value);
                                         }}
-                                    >
-                                        작성
-                                    </_comment>
-                                </_commentWriter>
-                                <_commentContents
-                                    value={commentContent}
-                                    onChange={(e) => {
-                                        setCommentContent(e.target.value);
-                                    }}
-                                ></_commentContents>
-                            </_commentArea>
+                                    ></_commentContents>
+                                </_commentArea>
+                            )}
                         </>
                     )}
                 </_content>
@@ -819,6 +938,7 @@ const _share = styled.div`
     position: relative;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     margin: 0px 5px 0px 5px;
     cursor: pointer;
 `;
@@ -838,10 +958,11 @@ const _content = styled.div`
 const _commentArea = styled.div`
     width: 100%;
     height: 200px;
-    border: 1px solid black;
+    border: 1px solid #ccc;
     display: flex;
     flex-direction: column;
     align-items: center;
+    border-radius: 5px;
 `;
 
 const _commentWriter = styled.div`
@@ -853,11 +974,12 @@ const _commentWriter = styled.div`
 `;
 
 const _commentContents = styled.textarea`
-    border: 1px solid black;
+    border: 1px solid #ccc;
     width: 95%;
     height: 150px;
     resize: none;
     font-size: 16px;
+    border-radius: 5px;
 `;
 
 const _realContent = styled.div`
@@ -924,6 +1046,8 @@ const _recommentBox = styled.textarea`
 
 const _postTitle = styled.h1`
     width: 100%;
+    word-wrap: break-word;
+    word-break: break-all;
 `;
 
 const _likeLine = styled.div`
