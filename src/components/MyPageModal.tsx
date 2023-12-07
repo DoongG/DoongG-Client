@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { AiOutlineClose } from 'react-icons/ai';
 import { User } from './data/User';
 import { PasswordChangeModal } from './PasswordChangeModal';
-import originalImg from '../assets/Mascot.jpg';
+import originalImg from '../assets/Mascot.png';
 import axios from 'axios';
 import { S3 } from 'aws-sdk';
 import ReactS3Client from 'react-aws-s3-typescript';
