@@ -41,14 +41,12 @@ function UpdateModal() {
 
     // 제목 핸들러
     const handleTitleChange = (e: any) => {
-        console.log(e.currentTarget.value.length);
         if (e.currentTarget.value.length <= 50) setTitle(e.currentTarget.value);
         else alert('최대 50글자까지 가능합니다');
     };
 
     // 내용 핸들러
     const handleCommentAllow = (e: any) => {
-        console.log(e.currentTarget.value);
         if (e.currentTarget.value == 'true') {
             setCommentAllowed(true);
         } else {
@@ -105,7 +103,6 @@ function UpdateModal() {
                     const range: any = editor.getSelection();
                     editor.insertEmbed(range.index, 'image', res.location);
                     editor.setSelection(range.index + 1);
-                    console.log(images);
                     const eachImage = {
                         url: res.location,
                         imageType: images.length > 0 ? 'contents' : 'thumbnail',
@@ -113,9 +110,7 @@ function UpdateModal() {
                     };
                     setImages((prevList: any) => [...prevList, eachImage]);
                 }
-            } catch (error) {
-                console.log(error);
-            }
+            } catch (error) {}
         }
     };
 
@@ -157,7 +152,6 @@ function UpdateModal() {
             alert('로그인 된 상태가 아닙니다');
             return;
         }
-        console.log(token);
         let tagTempArr = [];
         for (let i = 0; i < tags.length; i++) {
             let newTag = {
@@ -189,13 +183,11 @@ function UpdateModal() {
                 Authorization: `Bearer ${token}`,
             },
         });
-        console.log(res);
 
         let res2 = await axios({
             method: 'get',
             url: `${process.env.REACT_APP_API_KEY}/boards/posts/${onePageData[0]?.postId}`,
         });
-        console.log(res2);
         setOnePageData([res2.data]);
 
         alert('글 수정 성공!');

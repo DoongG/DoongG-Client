@@ -148,7 +148,6 @@ const BoardUnited = () => {
                                     }}
                                 >
                                     {x.posts.map((y: any, index: number) => {
-                                        console.log(y);
                                         return (
                                             <div
                                                 style={{

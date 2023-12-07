@@ -19,7 +19,6 @@ function PasswordChangeModal({
     const [nickname, setNickname] = useState<string | null>('');
 
     useEffect(() => {
-        console.log(localStorage.getItem('token'));
         setToken(localStorage.getItem('token'));
         setNickname(localStorage.getItem('nickname'));
     }, []);
@@ -42,8 +41,6 @@ function PasswordChangeModal({
             password: newPassword,
         };
 
-        console.log(requestData);
-        console.log(token);
 
         axios
             .post(
@@ -58,7 +55,6 @@ function PasswordChangeModal({
             .then((response) => {
                 const result = response.data;
 
-                console.log(response.data);
 
                 if (result) {
                     alert('성공');
@@ -66,7 +62,6 @@ function PasswordChangeModal({
                 }
             })
             .catch((error) => {
-                console.log(error.response);
             });
     };
 

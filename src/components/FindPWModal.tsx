@@ -45,7 +45,7 @@ function FindPWModal({ onClickToggleModal }: ModalDefaultType) {
             )
             .then((response) => {
                 const result = response.data;
-                console.log(result);
+
                 if (!result) {
                     alert('존재하지 않는 이메일입니다.');
                 } else {

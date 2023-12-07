@@ -263,7 +263,6 @@ const TodayFoodModal = () => {
         for (let i = 0; i < foodDB.length; i++) {
             if (foodDB[i].name == category) {
                 let res = foodDB[i].pack.func(foodDB[i].pack.arr);
-                console.log(res);
                 setTarget(res);
                 return;
             }
@@ -277,7 +276,6 @@ const TodayFoodModal = () => {
     }, [target]);
 
     const handleResize = () => {
-        console.log(window.innerWidth / 25);
         if (window.innerWidth / 10 < 45) {
             setTitleWidth(window.innerWidth / 10);
         }

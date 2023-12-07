@@ -67,15 +67,11 @@ function LoginModal({
             password,
         };
 
-        console.log(requestData);
-
         // axios를 사용하여 로그인 요청
         axios
             .post('${process.env.REACT_APP_API_KEY}/user/login', requestData)
             .then((response) => {
                 const result = response.data;
-
-                console.log(result);
 
                 if (result == '1') {
                     setLoginError('비밀번호가 옳바르지 않습니다.');

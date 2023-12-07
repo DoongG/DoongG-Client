@@ -49,7 +49,6 @@ function FindIDModal({
 
     // 아이디 찾기
     const handleFindID = () => {
-        console.log(phoneNumber);
         const requestData = {
             nickname,
             phoneNumber,

@@ -36,8 +36,6 @@ function OrderHistoryModal({
         setCurrentIndex(newIndex);
     };
 
-    console.log(orderHistoryData);
-
     return (
         <ModalContainer>
             <DialogBox>

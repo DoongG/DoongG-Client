@@ -45,7 +45,6 @@ const RoomReviewWatch = () => {
             })
             .catch(function (error) {
                 // 에러 핸들링
-                console.log(error);
             })
             .finally(function () {
                 // 항상 실행되는 영역

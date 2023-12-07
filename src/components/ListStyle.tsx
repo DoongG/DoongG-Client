@@ -109,32 +109,22 @@ const ListStyle = () => {
                 setIsKeywordExsist(keyword);
             }
             if (keyword.length > 0) {
-                console.log(
-                    `${process.env.REACT_APP_API_KEY}/boards/search/${
-                        path.pathname.split('/')[3]
-                    }?keyword=${keyword}&page=${page}&order=${order}`,
-                );
                 res = await axios({
                     method: 'get',
                     url: `${process.env.REACT_APP_API_KEY}/boards/search/${
                         path.pathname.split('/')[3]
                     }?keyword=${keyword}&page=${page}&order=${order}`,
                 });
-                console.log(res?.data);
+
                 setListData(res?.data.content);
             } else {
-                console.log(
-                    `${process.env.REACT_APP_API_KEY}/boards/${
-                        path.pathname.split('/')[2]
-                    }?page=${page}&order=${order}`,
-                );
                 res = await axios({
                     method: 'get',
                     url: `${process.env.REACT_APP_API_KEY}/boards/${
                         path.pathname.split('/')[2]
                     }?page=${page}&order=${order}`,
                 });
-                console.log(res?.data);
+
                 setListData(res?.data.posts);
             }
         } else {
@@ -153,7 +143,7 @@ const ListStyle = () => {
                     }?page=${page}&order=${whichType}`,
                 });
             }
-            console.log(res?.data);
+
             setListData(res?.data.posts);
         }
     };
@@ -179,7 +169,7 @@ const ListStyle = () => {
                     : path.pathname.split('/')[2]
             }?page=1`,
         });
-        console.log(res.data);
+
         setBoardPostCount(res.data.postCount);
         setListData(res.data.posts);
         setSignal(false);
@@ -190,14 +180,12 @@ const ListStyle = () => {
 
     // 렌더링시 데이터 받아오는 이펙트
     useEffect(() => {
-        console.log(path);
         if (path.search) {
             let temp = path.search.slice(1);
             let arr = temp.split('&');
             for (let i = 0; i < arr.length; i++) {
                 if (arr[i].split('=')[0] == 'page') {
                     getListData(+arr[i].split('=')[1]);
-                    console.log(+arr[i].split('=')[1]);
                     setColorPage(+arr[i].split('=')[1]);
                 }
             }
@@ -217,7 +205,6 @@ const ListStyle = () => {
     // 페이지네이션
     const pagination = (num: number, pageSection: number) => {
         let pagesNum = Math.ceil(num / 12);
-        console.log('이게어케나오지', pagesNum);
         let data = [];
         for (let i = pageSection; i <= pageSection + 9; i++) {
             if (pagesNum >= i) {
@@ -238,7 +225,6 @@ const ListStyle = () => {
     };
 
     useEffect(() => {
-        console.log(boardPostCount);
         pagination(boardPostCount, 1);
         // setColorPage(1);
         if (path.search) {
@@ -255,7 +241,6 @@ const ListStyle = () => {
     }, [boardPostCount]);
 
     useEffect(() => {
-        console.log(nowPage);
         if ((nowPage - 1) % 10 == 0) {
             pagination(boardPostCount, nowPage);
         }
@@ -263,8 +248,6 @@ const ListStyle = () => {
 
     // 게시글 하나 가져오는 함수
     const getOnePost = async (id: number) => {
-        console.log(id);
-
         let res = await axios({
             method: 'get',
             url: `${process.env.REACT_APP_API_KEY}/boards/posts/${id}`,
@@ -281,13 +264,6 @@ const ListStyle = () => {
         });
         getOnePost(postId);
     };
-
-    // useEffect(() => {
-    //     console.log(onePageData);
-    //     if (onePageData.length > 0) {
-    //         setDetailModalOn(true);
-    //     }
-    // }, [onePageData]);
 
     return (
         <_listContainer>

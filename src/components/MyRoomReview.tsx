@@ -16,7 +16,6 @@ function MyRoomReview({
     children,
     myRoomReviewData,
 }: MyRoomReviewProps) {
-    console.log('asfasdf', myRoomReviewData);
     const [isModalOpen, setModalOpen] = useState(true);
     const modalClose = () => {
         setModalOpen(false);

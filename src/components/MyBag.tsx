@@ -32,8 +32,6 @@ function MyBag({ onClickToggleModal, children, cartData }: MyBagProps) {
         setCurrentIndex(newIndex);
     };
 
-    console.log(cartData);
-
     return (
         <ModalContainer>
             <DialogBox>
