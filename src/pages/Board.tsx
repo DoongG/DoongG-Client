@@ -51,12 +51,24 @@ const _galleryContainer = styled.div`
     justify-content: center;
 `;
 
+const _boardTitle = styled.div`
+    @font-face {
+        font-family: 'GangwonEduPowerExtraBoldA';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff')
+            format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    font-family: 'GangwonEduPowerExtraBoldA';
+    font-weight: 700;
+    font-size: 50px;
+`;
+
+// 특정 게시판 하나 컴포넌트
 const Board = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    // const [galleryName, setGalleryName] = useState('');
     const [galleryType, setGalleryType] = useState('');
-    // const [styleSwitch, setStyleSwitch] = useState(true);
 
     const {
         onePageData,
@@ -81,34 +93,38 @@ const Board = () => {
         setRealBoardName,
         isKeywordExsist,
         setIsKeywordExsist,
+        setBoardId,
     } = BoardStore();
 
+    // 게시판 데이터 요청
     const getBoardData = async () => {
         let res;
         if (location.pathname.includes('search')) {
             const judgement = location.pathname.split('/')[3];
-            console.log(`http://localhost:8080/boards/${judgement}`);
             res = await axios({
                 method: 'get',
+                // url: `http://localhost:8080/boards/${judgement}`,
                 url: `http://localhost:8080/boards/${judgement}`,
             });
         } else {
             const judgement = location.pathname.split('/')[2];
-            console.log(`http://localhost:8080/boards/${judgement}`);
             res = await axios({
                 method: 'get',
+                // url: `http://localhost:8080/boards/${judgement}`,
                 url: `http://localhost:8080/boards/${judgement}`,
             });
         }
         if (res) {
             console.log(res.data);
+            // 여기에 보드아이디도 하나 정해줘야함
+            // setBoardId(res.data.boardId);
             setRealBoardName(res.data.boardName);
             setGalleryType(res.data.boardDefaultType);
-            // setGalleryData(res.data.posts);
             setBoardPostCount(res.data.postCount);
         }
     };
 
+    // 한 게시판 렌더링
     useEffect(() => {
         getBoardData();
         if (location.search) {
@@ -116,6 +132,7 @@ const Board = () => {
         }
     }, []);
 
+    // 게시판 유형에 따라 게시판 boolean 값을 바꾸는 이펙트
     useEffect(() => {
         if (galleryType == 'list') {
             setStyleSwitch(false);
@@ -126,14 +143,17 @@ const Board = () => {
         }
     }, [galleryType]);
 
+    // 게시판 유형 바뀔 때 일부 값들 리셋하는 이펙트
     useEffect(() => {
         setIsKeywordExsist('');
         setDetailModalOn(false);
     }, [styleSwitch]);
 
+    // 게시물 하나 데이터 요청 함수
     const getOnePageData = async () => {
         let res = await axios({
             method: 'get',
+            // url: `http://localhost:8080/boards/posts/${modalSignal}`,
             url: `http://localhost:8080/boards/posts/${modalSignal}`,
         });
         setOnePageData([res.data]);
@@ -153,7 +173,7 @@ const Board = () => {
             {updateModal && <UpdateModal />}
             <_boardHeader>
                 <_innerBoardHeader>
-                    <h1>{realBoardName}</h1>
+                    <_boardTitle>{realBoardName}</_boardTitle>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <_switchButton
                             onClick={() => {

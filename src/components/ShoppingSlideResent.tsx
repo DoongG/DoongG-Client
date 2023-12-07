@@ -69,7 +69,7 @@ export default function ShoppingSlideResent() {
         const getResentProduct = async () => {
             try {
                 const res = await axios.get<ApiResponse, any>(
-                    'http://3.38.68.222:8080/shop/new',
+                    'http://localhost:8080/shop/new',
                 );
 
                 setResentProductList(res.data);

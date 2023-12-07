@@ -25,7 +25,6 @@ const _rightSection = styled.div`
     min-width: 140px;
     height: 200px;
     background-color: #1c393d;
-    /* border: 5px solid #1c393d; */
     border-radius: 5px;
     display: flex;
     justify-content: center;
@@ -54,18 +53,20 @@ const _eachBoardArea = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* height: 200px; */
 `;
 
 const _boardTitleArea = styled.div`
     padding: 5px 5px 5px 5px;
     width: 100%;
-    border: 2px solid #cbffd3;
+    min-width: 310px;
+    border: 5px solid #1c393d;
     border-radius: 20px;
+    color: #1c393d;
     cursor: pointer;
 `;
 
 const _eachPost = styled.div`
+    width: 90%;
     padding: 5px;
     display: flex;
     justify-content: space-between;
@@ -83,6 +84,7 @@ const _rightPlace = styled.div`
     flex-direction: column;
 `;
 
+// 통합 게시판 컴포넌트
 const BoardUnited = () => {
     const {
         currentBoardName,
@@ -96,29 +98,30 @@ const BoardUnited = () => {
     } = BoardStore();
     const navigate = useNavigate();
     const [allBoard, setAllBoard] = useState([]);
+
+    // 통합 게시판 데이터 요청
     const getBoard = async () => {
         let res = await axios({
             method: 'get',
+            // url: `http://localhost:8080/boards`,
             url: `http://localhost:8080/boards`,
         });
-
-        console.log(res);
         setAllBoard(res.data);
     };
 
+    // 통합 게시판 렌더링 이펙트
     useEffect(() => {
         getBoard();
         setModalSignal(0);
     }, []);
 
+    // 각 게시판에 들어가는 함수
     const enterEachBoard = (e: any) => {
-        // console.log(e.currentTarget.innerText);
-        // setCurrentBoardName(e.currentTarget.innerText);
         navigate(`/board/${e.currentTarget.innerText}`);
     };
 
+    // 통합게시판에서 특정 게시물 하나로 들어가는 함수
     const goToOnePage = async (id: any, postId: any) => {
-        // navigate(`/posts/${postId}`);
         setModalSignal(postId);
         navigate(`/board/${id}`);
     };
@@ -138,30 +141,68 @@ const BoardUnited = () => {
                                 >
                                     {x.boardName}
                                 </_boardTitleArea>
-                                {x.posts.map((y: any, index: number) => {
-                                    console.log(y);
-                                    return (
-                                        <>
-                                            <_eachPost
-                                                onClick={(e) => {
-                                                    goToOnePage(
-                                                        x.boardName,
-                                                        y.postId,
-                                                    );
+                                <div
+                                    style={{
+                                        width: '100%',
+                                        padding: '10px 0px 0px 0px',
+                                    }}
+                                >
+                                    {x.posts.map((y: any, index: number) => {
+                                        console.log(y);
+                                        return (
+                                            <div
+                                                style={{
+                                                    width: '100%',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    // justifyContent: 'center',
+                                                    alignItems: 'center',
                                                 }}
                                             >
-                                                <div>{y.title}</div>
-                                                <div>
-                                                    {y.createdAt.slice(0, 10)}{' '}
-                                                    {y.createdAt.slice(11, 16)}{' '}
-                                                </div>
-                                            </_eachPost>
-                                            {x.posts.length !== index + 1 ? (
-                                                <_hr></_hr>
-                                            ) : null}
-                                        </>
-                                    );
-                                })}
+                                                <_eachPost
+                                                    onClick={(e) => {
+                                                        goToOnePage(
+                                                            x.boardName,
+                                                            y.postId,
+                                                        );
+                                                    }}
+                                                >
+                                                    <div
+                                                        style={{
+                                                            minWidth: '140px',
+                                                            maxWidth: '140px',
+                                                            overflow: 'hidden',
+                                                            textOverflow:
+                                                                'ellipsis',
+                                                            whiteSpace:
+                                                                'nowrap',
+                                                        }}
+                                                    >
+                                                        {y.title}
+                                                    </div>
+                                                    <div
+                                                        style={{
+                                                            minWidth: '128px',
+                                                        }}
+                                                    >
+                                                        {y.createdAt.slice(
+                                                            0,
+                                                            10,
+                                                        )}{' '}
+                                                        {y.createdAt.slice(
+                                                            11,
+                                                            16,
+                                                        )}{' '}
+                                                    </div>
+                                                </_eachPost>
+                                                {/* {x.posts.length !==
+                                                index + 1 ? (
+                                                    <_hr></_hr>
+                                                ) : null} */}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
                             </_eachBoardArea>
                         );
                     })}

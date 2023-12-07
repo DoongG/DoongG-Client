@@ -13,6 +13,7 @@ import { useLocation, useNavigate } from 'react-router';
 import eyes from '../assets/eyes.png';
 import axios from 'axios';
 
+// url로 접근해서 들어가는 페이지 컴포넌트
 const PostDetail = () => {
     const location = useLocation();
 
@@ -22,6 +23,8 @@ const PostDetail = () => {
     const [copiedCheck, setCopiedCheck] = useState(false);
     const [commentsList, setCommentsList] = useState([]);
     const iscopied = useRef<any>(null);
+
+    // 게시물 데이터 하나 요청
     const getOnePage = async () => {
         console.log(location.pathname);
         let pathKey = location.pathname.split('/')[2];
@@ -35,6 +38,8 @@ const PostDetail = () => {
         setOnePageData([page]);
         // return res.data;
     };
+
+    // 조회수 1증가
     const plusView = async () => {
         let pathKey = location.pathname.split('/')[2];
         let res = await axios({
@@ -44,13 +49,14 @@ const PostDetail = () => {
         getOnePage();
     };
 
+    // 게시물 하나 렌더링 될 때 조회수 하나 추가
     useEffect(() => {
         plusView();
     }, []);
 
+    // 댓글 렌더링 이펙트
     useEffect(() => {
         if (onePageData[0]) {
-            console.log(onePageData[0]);
             let newData = onePageData[0];
 
             for (let i = 0; i < newData.comments.length; i++) {
@@ -71,11 +77,11 @@ const PostDetail = () => {
                     }
                 }
             }
-            console.log(newData.comments);
             setCommentsList(newData.comments);
         }
     }, [onePageData]);
 
+    // 공유버튼창 띄우기
     const share = (id: number) => {
         setShareBalloon(!shareBalloon);
     };
@@ -144,7 +150,7 @@ const PostDetail = () => {
                                     onClick={async (e) => {
                                         e.stopPropagation();
                                         await navigator.clipboard.writeText(
-                                            `http://localhost:3000/posts/${onePageData[0]?.postId}`,
+                                            `https://doongg.site/posts/${onePageData[0]?.postId}`,
                                         );
                                         setCopiedCheck(true);
                                         setTimeout(() => {
@@ -154,7 +160,7 @@ const PostDetail = () => {
                                 >
                                     <div style={{ display: 'flex' }}>
                                         <p style={{ margin: '5px' }}>
-                                            http://localhost:3000/posts/
+                                            https://doongg.site/posts/
                                             {onePageData[0]?.postId}
                                         </p>
                                         <div

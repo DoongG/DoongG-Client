@@ -11,7 +11,9 @@ import ReactQuill from 'react-quill';
 import AWS from 'aws-sdk';
 import ReactS3Client from 'react-aws-s3-typescript';
 import axios from 'axios';
+import { IoIosClose } from 'react-icons/io';
 
+// 글 수정 모달 컴포넌트
 function UpdateModal() {
     let myRef = useRef<ReactQuill>(null);
     let tagRef = useRef<any>(null);
@@ -25,6 +27,7 @@ function UpdateModal() {
         updateModal,
         setUpdateModal,
         updatePostId,
+        boardId,
     } = BoardStore();
     const [content, setContent] = useState('');
     const [title, setTitle] = useState('');
@@ -36,9 +39,14 @@ function UpdateModal() {
     const [images, setImages] = useState<any>([]);
     const [token, setToken] = useState<any>('');
 
+    // 제목 핸들러
     const handleTitleChange = (e: any) => {
-        setTitle(e.currentTarget.value);
+        console.log(e.currentTarget.value.length);
+        if (e.currentTarget.value.length <= 50) setTitle(e.currentTarget.value);
+        else alert('최대 50글자까지 가능합니다');
     };
+
+    // 내용 핸들러
     const handleCommentAllow = (e: any) => {
         console.log(e.currentTarget.value);
         if (e.currentTarget.value == 'true') {
@@ -52,6 +60,7 @@ function UpdateModal() {
         setCurrentTag(e.current.value);
     };
 
+    // 태그 추가하는 함수
     const tagAdder = (e: any) => {
         if (e.key == 'Enter') {
             if (tagRef.current) {
@@ -65,6 +74,7 @@ function UpdateModal() {
         }
     };
 
+    // 태그 빼는 함수
     const tagSubtracter = (tagContent: any) => {
         let temp = [];
         for (let i = 0; i < tags.length; i++) {
@@ -82,6 +92,7 @@ function UpdateModal() {
         secretAccessKey: 'OtlP81kOhHkBOPN/CP3083u1nV7uhml4NLg4jY6j',
     };
 
+    // 이미지 링크 생성기 및 게시글 창에 이미지 띄우는 함수
     const imageSender = async (input: any, images: any) => {
         if (input) {
             const file: any = input.files?.[0];
@@ -108,10 +119,12 @@ function UpdateModal() {
         }
     };
 
+    // 이미지 핸들러 작동 완료시 이미지 url 생성하는 함수 발생하는 이펙트
     useEffect(() => {
         imageSender(inputImage, images);
     }, [inputImage]);
 
+    // 이미지 핸들러
     const imageHandler = async () => {
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
@@ -122,6 +135,7 @@ function UpdateModal() {
         };
     };
 
+    // react-quill 모듈
     const modules = useMemo<any>(() => {
         return {
             toolbar: {
@@ -137,7 +151,12 @@ function UpdateModal() {
         };
     }, []);
 
+    // 글 업데이트 함수
     const postUpdatePost = async () => {
+        if (!localStorage.getItem('token')) {
+            alert('로그인 된 상태가 아닙니다');
+            return;
+        }
         console.log(token);
         let tagTempArr = [];
         for (let i = 0; i < tags.length; i++) {
@@ -151,11 +170,12 @@ function UpdateModal() {
             content: content,
             views: 0,
             board: {
+                // boardId: boardId,
                 boardId: 1,
             },
-            user: {
-                id: 1,
-            },
+            // user: {
+            //     id: 1,
+            // },
             commentAllowed: commentAllowed ? 'true' : 'false',
             commentCount: 0,
             hashtags: tagTempArr,
@@ -186,6 +206,7 @@ function UpdateModal() {
         setUpdateModal(!updateModal);
     };
 
+    // 이미지 업데이트 모달 발동시 기존 데이터 세팅 이펙트
     useEffect(() => {
         setTitle(onePageData[0].title);
         setContent(onePageData[0].content);
@@ -200,6 +221,7 @@ function UpdateModal() {
         );
     }, [updateModal]);
 
+    // 썸네일 고르는 함수
     const chooseThumbnail = (type: any, id: any) => {
         if (type == 'contents') {
             let confirmer = window.confirm(
@@ -219,6 +241,7 @@ function UpdateModal() {
         }
     };
 
+    // 이미지 삭제 함수
     const imageDelete = (type: any, id: any, url: any) => {
         let temp = [];
         let typeCheck = [];
@@ -249,6 +272,7 @@ function UpdateModal() {
         setImages(temp);
     };
 
+    // 렌더링시 토큰 등록
     useEffect(() => {
         setToken(localStorage.getItem('token'));
     }, []);
@@ -256,6 +280,29 @@ function UpdateModal() {
     return (
         <_modalContainer>
             <_dialogBox>
+                <div
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'end',
+                    }}
+                >
+                    <IoIosClose
+                        style={{
+                            cursor: 'pointer',
+                            fontSize: '20px',
+                            marginBottom: '10px',
+                        }}
+                        onClick={() => {
+                            let confirmNotice = window.confirm(
+                                '창을 끄면 작성중인 내용이 삭제됩니다. 창을 끄시겠습니까?',
+                            );
+                            if (confirmNotice) {
+                                setUpdateModal(!updateModal);
+                            }
+                        }}
+                    />
+                </div>
                 <_titleInput
                     placeholder=" 제목을 입력하세요"
                     id="title"
@@ -400,19 +447,15 @@ function UpdateModal() {
                             </div>
                         </div>
                     </_buttonPlace>
-                    <button onClick={postUpdatePost}>수정</button>
+                    <_postButton onClick={postUpdatePost}>수정</_postButton>
                 </_belowPlace>
             </_dialogBox>
             <_backdrop
                 onClick={() => {
-                    if (content.length > 0) {
-                        let confirmNotice = window.confirm(
-                            '창을 끄면 작성중인 내용이 삭제됩니다. 창을 끄시겠습니까?',
-                        );
-                        if (confirmNotice) {
-                            setUpdateModal(!updateModal);
-                        }
-                    } else {
+                    let confirmNotice = window.confirm(
+                        '창을 끄면 작성중인 내용이 삭제됩니다. 창을 끄시겠습니까?',
+                    );
+                    if (confirmNotice) {
                         setUpdateModal(!updateModal);
                     }
                 }}
@@ -420,6 +463,15 @@ function UpdateModal() {
         </_modalContainer>
     );
 }
+
+const _postButton = styled.button`
+    background-color: transparent;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    /* &:hover {
+        background-color: #1c393d;
+    } */
+`;
 
 const _customQuill = styled(ReactQuill)`
     padding: 0;

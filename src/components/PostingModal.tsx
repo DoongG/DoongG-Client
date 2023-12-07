@@ -11,13 +11,16 @@ import ReactQuill from 'react-quill';
 import AWS from 'aws-sdk';
 import ReactS3Client from 'react-aws-s3-typescript';
 import axios from 'axios';
+import { IoIosClose } from 'react-icons/io';
 
 // profile / thumbnail / contents
 
+// 글 작성 모달
 function Modal() {
     let myRef = useRef<ReactQuill>(null);
     let tagRef = useRef<any>(null);
-    const { postModalOn, setPostModalOn, setSignal, signal } = BoardStore();
+    const { postModalOn, setPostModalOn, setSignal, signal, boardId } =
+        BoardStore();
     const [content, setContent] = useState('');
     const [title, setTitle] = useState(' ');
     const [commentAllowed, setCommentAllowed] = useState(true);
@@ -28,12 +31,18 @@ function Modal() {
     const [inputImage, setInputImage] = useState<any>(null);
     const [token, setToken] = useState<string | null>('');
 
+    // 렌더링 시 토큰 등록
     useEffect(() => {
         setToken(localStorage.getItem('token'));
     }, []);
+
+    // 제목 핸들러
     const handleTitleChange = (e: any) => {
-        setTitle(e.currentTarget.value);
+        console.log(e.currentTarget.value.length);
+        if (e.currentTarget.value.length <= 50) setTitle(e.currentTarget.value);
+        else alert('최대 50글자까지 가능합니다');
     };
+    // 댓글 허용 여부 핸들러
     const handleCommentAllow = (e: any) => {
         console.log(e.currentTarget.value);
         if (e.currentTarget.value == 'true') {
@@ -47,6 +56,7 @@ function Modal() {
         setCurrentTag(e.current.value);
     };
 
+    // 태그 추가
     const tagAdder = (e: any) => {
         if (e.key == 'Enter') {
             if (tagRef.current) {
@@ -60,6 +70,7 @@ function Modal() {
         }
     };
 
+    // 태그 삭제
     const tagSubtracter = (tagContent: any) => {
         let temp = [];
         for (let i = 0; i < tags.length; i++) {
@@ -73,9 +84,11 @@ function Modal() {
     const config: any = {
         bucketName: 'doongg-bucket',
         region: 'ap-northeast-2',
-        accessKeyId: 'AKIAV64KNCLEKO47QYL4',
-        secretAccessKey: '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',
+        accessKeyId: process.env.REACT_APP_ACCESS_KEY_ID,
+        secretAccessKey: process.env.REACT_APP_SECRET_ACCESS_KEY,
     };
+
+    // 이미지 url 생성하는 함수
     const imageSender = async (input: any, images: any) => {
         if (input) {
             const file: any = input.files?.[0];
@@ -103,10 +116,12 @@ function Modal() {
         }
     };
 
+    // 이미지 핸들러 동작시 이미지 url 생성하는 함수 작동하는 이펙트
     useEffect(() => {
         imageSender(inputImage, images);
     }, [inputImage]);
 
+    // 이미지 핸들러
     const imageHandler = async () => {
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
@@ -116,6 +131,8 @@ function Modal() {
             setInputImage(input);
         };
     };
+
+    // react-quill 모듈
     const modules = useMemo<any>(() => {
         return {
             toolbar: {
@@ -131,7 +148,12 @@ function Modal() {
         };
     }, []);
 
+    // 게시글 작성 요청
     const postComplete = async () => {
+        if (!localStorage.getItem('token')) {
+            alert('로그인 된 상태가 아닙니다');
+            return;
+        }
         let tagTempArr = [];
         for (let i = 0; i < tags.length; i++) {
             let newTag = {
@@ -144,11 +166,12 @@ function Modal() {
             content: content,
             views: 0,
             board: {
+                // boardId: boardId,
                 boardId: 1,
             },
-            user: {
-                id: 1,
-            },
+            // user: {
+            //     id: 1,
+            // },
             commentAllowed: commentAllowed ? 'true' : 'false',
             commentCount: 0,
             hashtags: tagTempArr,
@@ -176,6 +199,7 @@ function Modal() {
         setCommentAllowed(true);
     };
 
+    // 썸네일 고르는 함수
     const chooseThumbnail = (type: any, id: any) => {
         if (type == 'contents') {
             let confirmer = window.confirm(
@@ -195,6 +219,7 @@ function Modal() {
         }
     };
 
+    // 이미지 삭제
     const imageDelete = (type: any, id: any, url: any) => {
         let temp = [];
         let typeCheck = [];
@@ -232,6 +257,29 @@ function Modal() {
     return (
         <_modalContainer>
             <_dialogBox>
+                <div
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'end',
+                    }}
+                >
+                    <IoIosClose
+                        style={{
+                            cursor: 'pointer',
+                            fontSize: '20px',
+                            marginBottom: '10px',
+                        }}
+                        onClick={() => {
+                            let confirmNotice = window.confirm(
+                                '창을 끄면 작성중인 내용이 삭제됩니다. 창을 끄시겠습니까?',
+                            );
+                            if (confirmNotice) {
+                                setPostModalOn(!postModalOn);
+                            }
+                        }}
+                    />
+                </div>
                 <_titleInput
                     placeholder=" 제목을 입력하세요"
                     id="title"
@@ -359,6 +407,7 @@ function Modal() {
                                         name="commentAllow"
                                         value="true"
                                         type="radio"
+                                        checked={true}
                                         onChange={handleCommentAllow}
                                     ></input>
                                 </span>{' '}
@@ -368,25 +417,22 @@ function Modal() {
                                         name="commentAllow"
                                         value="false"
                                         type="radio"
+                                        checked={false}
                                         onChange={handleCommentAllow}
                                     ></input>
                                 </span>
                             </div>
                         </div>
                     </_buttonPlace>
-                    <button onClick={postComplete}>작성</button>
+                    <_postButton onClick={postComplete}>작성</_postButton>
                 </_belowPlace>
             </_dialogBox>
             <_backdrop
                 onClick={() => {
-                    if (content.length > 0) {
-                        let confirmNotice = window.confirm(
-                            '창을 끄면 작성중인 내용이 삭제됩니다. 창을 끄시겠습니까?',
-                        );
-                        if (confirmNotice) {
-                            setPostModalOn(!postModalOn);
-                        }
-                    } else {
+                    let confirmNotice = window.confirm(
+                        '창을 끄면 작성중인 내용이 삭제됩니다. 창을 끄시겠습니까?',
+                    );
+                    if (confirmNotice) {
                         setPostModalOn(!postModalOn);
                     }
                 }}
@@ -394,6 +440,15 @@ function Modal() {
         </_modalContainer>
     );
 }
+
+const _postButton = styled.button`
+    background-color: transparent;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    /* &:hover {
+        background-color: #1c393d;
+    } */
+`;
 
 const _customQuill = styled(ReactQuill)`
     padding: 0;

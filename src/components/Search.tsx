@@ -5,6 +5,7 @@ import { IoIosClose } from 'react-icons/io';
 import axios from 'axios';
 import { BoardStore } from '../store/storeT';
 import { useLocation, useNavigate } from 'react-router';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
 
 const EmptySearchBalloon = styled.div`
     position: absolute;
@@ -68,7 +69,9 @@ const HashTagBox = styled.div`
 const Search = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const boardName = location.pathname.split('/')[2];
+    const boardName = location.search.includes('keyword')
+        ? location.pathname.split('/')[3]
+        : location.pathname.split('/')[2];
     const [inputHashTag, setInputHashTag] = useState('');
     const [hashTags, setHashTags] = useState<string[]>([]);
     const [hashTagBoxes, setHashTagBoxes] = useState<JSX.Element[]>([]);
@@ -82,6 +85,7 @@ const Search = () => {
         setIsKeywordExsist,
         selectedOption,
         setSelectedOption,
+        orderKind,
         setOrderKind,
         setSearchCount,
         setBoardPostCount,
@@ -99,19 +103,28 @@ const Search = () => {
         return () => clearTimeout(timeoutId);
     }, [showEmptySearchBalloon]);
 
+    // 검색 요청 함수
     const handleSearch = async () => {
         setSearchCount(1);
         const inputElement = document.querySelector('.input_search');
         if (inputElement) {
             const inputValue = (inputElement as HTMLInputElement).value;
+            console.log(inputValue);
             setIsKeywordExsist(inputValue);
             if (inputValue === '') {
                 setShowEmptySearchBalloon(true);
             } else {
+                console.log(
+                    `http://localhost:8080/boards/search/${boardName}?keyword=${inputValue}&searchType=${selectedOption}&order=${
+                        orderKind ? 'views' : 'latest'
+                    }&pageSize=12&page=1`,
+                );
                 // 성공시 로직 작성
                 let res = await axios({
                     method: 'get',
-                    url: `http://localhost:8080/boards/search/${boardName}?keyword=${inputValue}&searchType=${selectedOption}&order=latest&pageSize=12&page=1`,
+                    url: `http://localhost:8080/boards/search/${boardName}?keyword=${inputValue}&searchType=${selectedOption}&order=${
+                        orderKind ? 'views' : 'latest'
+                    }&pageSize=12&page=1`,
                 });
                 console.log(res.data);
                 if (styleSwitch == true) {
@@ -132,7 +145,7 @@ const Search = () => {
                         );
                     }
 
-                    setOrderKind(false);
+                    // setOrderKind(false);
                     setListData(res.data.posts);
                     setBoardPostCount(res.data.postCount);
                 }
@@ -281,7 +294,9 @@ const Search = () => {
                         />
                     )}
                 </_InputContainer>
-                <_SearchButton onClick={handleSearch}>검색</_SearchButton>
+                <_SearchButton onClick={handleSearch}>
+                    <FaMagnifyingGlass />
+                </_SearchButton>
                 {showEmptySearchBalloon && (
                     <EmptySearchBalloon>
                         검색어를 입력해 주세요!!
@@ -322,7 +337,7 @@ const _SearchBox = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 500px;
+    width: 100%;
     border: 2px solid black;
     border-radius: 10px;
 `;
@@ -387,10 +402,13 @@ const _SearchButton = styled.button`
         font-weight: normal;
         font-style: normal;
     }
+    min-width: 28px;
+    max-height: 26px;
     font-family: 'MBC1961GulimM';
     background-color: white;
     color: black;
     border: none;
     cursor: pointer;
+    overflow: hidden;
 `;
 export { Search };

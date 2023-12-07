@@ -43,6 +43,8 @@ interface BoardStore {
     setSearchCount: (text: any) => void;
     realBoardName: string;
     setRealBoardName: (text: any) => void;
+    boardId: number;
+    setBoardId: (text: any) => void;
 }
 
 // Zustand 스토어 생성 및 초기 상태 정의
@@ -109,6 +111,9 @@ const BoardStore: any = create<BoardStore>((set) => ({
 
     realBoardName: '',
     setRealBoardName: (input: any) => set({ realBoardName: input }),
+
+    boardId: -1,
+    setBoardId: (input: any) => set({ boardId: input }),
 }));
 
 export { BoardStore };
