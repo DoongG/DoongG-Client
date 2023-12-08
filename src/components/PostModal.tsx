@@ -522,8 +522,7 @@ const PostModal = () => {
                                                                 </_recomment>
                                                             )}
                                                             {nickname ==
-                                                                onePageData[0]
-                                                                    .user
+                                                                x.commenter
                                                                     .nickname && (
                                                                 <>
                                                                     <_recomment
@@ -620,8 +619,8 @@ const PostModal = () => {
                                                                                 }
                                                                             </_eachCommentWriter>
                                                                             {nickname ==
-                                                                                onePageData[0]
-                                                                                    .user
+                                                                                y
+                                                                                    .commenter
                                                                                     .nickname && (
                                                                                 <div
                                                                                     style={{
