@@ -392,7 +392,7 @@ const _buttonWrite = styled.button<Props>`
     padding: 5px 10px;
     border-radius: 5px;
     font-weight: 700;
-    min-width: 120px;
+    min-width: 113px;
     border: none;
     background-color: rgb(28, 57, 61);
 
@@ -404,7 +404,7 @@ const _buttonSee = styled.button<Props>`
     padding: 5px 10px;
     border-radius: 5px;
     font-weight: 700;
-    min-width: 120px;
+    min-width: 113px;
     border: none;
     background-color: rgb(28, 57, 61);
     color: ${(props) =>

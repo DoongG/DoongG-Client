@@ -165,8 +165,8 @@ const RoomReviewWriteMap = () => {
                                     ? result[0].road_address.address_name
                                     : result[0].address.address_name;
 
-                                // setMylat(mouseEvent.latLng.getLat());
-                                // setMylng(mouseEvent.latLng.getLng());
+                                setMylat(mouseEvent.latLng.getLat());
+                                setMylng(mouseEvent.latLng.getLng());
                                 setCenterLat(mouseEvent.latLng.getLat());
                                 setCenterLng(mouseEvent.latLng.getLng());
                                 setAddress(addr);

@@ -12,6 +12,7 @@ import { useSpring, animated } from 'react-spring';
 import axios from 'axios';
 
 const _headerArea = styled.div`
+    position: relative;
     font-size: 14px;
     width: 100%;
     height: 50px;

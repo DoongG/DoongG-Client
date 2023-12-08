@@ -385,7 +385,7 @@ const ShoppingDetailHeader: React.FC<ShoppingDetailModalProps> = ({
 
 // 가장 밖 div
 const _ShoppingDetailModal = styled.div<ModalProps>`
-    height: 90%;
+    height: 82%;
     width: 92%;
     position: fixed;
     top: 50%;

@@ -199,6 +199,8 @@ function SignUpModal({
                 .then((response) => {
                     const result = response.data;
 
+                    console.log(result);
+
                     if (!result) {
                         alert('존재하는 번호입니다.');
                     } else {
