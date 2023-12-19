@@ -5,18 +5,22 @@ import React, {
     useMemo,
     useEffect,
 } from 'react';
-import { BoardStore } from '../store/storeT';
+import { BoardStore } from '../../../store/storeT';
 import styled from 'styled-components';
 import ReactQuill from 'react-quill';
 import AWS from 'aws-sdk';
 import ReactS3Client from 'react-aws-s3-typescript';
 import axios from 'axios';
 import { IoIosClose } from 'react-icons/io';
+import { CommentAllowCheckRadio } from './CommentAllowCheckRadio';
+import { imageDataType } from '../../Type/Type';
+import { ImagePreview } from './ImagePreview';
+import { Configer } from '../../Config/Configer';
 
 // 글 수정 모달 컴포넌트
 function UpdateModal() {
     let myRef = useRef<ReactQuill>(null);
-    let tagRef = useRef<any>(null);
+    let tagRef = useRef<HTMLDivElement>(null);
     const {
         onePageData,
         setOnePageData,
@@ -33,25 +37,16 @@ function UpdateModal() {
     const [title, setTitle] = useState('');
     const [commentAllowed, setCommentAllowed] = useState(true);
     const [currentTag, setCurrentTag] = useState('');
-    const [inputImage, setInputImage] = useState<any>(null);
+    const [inputImage, setInputImage] = useState<HTMLInputElement | null>(null);
     const [tagExsist, setTagExsist] = useState(false);
-    const [tags, setTags] = useState<any>([]);
-    const [images, setImages] = useState<any>([]);
-    const [token, setToken] = useState<any>('');
+    const [tags, setTags] = useState<string[]>([]);
+    const [images, setImages] = useState<imageDataType[]>([]);
+    const [token, setToken] = useState<string | null>('');
 
     // 제목 핸들러
-    const handleTitleChange = (e: any) => {
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.currentTarget.value.length <= 50) setTitle(e.currentTarget.value);
         else alert('최대 50글자까지 가능합니다');
-    };
-
-    // 내용 핸들러
-    const handleCommentAllow = (e: any) => {
-        if (e.currentTarget.value == 'true') {
-            setCommentAllowed(true);
-        } else {
-            setCommentAllowed(false);
-        }
     };
 
     const handleTag = (e: any) => {
@@ -59,7 +54,7 @@ function UpdateModal() {
     };
 
     // 태그 추가하는 함수
-    const tagAdder = (e: any) => {
+    const tagAdder = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key == 'Enter') {
             if (tagRef.current) {
                 if (currentTag.length > 0 && !tags.includes(currentTag)) {
@@ -73,7 +68,7 @@ function UpdateModal() {
     };
 
     // 태그 빼는 함수
-    const tagSubtracter = (tagContent: any) => {
+    const tagSubtracter = (tagContent: string) => {
         let temp = [];
         for (let i = 0; i < tags.length; i++) {
             if (tags[i] !== tagContent) {
@@ -83,19 +78,15 @@ function UpdateModal() {
         setTags(temp);
     };
 
-    const config: any = {
-        bucketName: 'doongg-bucket',
-        region: 'ap-northeast-2',
-        accessKeyId: 'AKIAV64KNCLEKO47QYL4',
-        secretAccessKey: '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',
-    };
-
     // 이미지 링크 생성기 및 게시글 창에 이미지 띄우는 함수
-    const imageSender = async (input: any, images: any) => {
+    const imageSender = async (
+        input: HTMLInputElement | null,
+        images: imageDataType[],
+    ) => {
         if (input) {
             const file: any = input.files?.[0];
             try {
-                const s3 = new ReactS3Client(config);
+                const s3 = new ReactS3Client(Configer);
                 let fullName = file.name.split('.')[0] + Date.now();
                 const res = await s3.uploadFile(file, fullName);
                 if (myRef.current) {
@@ -106,9 +97,9 @@ function UpdateModal() {
                     const eachImage = {
                         url: res.location,
                         imageType: images.length > 0 ? 'contents' : 'thumbnail',
-                        description: Date.now(),
+                        description: '' + Date.now(),
                     };
-                    setImages((prevList: any) => [...prevList, eachImage]);
+                    setImages((prevList) => [...prevList, eachImage]);
                 }
             } catch (error) {}
         }
@@ -131,7 +122,7 @@ function UpdateModal() {
     };
 
     // react-quill 모듈
-    const modules = useMemo<any>(() => {
+    const modules = useMemo(() => {
         return {
             toolbar: {
                 container: [
@@ -165,17 +156,13 @@ function UpdateModal() {
             views: 0,
             board: {
                 boardId: boardId,
-                // boardId: 1,
             },
-            // user: {
-            //     id: 1,
-            // },
             commentAllowed: commentAllowed ? 'true' : 'false',
             commentCount: 0,
             hashtags: tagTempArr,
             postImages: images,
         };
-        let res = await axios({
+        await axios({
             method: 'post',
             url: `${process.env.REACT_APP_API_KEY}/boardsAuth/updatePost/${updatePostId}`,
             data: data,
@@ -214,7 +201,7 @@ function UpdateModal() {
     }, [updateModal]);
 
     // 썸네일 고르는 함수
-    const chooseThumbnail = (type: any, id: any) => {
+    const chooseThumbnail = (type: string, id: string) => {
         if (type == 'contents') {
             let confirmer = window.confirm(
                 '해당 이미지를 대표이미지로 선택하시겠습니까?',
@@ -234,7 +221,7 @@ function UpdateModal() {
     };
 
     // 이미지 삭제 함수
-    const imageDelete = (type: any, id: any, url: any) => {
+    const imageDelete = (id: string, url: string) => {
         let temp = [];
         let typeCheck = [];
         for (let i = 0; i < images.length; i++) {
@@ -269,32 +256,21 @@ function UpdateModal() {
         setToken(localStorage.getItem('token'));
     }, []);
 
+    const modalClose = () => {
+        let confirmNotice = window.confirm(
+            '창을 끄면 작성중인 내용이 삭제됩니다. 창을 끄시겠습니까?',
+        );
+        if (confirmNotice) {
+            setUpdateModal(!updateModal);
+        }
+    };
+
     return (
         <_modalContainer>
             <_dialogBox>
-                <div
-                    style={{
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: 'end',
-                    }}
-                >
-                    <IoIosClose
-                        style={{
-                            cursor: 'pointer',
-                            fontSize: '20px',
-                            marginBottom: '10px',
-                        }}
-                        onClick={() => {
-                            let confirmNotice = window.confirm(
-                                '창을 끄면 작성중인 내용이 삭제됩니다. 창을 끄시겠습니까?',
-                            );
-                            if (confirmNotice) {
-                                setUpdateModal(!updateModal);
-                            }
-                        }}
-                    />
-                </div>
+                <_closeButtonWrapper>
+                    <_customCloser onClick={modalClose} />
+                </_closeButtonWrapper>
                 <_titleInput
                     placeholder=" 제목을 입력하세요"
                     id="title"
@@ -305,90 +281,26 @@ function UpdateModal() {
                 />
                 <_customQuill
                     ref={myRef}
-                    // 스타일 이거 반응형 맞춰야함
                     value={content}
                     modules={modules}
                     onChange={setContent}
                 />
-                <p
-                    style={{
-                        color: 'grey',
-                        margin: 0,
-                        width: '99%',
-                        textAlign: 'start',
-                    }}
-                >
+                <_placeDescription>
                     (이미지를 클릭하여 대표이미지를 정할 수 있습니다)
-                </p>
-                <div
-                    style={{
-                        width: '100%',
-                        minHeight: '80px',
-                        border: '1px solid #ccc',
-                        margin: '5px',
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                    }}
-                >
-                    {images.map((x: any) => {
+                </_placeDescription>
+                <_imageShelf>
+                    {images.map((image: imageDataType) => {
                         return (
-                            <div
-                                style={{
-                                    width: '80px',
-                                    height: '80px',
-                                    margin: '5px',
-                                }}
-                                onClick={() => {
-                                    chooseThumbnail(x.imageType, x.description);
-                                }}
-                            >
-                                <img
-                                    style={{
-                                        position: 'relative',
-                                        width: '90%',
-                                        height: '90%',
-                                        border:
-                                            x.imageType == 'thumbnail'
-                                                ? '1px solid blue'
-                                                : '1px solid black',
-                                    }}
-                                    src={x.url}
-                                ></img>
-                                <div
-                                    style={{
-                                        cursor: 'pointer',
-                                        position: 'absolute',
-                                        marginTop: '-80px',
-                                        marginLeft: '8px',
-                                    }}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        let temper = window.confirm(
-                                            '이미지를 삭제하시겠습니까? (복사된 이미지까지 전부 삭제됩니다)',
-                                        );
-                                        if (temper) {
-                                            imageDelete(
-                                                x.imageType,
-                                                x.description,
-                                                x.url,
-                                            );
-                                        }
-                                    }}
-                                >
-                                    x
-                                </div>
-                            </div>
+                            <ImagePreview
+                                thumbnailChooser={chooseThumbnail}
+                                image={image}
+                                imageDeleter={imageDelete}
+                            />
                         );
                     })}
-                </div>
+                </_imageShelf>
                 <_belowPlace>
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            width: '60%',
-                        }}
-                    >
+                    <_tagBoxWrapper>
                         <_tagBox ref={tagRef}>
                             {tags.map((tagContent: any) => {
                                 return (
@@ -411,58 +323,60 @@ function UpdateModal() {
                             type="text"
                             value={currentTag}
                         ></_tagInput>
-                    </div>
+                    </_tagBoxWrapper>
                     <_buttonPlace>
-                        <div>
-                            <div>댓글허용</div>
-                            <div>
-                                <span>
-                                    허용
-                                    <input
-                                        name="commentAllow"
-                                        value="true"
-                                        type="radio"
-                                        checked={commentAllowed ? true : false}
-                                        onChange={handleCommentAllow}
-                                    ></input>
-                                </span>{' '}
-                                <span>
-                                    비허용
-                                    <input
-                                        name="commentAllow"
-                                        value="false"
-                                        type="radio"
-                                        checked={commentAllowed ? false : true}
-                                        onChange={handleCommentAllow}
-                                    ></input>
-                                </span>
-                            </div>
-                        </div>
+                        <CommentAllowCheckRadio
+                            isAllowed={commentAllowed}
+                            setIsAllowed={setCommentAllowed}
+                        />
                     </_buttonPlace>
                     <_postButton onClick={postUpdatePost}>수정</_postButton>
                 </_belowPlace>
             </_dialogBox>
-            <_backdrop
-                onClick={() => {
-                    let confirmNotice = window.confirm(
-                        '창을 끄면 작성중인 내용이 삭제됩니다. 창을 끄시겠습니까?',
-                    );
-                    if (confirmNotice) {
-                        setUpdateModal(!updateModal);
-                    }
-                }}
-            />
+            <_backdrop onClick={modalClose} />
         </_modalContainer>
     );
 }
+
+const _tagBoxWrapper = styled.div`
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`;
+
+const _imageShelf = styled.div`
+    width: 100%;
+    min-height: 80px;
+    border: 1px solid #ccc;
+    margin: 5px;
+    display: flex;
+    flex-wrap: wrap;
+`;
+
+const _placeDescription = styled.p`
+    color: grey;
+    margin: 0;
+    width: 99%;
+    text-align: start;
+`;
+
+const _customCloser = styled(IoIosClose)`
+    cursor: pointer;
+    font-size: 20px;
+    margin-bottom: 10px;
+`;
+
+const _closeButtonWrapper = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: end;
+`;
 
 const _postButton = styled.button`
     background-color: transparent;
     border: 1px solid #ccc;
     border-radius: 5px;
-    /* &:hover {
-        background-color: #1c393d;
-    } */
 `;
 
 const _customQuill = styled(ReactQuill)`

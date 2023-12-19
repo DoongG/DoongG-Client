@@ -1,53 +1,14 @@
 import styled from 'styled-components';
-import { BoardStore } from '../store/storeT';
+import { BoardStore } from '../../store/storeT';
 import { useEffect, useState, useRef } from 'react';
-import ramen from '../assets/ramen1.jpg';
-import fox from '../assets/fox.jpg';
 import { IoMdPhotos } from 'react-icons/io';
-import { BoardUpperPart } from './BoardUpperPart';
+import { BoardUpperPart } from './SearchBar/BoardUpperPart';
 import { IoIosArrowBack } from 'react-icons/io';
 import { IoIosArrowForward } from 'react-icons/io';
 import axios from 'axios';
 import { useLocation, useParams } from 'react-router';
-
 import { useNavigate } from 'react-router';
-
-const _listContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 90%;
-    height: auto;
-    /* background-color: #cccccc; */
-    margin: 0px 0px 20px 0px;
-`;
-
-const _listRow = styled.table`
-    width: 80%;
-    font-size: 16px;
-    border-spacing: 0 10px;
-    cursor: pointer;
-    & #title {
-        text-align: start;
-    }
-    & #title:hover {
-        text-decoration: underline;
-    }
-`;
-
-const _th = styled.th`
-    border-bottom: 1px solid #000;
-`;
-
-const _td = styled.td`
-    border-bottom: 1px solid #000;
-`;
-
-const _titleTd = styled.td`
-    display: flex;
-    flex-direction: row;
-`;
+import { eachDataType } from '../Type/Type';
 
 // 리스트 유형 게시판 컴포넌트
 const ListStyle = () => {
@@ -69,21 +30,17 @@ const ListStyle = () => {
         isKeywordExsist,
         realBoardName,
     } = BoardStore();
-    const [pages, setPages] = useState<any>([]);
+    const [pages, setPages] = useState<number[]>([]);
     const [nowPage, setNowPage] = useState(0);
     const [prevPages, setPrevPages] = useState(false);
     const [nextPages, setNextPages] = useState(false);
     const [colorPage, setColorPage] = useState(1);
     const navigate = useNavigate();
     const path = useLocation();
-
-    const routingManager = () => {
-        if (path.search) return 'pattern1';
-        else return 'pattern2';
-    };
+    const params = useParams();
 
     // 게시글 요청
-    const getListData = async (page: any) => {
+    const getListData = async (page: number) => {
         let whichType = 'latest';
         if (orderKind === false) whichType = 'latest';
         else whichType = 'views';
@@ -97,11 +54,9 @@ const ListStyle = () => {
             for (let i = 0; i < arr.length; i++) {
                 if (arr[i].includes('keyword')) {
                     keyword = arr[i].split('=')[1];
-                }
-                if (arr[i].includes('page')) {
+                } else if (arr[i].includes('page')) {
                     pageNum = +arr[i].split('=')[1];
-                }
-                if (arr[i].includes('order')) {
+                } else if (arr[i].includes('order')) {
                     order = arr[i].split('=')[1];
                 }
             }
@@ -115,7 +70,6 @@ const ListStyle = () => {
                         path.pathname.split('/')[3]
                     }?keyword=${keyword}&page=${page}&order=${order}`,
                 });
-
                 setListData(res?.data.content);
             } else {
                 res = await axios({
@@ -124,7 +78,6 @@ const ListStyle = () => {
                         path.pathname.split('/')[2]
                     }?page=${page}&order=${order}`,
                 });
-
                 setListData(res?.data.posts);
             }
         } else {
@@ -143,7 +96,6 @@ const ListStyle = () => {
                     }?page=${page}&order=${whichType}`,
                 });
             }
-
             setListData(res?.data.posts);
         }
     };
@@ -193,6 +145,10 @@ const ListStyle = () => {
             getListData(1);
             setColorPage(1);
         }
+
+        return () => {
+            setListData([]);
+        };
     }, []);
 
     // 글이 작성된 후에 데이터 목록을 다시 가져오는 요청을 보내는 함수가 발동되는 이펙트
@@ -226,7 +182,6 @@ const ListStyle = () => {
 
     useEffect(() => {
         pagination(boardPostCount, 1);
-        // setColorPage(1);
         if (path.search) {
             let temp = path.search.slice(1);
             let arr = temp.split('&');
@@ -252,18 +207,57 @@ const ListStyle = () => {
             method: 'get',
             url: `${process.env.REACT_APP_API_KEY}/boards/posts/${id}`,
         });
-
         setOnePageData([res.data]);
+        setDetailModalOn(true);
     };
 
     // 조회수 1 증가
-    const plusView = async (postId: any) => {
-        let res = await axios({
+    const plusView = async (postId: number) => {
+        await axios({
             method: 'post',
             url: `${process.env.REACT_APP_API_KEY}/boards/posts/increaseViews/${postId}`,
         });
         getOnePost(postId);
     };
+
+    const routingManager = (eachPage: number, state: string) => {
+        let pageComplete = -1;
+        if (state == 'prev') {
+            pageComplete = eachPage - 1;
+            setNowPage(eachPage - 10);
+        } else if (state == 'next') {
+            pageComplete = eachPage + 1;
+            setNowPage(eachPage + 1);
+        } else {
+            pageComplete = eachPage;
+            setNowPage(eachPage);
+        }
+        setColorPage(pageComplete);
+        let completeURL = '';
+        if (isKeywordExsist) {
+            completeURL += `/boards/search/${realBoardName}?keyword=${isKeywordExsist}&page=${pageComplete}&order=${
+                orderKind ? 'views' : 'latest'
+            }`;
+        } else {
+            completeURL += `/board/${realBoardName}?page=${pageComplete}&order=${
+                orderKind ? 'views' : 'latest'
+            }`;
+        }
+        navigate(completeURL);
+        getListData(pageComplete);
+    };
+
+    useEffect(() => {
+        if (path.search) {
+            let numberExport = path.search
+                .split('page')[1]
+                .split('&')[0]
+                .split('=')[1];
+            setColorPage(+numberExport);
+        } else {
+            setColorPage(1);
+        }
+    }, [path]);
 
     return (
         <_listContainer>
@@ -276,31 +270,32 @@ const ListStyle = () => {
                     <_th style={{ width: '100px' }}>추천수</_th>
                 </tr>
                 {listData &&
-                    listData.map((x: any, index: number) => {
+                    listData.map((eachData: eachDataType) => {
                         return (
                             <>
                                 <tr
                                     onClick={() => {
-                                        plusView(x.postId);
+                                        plusView(eachData.postId);
                                     }}
                                 >
-                                    <td>{x.postId}</td>
+                                    <td>{eachData.postId}</td>
                                     <_titleTd id="title">
                                         <div
                                             style={{
                                                 color: 'orange',
                                             }}
                                         >
-                                            {x.postImages.length > 0 && (
+                                            {eachData.postImages.length > 0 && (
                                                 <IoMdPhotos />
                                             )}
                                         </div>
                                         <div>
-                                            {x.title} [{x.commentCount}]
+                                            {eachData.title} [
+                                            {eachData.commentCount}]
                                         </div>
                                     </_titleTd>
-                                    <td>{x.views}</td>
-                                    <td>{x.likeCount}</td>
+                                    <td>{eachData.views}</td>
+                                    <td>{eachData.likeCount}</td>
                                 </tr>
                                 <tr>
                                     <_td></_td>
@@ -312,101 +307,45 @@ const ListStyle = () => {
                         );
                     })}
             </_listRow>
-            {/* {pagination(boardPostCount !== 0 ? boardPostCount : 1)} */}
-            <div
-                style={{
-                    margin: '10px',
-                    width: '60%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                }}
-            >
-                {pages.map((x: number) => {
+            <_paginationWrapper>
+                {pages.map((eachPage: number) => {
                     return (
                         <>
-                            {x !== 1 && (x - 1) % 10 == 0 && prevPages && (
-                                <span>
-                                    <IoIosArrowBack
-                                        style={{ cursor: 'pointer' }}
-                                        onClick={() => {
-                                            setColorPage(x - 1);
-                                            setNowPage(x - 10);
-                                            let completeURL = '';
-                                            if (isKeywordExsist) {
-                                                completeURL += `/boards/search/${realBoardName}?keyword=${isKeywordExsist}&page=${
-                                                    x - 1
-                                                }&order=${
-                                                    orderKind
-                                                        ? 'views'
-                                                        : 'latest'
-                                                }`;
-                                            } else {
-                                                completeURL += `/board/${realBoardName}?page=${
-                                                    x - 1
-                                                }&order=${
-                                                    orderKind
-                                                        ? 'views'
-                                                        : 'latest'
-                                                }`;
-                                            }
-                                            navigate(completeURL);
-                                            getListData(x - 1);
-                                        }}
-                                    />
-                                </span>
-                            )}
-                            <span
+                            {eachPage !== 1 &&
+                                (eachPage - 1) % 10 == 0 &&
+                                prevPages && (
+                                    <span>
+                                        <IoIosArrowBack
+                                            style={{ cursor: 'pointer' }}
+                                            onClick={() => {
+                                                routingManager(
+                                                    eachPage,
+                                                    'prev',
+                                                );
+                                            }}
+                                        />
+                                    </span>
+                                )}
+                            <_whichPage
                                 style={{
-                                    color: colorPage == x ? 'blue' : 'black',
-                                    fontWeight: colorPage == x ? 700 : 400,
-                                    cursor: 'pointer',
-                                    margin: '0px 10px 0px 10px',
+                                    color:
+                                        colorPage == eachPage
+                                            ? 'blue'
+                                            : 'black',
+                                    fontWeight:
+                                        colorPage == eachPage ? 700 : 400,
                                 }}
                                 onClick={(e) => {
-                                    setColorPage(x);
-                                    setNowPage(x);
-                                    let completeURL = '';
-                                    if (isKeywordExsist) {
-                                        completeURL += `/boards/search/${realBoardName}?keyword=${isKeywordExsist}&page=${x}&order=${
-                                            orderKind ? 'views' : 'latest'
-                                        }`;
-                                    } else {
-                                        completeURL += `/board/${realBoardName}?page=${x}&order=${
-                                            orderKind ? 'views' : 'latest'
-                                        }`;
-                                    }
-                                    navigate(completeURL);
-                                    getListData(x);
+                                    routingManager(eachPage, 'current');
                                 }}
                             >
-                                {x}
-                            </span>
-                            {x % 10 == 0 && nextPages == true && (
+                                {eachPage}
+                            </_whichPage>
+                            {eachPage % 10 == 0 && nextPages == true && (
                                 <span>
                                     <IoIosArrowForward
                                         onClick={() => {
-                                            setColorPage(x + 1);
-                                            setNowPage(x + 1);
-                                            let completeURL = '';
-                                            if (isKeywordExsist) {
-                                                completeURL += `/boards/search/${realBoardName}?keyword=${isKeywordExsist}&page=${
-                                                    x + 1
-                                                }&order=${
-                                                    orderKind
-                                                        ? 'views'
-                                                        : 'latest'
-                                                }`;
-                                            } else {
-                                                completeURL += `/board/${realBoardName}?page=${
-                                                    x + 1
-                                                }&order=${
-                                                    orderKind
-                                                        ? 'views'
-                                                        : 'latest'
-                                                }`;
-                                            }
-                                            navigate(completeURL);
-                                            getListData(x + 1);
+                                            routingManager(eachPage, 'next');
                                         }}
                                         style={{
                                             marginTop: '-3px',
@@ -418,9 +357,58 @@ const ListStyle = () => {
                         </>
                     );
                 })}
-            </div>
+            </_paginationWrapper>
         </_listContainer>
     );
 };
+
+const _whichPage = styled.span`
+    cursor: pointer;
+    margin: 0px 10px 0px 10px;
+`;
+
+const _listContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    height: auto;
+    /* background-color: #cccccc; */
+    margin: 0px 0px 20px 0px;
+`;
+
+const _listRow = styled.table`
+    width: 80%;
+    font-size: 16px;
+    border-spacing: 0 10px;
+    cursor: pointer;
+    & #title {
+        text-align: start;
+    }
+    & #title:hover {
+        text-decoration: underline;
+    }
+`;
+
+const _th = styled.th`
+    border-bottom: 1px solid #000;
+`;
+
+const _td = styled.td`
+    border-bottom: 1px solid #000;
+`;
+
+const _titleTd = styled.td`
+    display: flex;
+    flex-direction: row;
+`;
+
+const _paginationWrapper = styled.div`
+    margin: 10px;
+    width: 60%;
+    display: flex;
+    justify-content: center;
+`;
 
 export { ListStyle };

@@ -1,18 +1,244 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { FaRegComment } from 'react-icons/fa';
-import ramen from '../assets/ramen1.jpg';
-import fox from '../assets/fox.jpg';
-import eyes from '../assets/eyes.png';
-import { BoardStore } from '../store/storeT';
+import eyes from '../../assets/eyes.png';
+import { BoardStore } from '../../store/storeT';
 import axios from 'axios';
 import { useInView } from 'react-intersection-observer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
-import { BoardUpperPart } from './BoardUpperPart';
-import { PostModal } from './PostModal';
+import { BoardUpperPart } from './SearchBar/BoardUpperPart';
+import { PostModal } from './PostDetailModal/PostModal';
 import { useLocation, useParams } from 'react-router';
-import Mascot from '../assets/Mascot-removebg-preview.png';
+import Mascot from '../../assets/Mascot-removebg-preview.png';
+import { imageDataType, eachDataType } from '../Type/Type';
+
+// 갤러리 유형의 게시판 컴포넌트
+const GalleryStyle = () => {
+    let path = useLocation();
+    const isMounted = useRef(false);
+    const {
+        setOnePageData,
+        setSignal,
+        signal,
+        orderKind,
+        galleryData,
+        setGalleryData,
+        isKeywordExsist,
+        selectedOption,
+        searchCount,
+        setSearchCount,
+        setDetailModalOn,
+    } = BoardStore();
+    const [reference, inView] = useInView();
+    const [getCount, setGetCount] = useState(0);
+
+    const dataGenerate = async () => {
+        let whichType = '';
+        if (orderKind === false) whichType = 'latest';
+        else whichType = 'views';
+        let res = await axios({
+            method: 'get',
+            url: `${process.env.REACT_APP_API_KEY}/boards/${
+                path.pathname.split('/')[2]
+            }?page=1&order=${whichType}`,
+        });
+        setGalleryData(res.data.posts);
+        setGetCount(getCount + 1);
+        setSignal(false);
+    };
+
+    // 게시판 데이터 요청하는 함수
+    const dataGenerate2 = async (counter: number) => {
+        let whichType = '';
+        if (orderKind === false) whichType = 'latest';
+        else whichType = 'views';
+        let res;
+        if (isKeywordExsist.length > 0) {
+            res = await axios({
+                method: 'get',
+                url: `${process.env.REACT_APP_API_KEY}/boards/search/${
+                    path.pathname.split('/')[2]
+                }?keyword=${isKeywordExsist}&searchType=${selectedOption}&order=${whichType}&pageSize=${12}&page=${
+                    searchCount + 1
+                }`,
+            });
+            setSearchCount(searchCount + 1);
+            setGalleryData([...galleryData, ...res.data.content]);
+        } else {
+            res = await axios({
+                method: 'get',
+                url: `${process.env.REACT_APP_API_KEY}/boards/${
+                    path.pathname.split('/')[2]
+                }?page=${counter}&order=${whichType}`,
+            });
+            setGetCount(counter);
+            setGalleryData([...galleryData, ...res.data.posts]);
+        }
+    };
+
+    // 정렬 기준이 들어간 요청이 들어간 함수
+    const dataGenerate3 = async () => {
+        let whichType = '';
+        if (orderKind === false) whichType = 'latest';
+        else whichType = 'views';
+        let res;
+        if (isKeywordExsist.length > 0) {
+            res = await axios({
+                method: 'get',
+                url: `${process.env.REACT_APP_API_KEY}/boards/search/${
+                    path.pathname.split('/')[2]
+                }?keyword=${isKeywordExsist}&searchType=${selectedOption}&order=${whichType}&pageSize=${12}&page=1`,
+            });
+            setGalleryData(res.data.content);
+        } else {
+            res = await axios({
+                method: 'get',
+                url: `${process.env.REACT_APP_API_KEY}/boards/${
+                    path.pathname.split('/')[2]
+                }?page=1&order=${whichType}`,
+            });
+            setGalleryData(res.data.posts);
+        }
+        setGetCount(1);
+        setSearchCount(1);
+    };
+
+    // 무한 스크롤이 동작하기 위한 인터섹트옵저버 로직이 들어간 라이브러리 기능이 들어간 이펙트
+    useEffect(() => {
+        if (inView) {
+            // console.log('설마 이거 땜에??');
+            dataGenerate2(getCount + 1);
+        }
+    }, [inView]);
+
+    // 게시글 하나 요청하는 함수
+    const getOnePost = async (id: number) => {
+        let res = await axios({
+            method: 'get',
+            url: `${process.env.REACT_APP_API_KEY}/boards/posts/${id}`,
+        });
+        setOnePageData([res.data]);
+        setDetailModalOn(true);
+    };
+
+    // 조회수 1 증가 함수
+    const plusView = async (postId: number) => {
+        let res = await axios({
+            method: 'post',
+            url: `${process.env.REACT_APP_API_KEY}/boards/posts/increaseViews/${postId}`,
+        });
+        getOnePost(postId);
+    };
+
+    // 썸네일 고르는 로직 함수
+    const thumbnailPicker = (imageArr: imageDataType[]) => {
+        if (imageArr) {
+            for (let i = 0; i < imageArr.length; i++) {
+                if (imageArr[i].imageType == 'thumbnail') {
+                    return imageArr[i].url;
+                }
+            }
+        }
+        return Mascot;
+    };
+
+    // 글이 수정되거나 했을 때 게시판 데이터 새로 불러오는 이펙트
+    useEffect(() => {
+        if (signal == true) {
+            dataGenerate();
+        }
+    }, [signal]);
+
+    useEffect(() => {
+        return () => {
+            setGalleryData([]);
+        };
+    }, []);
+
+    // 게시글 정렬 기준이 바꼈을 때 데이터 새로 불러오는 이펙트
+    useEffect(() => {
+        if (isMounted.current) {
+            dataGenerate3();
+        } else {
+            isMounted.current = true;
+        }
+    }, [orderKind]);
+
+    return (
+        <_allArea>
+            <BoardUpperPart></BoardUpperPart>
+            <_cardContainer>
+                {galleryData &&
+                    galleryData.map((eachData: eachDataType) => {
+                        return (
+                            <div>
+                                <_cardBox
+                                    onClick={() => {
+                                        plusView(eachData.postId);
+                                    }}
+                                >
+                                    <_cardLike>
+                                        <FontAwesomeIcon icon={faHeart} />
+                                        {eachData.likeCount}
+                                    </_cardLike>
+                                    <_cardDisplay>
+                                        <_card
+                                            id="img"
+                                            src={thumbnailPicker(
+                                                eachData.postImages,
+                                            )}
+                                        />
+                                    </_cardDisplay>
+                                    <_cardInst>
+                                        <_cardLeft>
+                                            <_cardProfileImg
+                                                src={
+                                                    eachData?.user?.profileImg
+                                                        ? eachData?.user
+                                                              ?.profileImg
+                                                        : Mascot
+                                                }
+                                            ></_cardProfileImg>
+                                        </_cardLeft>
+                                        <_cardRight>
+                                            <_cardTitle id="title">
+                                                {eachData.title}
+                                            </_cardTitle>
+                                            <_cardWriter>
+                                                {eachData?.user?.nickname
+                                                    ? eachData?.user?.nickname
+                                                    : '미정'}
+                                            </_cardWriter>
+                                        </_cardRight>
+                                    </_cardInst>
+                                    <_cardFooter>
+                                        <_cardFooterSection>
+                                            <img
+                                                style={{ width: '15px' }}
+                                                src={eyes}
+                                            ></img>
+                                            {eachData.views}
+                                        </_cardFooterSection>
+                                        <_cardFooterSection>
+                                            <_customCommentIcon />
+                                            {eachData.commentCount}
+                                        </_cardFooterSection>
+                                    </_cardFooter>
+                                </_cardBox>
+                            </div>
+                        );
+                    })}
+            </_cardContainer>
+            <div ref={reference}>더보기</div>
+        </_allArea>
+    );
+};
+
+const _customCommentIcon = styled(FaRegComment)`
+    font-size: 12px;
+    margin-top: 5px;
+`;
 
 const _allArea = styled.div`
     display: flex;
@@ -125,232 +351,5 @@ const _cardFooter = styled.div`
 const _cardFooterSection = styled.div`
     margin: 0px 5px 0px 5px;
 `;
-
-// 갤러리 유형의 게시판 컴포넌트
-const GalleryStyle = () => {
-    let path = useLocation();
-    const {
-        setOnePageData,
-        setSignal,
-        signal,
-        orderKind,
-        setOrderKind,
-        galleryData,
-        setGalleryData,
-        isKeywordExsist,
-        selectedOption,
-        searchCount,
-        setSearchCount,
-    } = BoardStore();
-    const [reference, inView] = useInView();
-    const [getCount, setGetCount] = useState(0);
-
-    const dataGenerate = async () => {
-        let whichType = '';
-        if (orderKind === false) whichType = 'latest';
-        else whichType = 'views';
-        let res = await axios({
-            method: 'get',
-            url: `${process.env.REACT_APP_API_KEY}/boards/${
-                path.pathname.split('/')[2]
-            }?page=1&order=${whichType}`,
-        });
-        setGalleryData(res.data.posts);
-        setGetCount(getCount + 1);
-        setSignal(false);
-    };
-
-    // 게시판 데이터 요청하는 함수
-    const dataGenerate2 = async (counter: number) => {
-        let whichType = '';
-        if (orderKind === false) whichType = 'latest';
-        else whichType = 'views';
-        let res;
-        if (isKeywordExsist.length > 0) {
-            res = await axios({
-                method: 'get',
-                url: `${process.env.REACT_APP_API_KEY}/boards/search/${
-                    path.pathname.split('/')[2]
-                }?keyword=${isKeywordExsist}&searchType=${selectedOption}&order=${whichType}&pageSize=${12}&page=${
-                    searchCount + 1
-                }`,
-            });
-            setSearchCount(searchCount + 1);
-            setGalleryData([...galleryData, ...res.data.content]);
-        } else {
-            res = await axios({
-                method: 'get',
-                url: `${process.env.REACT_APP_API_KEY}/boards/${
-                    path.pathname.split('/')[2]
-                }?page=${counter}&order=${whichType}`,
-            });
-            setGetCount(counter);
-            setGalleryData([...galleryData, ...res.data.posts]);
-        }
-    };
-
-    // 정렬 기준이 들어간 요청이 들어간 함수
-    const dataGenerate3 = async () => {
-        let whichType = '';
-        if (orderKind === false) whichType = 'latest';
-        else whichType = 'views';
-        let res;
-        if (isKeywordExsist.length > 0) {
-            res = await axios({
-                method: 'get',
-                url: `${process.env.REACT_APP_API_KEY}/boards/search/${
-                    path.pathname.split('/')[2]
-                }?keyword=${isKeywordExsist}&searchType=${selectedOption}&order=${whichType}&pageSize=${12}&page=1`,
-            });
-
-            setGalleryData(res.data.content);
-        } else {
-            res = await axios({
-                method: 'get',
-                url: `${process.env.REACT_APP_API_KEY}/boards/${
-                    path.pathname.split('/')[2]
-                }?page=1&order=${whichType}`,
-            });
-            setGalleryData(res.data.posts);
-        }
-        setGetCount(1);
-        setSearchCount(1);
-    };
-
-    // 무한 스크롤이 동작하기 위한 인터섹트옵저버 로직이 들어간 라이브러리 기능이 들어간 이펙트
-    useEffect(() => {
-        if (inView) {
-            dataGenerate2(getCount + 1);
-        }
-    }, [inView]);
-
-    // 게시글 하나 요청하는 함수
-    const getOnePost = async (id: number) => {
-        let res = await axios({
-            method: 'get',
-            url: `${process.env.REACT_APP_API_KEY}/boards/posts/${id}`,
-        });
-        setOnePageData([res.data]);
-    };
-
-    // 조회수 1 증가 함수
-    const plusView = async (postId: any) => {
-        let res = await axios({
-            method: 'post',
-            url: `${process.env.REACT_APP_API_KEY}/boards/posts/increaseViews/${postId}`,
-        });
-        getOnePost(postId);
-    };
-
-    // 썸네일 고르는 로직 함수
-    const thumbnailPicker = (imageArr: any) => {
-        if (imageArr) {
-            for (let i = 0; i < imageArr.length; i++) {
-                if (imageArr[i].imageType == 'thumbnail') {
-                    return imageArr[i].url;
-                }
-            }
-        }
-        return Mascot;
-    };
-
-    // 글이 수정되거나 했을 때 게시판 데이터 새로 불러오는 이펙트
-    useEffect(() => {
-        if (signal == true) {
-            dataGenerate();
-        }
-    }, [signal]);
-
-    // 게시글 정렬 기준이 바꼈을 때 데이터 새로 불러오는 이펙트
-    useEffect(() => {
-        dataGenerate3();
-    }, [orderKind]);
-
-    // useEffect(() => {
-    //     if (isKeywordExsist.length > 0) {
-    //         setSearchCount(1);
-    //     }
-    // }, [isKeywordExsist]);
-
-    return (
-        <_allArea>
-            <BoardUpperPart></BoardUpperPart>
-            <_cardContainer>
-                {galleryData &&
-                    galleryData.map((x: any) => {
-                        return (
-                            <div>
-                                <_cardBox
-                                    onClick={() => {
-                                        plusView(x.postId);
-                                    }}
-                                >
-                                    <_cardLike>
-                                        <FontAwesomeIcon icon={faHeart} />
-                                        {x.likeCount}
-                                    </_cardLike>
-                                    <_cardDisplay>
-                                        <_card
-                                            id="img"
-                                            src={thumbnailPicker(x.postImages)}
-                                        />
-                                    </_cardDisplay>
-                                    <_cardInst>
-                                        <_cardLeft>
-                                            <_cardProfileImg
-                                                src={
-                                                    x?.user?.profileImg
-                                                        ? x?.user?.profileImg
-                                                        : Mascot
-                                                }
-                                            ></_cardProfileImg>
-                                        </_cardLeft>
-                                        <_cardRight>
-                                            <_cardTitle id="title">
-                                                {x.title}
-                                            </_cardTitle>
-                                            <_cardWriter>
-                                                {x?.user?.nickname
-                                                    ? x?.user?.nickname
-                                                    : '미정'}
-                                            </_cardWriter>
-                                        </_cardRight>
-                                    </_cardInst>
-                                    <_cardFooter>
-                                        <_cardFooterSection>
-                                            <img
-                                                style={{ width: '15px' }}
-                                                src={eyes}
-                                            ></img>
-                                            {x.views}
-                                        </_cardFooterSection>
-                                        <_cardFooterSection>
-                                            <FaRegComment
-                                                style={{
-                                                    fontSize: '12px',
-                                                    marginTop: '5px',
-                                                }}
-                                            />
-                                            {x.commentCount}
-                                        </_cardFooterSection>
-                                    </_cardFooter>
-                                </_cardBox>
-                            </div>
-                        );
-                        // : (
-                        //     <div
-                        //         style={{
-                        //             width: '300px',
-                        //             height: '320px',
-                        //             margin: '20px',
-                        //         }}
-                        //     ></div>
-                        // );
-                    })}
-            </_cardContainer>
-            <div ref={reference}>더보기</div>
-        </_allArea>
-    );
-};
 
 export { GalleryStyle };
