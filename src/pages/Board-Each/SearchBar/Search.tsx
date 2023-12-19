@@ -3,7 +3,7 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { IoIosClose } from 'react-icons/io';
 import axios from 'axios';
-import { BoardStore } from '../store/storeT';
+import { BoardStore } from '../../../store/storeT';
 import { useLocation, useNavigate } from 'react-router';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 

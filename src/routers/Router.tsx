@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Main } from '../pages/Main';
-import { Board } from '../pages/Board';
+import { Board } from '../pages/Board-Each/Board';
 import { Shopping } from '../pages/Shopping';
-import { BoardUnited } from '../pages/BoardUnited';
+import { BoardUnited } from '../pages/Board-All/BoardUnited';
 import { Header } from '../components/Header';
-import { PostDetail } from '../pages/PostDetail';
+import { PostDetail } from '../pages/Post-Detail/PostDetail';
 import { RoomreView } from '../pages/RoomReview';
 import { PageNotFound } from '../pages/404';
 

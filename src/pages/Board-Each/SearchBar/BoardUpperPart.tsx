@@ -2,9 +2,133 @@ import styled from 'styled-components';
 import { Search } from './Search';
 import { IoIosCheckmark } from 'react-icons/io';
 import { useState, useEffect } from 'react';
-import { BoardStore } from '../store/storeT';
+import { BoardStore } from '../../../store/storeT';
 import { useLocation, useNavigate } from 'react-router';
 import { HiRefresh } from 'react-icons/hi';
+
+// 검색창 섹션 컴포넌트
+const BoardUpperPart = () => {
+    const path = useLocation();
+    const navigate = useNavigate();
+    const {
+        setSignal,
+        postModalOn,
+        setPostModalOn,
+        orderKind,
+        setOrderKind,
+        styleSwitch,
+        isKeywordExsist,
+        setIsKeywordExsist,
+    } = BoardStore();
+
+    // 데이터 새로 받아와서 최신순정렬
+    const orderNew = () => {
+        if (styleSwitch == false) {
+            if (isKeywordExsist) {
+                navigate(
+                    `/boards/search/${
+                        path.pathname.split('/')[3]
+                    }?keyword=${isKeywordExsist}&page=${1}&order=latest`,
+                );
+            } else {
+                navigate(
+                    `/board/${
+                        path.pathname.split('/')[2]
+                    }?page=${1}&order=latest`,
+                );
+            }
+        }
+
+        setOrderKind(false);
+    };
+
+    // 데이터 새로 받아와서 인기순정렬
+    const orderHot = () => {
+        if (styleSwitch == false) {
+            if (isKeywordExsist) {
+                navigate(
+                    `/boards/search/${
+                        path.pathname.split('/')[3]
+                    }?keyword=${isKeywordExsist}&page=${1}&order=views`,
+                );
+            } else {
+                navigate(
+                    `/board/${
+                        path.pathname.split('/')[2]
+                    }?page=${1}&order=views`,
+                );
+            }
+        }
+
+        setOrderKind(true);
+    };
+
+    const refresh = () => {
+        setOrderKind(false);
+        setIsKeywordExsist('');
+        setSignal(true);
+    };
+
+    return (
+        <_listUpperPart>
+            <div style={{ display: 'flex' }}>
+                <_refreshButton onClick={refresh}>
+                    <HiRefresh />
+                </_refreshButton>
+                <_orderKind>
+                    {!orderKind ? (
+                        <>
+                            <_orderEach onClick={orderNew}>최근순</_orderEach>
+                            <span>
+                                <IoIosCheckmark />
+                            </span>
+                            <_orderEach
+                                style={{ color: '#c1c1c1' }}
+                                onClick={orderHot}
+                            >
+                                조회순
+                            </_orderEach>
+                            <span style={{ color: '#c1c1c1' }}>
+                                <IoIosCheckmark />
+                            </span>
+                        </>
+                    ) : (
+                        <>
+                            <_orderEach
+                                style={{ color: '#c1c1c1' }}
+                                onClick={orderNew}
+                            >
+                                최근순
+                            </_orderEach>
+                            <span style={{ color: '#c1c1c1' }}>
+                                <IoIosCheckmark />
+                            </span>
+                            <_orderEach onClick={orderHot}>조회순</_orderEach>
+                            <span>
+                                <IoIosCheckmark />
+                            </span>
+                        </>
+                    )}
+                </_orderKind>
+                <_postButton2
+                    className="forApp"
+                    onClick={() => setPostModalOn(!postModalOn)}
+                >
+                    작성
+                </_postButton2>
+            </div>
+            <Search />
+            <_buttonPlace>
+                <_postButton
+                    className="forWeb"
+                    onClick={() => setPostModalOn(!postModalOn)}
+                >
+                    작성
+                </_postButton>
+            </_buttonPlace>
+        </_listUpperPart>
+    );
+};
 
 const _listUpperPart = styled.div`
     position: sticky;
@@ -94,141 +218,5 @@ const _refreshButton = styled.button`
     min-width: 45px;
     font-size: 30px;
 `;
-
-// 검색창 섹션 컴포넌트
-const BoardUpperPart = () => {
-    const path = useLocation();
-    const navigate = useNavigate();
-    const [keyword, setKeyword] = useState('');
-    const [forNext, setForNext] = useState(false);
-    const {
-        setSignal,
-        postModalOn,
-        setPostModalOn,
-        orderKind,
-        setOrderKind,
-        styleSwitch,
-        isKeywordExsist,
-        setIsKeywordExsist,
-    } = BoardStore();
-
-    // 데이터 새로 받아와서 최신순정렬
-    const orderNew = () => {
-        if (styleSwitch == false) {
-            if (isKeywordExsist) {
-                navigate(
-                    `/boards/search/${
-                        path.pathname.split('/')[3]
-                    }?keyword=${isKeywordExsist}&page=${1}&order=latest`,
-                );
-            } else {
-                navigate(
-                    `/board/${
-                        path.pathname.split('/')[2]
-                    }?page=${1}&order=latest`,
-                );
-            }
-        }
-
-        setOrderKind(false);
-    };
-
-    // 데이터 새로 받아와서 인기순정렬
-    const orderHot = () => {
-        if (styleSwitch == false) {
-            if (isKeywordExsist) {
-                navigate(
-                    `/boards/search/${
-                        path.pathname.split('/')[3]
-                    }?keyword=${isKeywordExsist}&page=${1}&order=views`,
-                );
-            } else {
-                navigate(
-                    `/board/${
-                        path.pathname.split('/')[2]
-                    }?page=${1}&order=views`,
-                );
-            }
-        }
-
-        setOrderKind(true);
-    };
-
-    const refresh = () => {
-        setOrderKind(false);
-        setIsKeywordExsist('');
-        setSignal(true);
-    };
-
-    // useEffect(() => {
-    //     if (isKeywordExsist == '') setForNext(true);
-    // }, [isKeywordExsist]);
-
-    // useEffect(() => {
-    //     if (forNext == true) {
-    //         setForNext(false);
-    //     }
-    // }, [forNext]);
-
-    return (
-        <_listUpperPart>
-            <div style={{ display: 'flex' }}>
-                <_refreshButton onClick={refresh}>
-                    <HiRefresh />
-                </_refreshButton>
-                <_orderKind>
-                    {!orderKind ? (
-                        <>
-                            <_orderEach onClick={orderNew}>최근순</_orderEach>
-                            <span>
-                                <IoIosCheckmark />
-                            </span>
-                            <_orderEach
-                                style={{ color: '#c1c1c1' }}
-                                onClick={orderHot}
-                            >
-                                조회순
-                            </_orderEach>
-                            <span style={{ color: '#c1c1c1' }}>
-                                <IoIosCheckmark />
-                            </span>
-                        </>
-                    ) : (
-                        <>
-                            <_orderEach
-                                style={{ color: '#c1c1c1' }}
-                                onClick={orderNew}
-                            >
-                                최근순
-                            </_orderEach>
-                            <span style={{ color: '#c1c1c1' }}>
-                                <IoIosCheckmark />
-                            </span>
-                            <_orderEach onClick={orderHot}>조회순</_orderEach>
-                            <span>
-                                <IoIosCheckmark />
-                            </span>
-                        </>
-                    )}
-                </_orderKind>
-                <_postButton2
-                    className="forApp"
-                    onClick={() => setPostModalOn(!postModalOn)}
-                >
-                    작성
-                </_postButton2>
-            </div>
-            <Search />
-            <_buttonPlace>
-                <_postButton
-                    className="forWeb"
-                    onClick={() => setPostModalOn(!postModalOn)}
-                >
-                    작성
-                </_postButton>
-            </_buttonPlace>
-        </_listUpperPart>
-    );
-};
 
 export { BoardUpperPart };
