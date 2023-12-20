@@ -107,7 +107,6 @@ const GalleryStyle = () => {
     // 무한 스크롤이 동작하기 위한 인터섹트옵저버 로직이 들어간 라이브러리 기능이 들어간 이펙트
     useEffect(() => {
         if (inView) {
-            // console.log('설마 이거 땜에??');
             dataGenerate2(getCount + 1);
         }
     }, [inView]);

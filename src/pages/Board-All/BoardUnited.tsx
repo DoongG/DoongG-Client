@@ -7,6 +7,10 @@ import { BoardStore } from '../../store/storeT';
 import { TodayFoodModal } from '../Side-Games/TodayFoodModal';
 import { RecipeGenerator } from '../Side-Games/RecipeGenerator';
 import { BoardAll, EachPost } from '../Type/Type';
+// import { BoardStore } from '@/Store';
+// import { TodayFoodModal } from '@/Side-Games/TodayFoodModal';
+// import { RecipeGenerator } from '@/Side-Games/RecipeGenerator';
+// import { BoardAll, EachPost } from '@/Type/Type';
 
 // 통합 게시판 컴포넌트
 const BoardUnited = () => {

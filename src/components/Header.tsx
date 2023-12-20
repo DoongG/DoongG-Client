@@ -10,6 +10,7 @@ import logo from '../assets/logo-removebg-preview.png';
 import profileImg from '../assets/Mascot.jpg';
 import { useSpring, animated } from 'react-spring';
 import axios from 'axios';
+import { validationCheck } from '../pages/Validation/Validation';
 
 const _headerArea = styled.div`
     position: relative;
@@ -79,8 +80,14 @@ const Header = () => {
 
     useEffect(() => {
         const fetchToken = async () => {
-            const storedToken = localStorage.getItem('token');
-            setToken(storedToken);
+            if (localStorage.getItem('token')) {
+                const storedToken = JSON.parse(
+                    localStorage.getItem('token') || '',
+                )?.value;
+                setToken(storedToken);
+            } else {
+                setToken('');
+            }
         };
         fetchToken();
     }, []);
@@ -95,27 +102,30 @@ const Header = () => {
             console.error('토큰이 없습니다.');
             return;
         }
-        axios
-            .get(`${process.env.REACT_APP_API_KEY}/userAuth`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then((response) => {
-                const result = response.data;
-                setMyPageUserInfo(result);
-                setMyPageModalOpen(!isMyPageModalOpen);
-            })
-            .catch((error) => {
-                console.error('에러 발생:', error);
-            });
+        if (validationCheck()) {
+            axios
+                .get(`${process.env.REACT_APP_API_KEY}/userAuth`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then((response) => {
+                    const result = response.data;
+                    setMyPageUserInfo(result);
+                    setMyPageModalOpen(!isMyPageModalOpen);
+                })
+                .catch((error) => {
+                    console.error('에러 발생:', error);
+                });
+        }
     }, [isMyPageModalOpen, token]);
 
     const location = useLocation();
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('nickname');
         window.location.replace('/');
     };
 
@@ -150,7 +160,7 @@ const Header = () => {
                 <_MenuSpecific
                     style={{ fontSize: '20px' }}
                     to={'/board'}
-                    isSelected={location.pathname === '/board'}
+                    isSelected={location.pathname.includes('/board')}
                 >
                     게시판
                 </_MenuSpecific>

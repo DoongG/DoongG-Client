@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { MdSubdirectoryArrowRight } from 'react-icons/md';
 import { BoardStore } from '../../store/storeT';
 import axios from 'axios';
+import { validationCheck } from '../Validation/Validation';
 
 const CommentManipulate = (props: {
     comment: any;
@@ -28,80 +29,90 @@ const CommentManipulate = (props: {
     };
 
     const postDeleteComment = async (id: any, postId: any) => {
-        if (!localStorage.getItem('token')) {
+        if (!JSON.parse(localStorage.getItem('token') || '')?.value) {
             alert('로그인 된 상태가 아닙니다');
             return;
         }
-        let confirmer = window.confirm('댓글을 삭제하시겠습니까?');
-        if (confirmer) {
+        if (validationCheck()) {
+            let confirmer = window.confirm('댓글을 삭제하시겠습니까?');
+            if (confirmer) {
+                await axios({
+                    method: 'post',
+                    url: `${process.env.REACT_APP_API_KEY}/boardsAuth/deleteComment/${id}`,
+                    data: {},
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                let res2 = await axios({
+                    method: 'get',
+                    url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
+                });
+                setOnePageData([res2.data]);
+            }
+        }
+    };
+
+    const postUpdateCommentSend = async (commentId: any, postId: any) => {
+        if (!JSON.parse(localStorage.getItem('token') || '')?.value) {
+            alert('로그인 된 상태가 아닙니다');
+            return;
+        }
+        if (validationCheck()) {
             await axios({
                 method: 'post',
-                url: `${process.env.REACT_APP_API_KEY}/boardsAuth/deleteComment/${id}`,
-                data: {},
+                url: `${process.env.REACT_APP_API_KEY}/boardsAuth/updateComment/${commentId}`,
+                data: {
+                    content: commentUpdateContent,
+                },
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
+            alert('수정되었습니다');
+            let res2 = await axios({
+                method: 'get',
+                url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
+            });
+            setCommentUpdate(!commentUpdate);
+            setOnePageData([res2.data]);
+        }
+    };
+
+    const postRecomment = async (commentId: any, postId: any) => {
+        if (!JSON.parse(localStorage.getItem('token') || '')?.value) {
+            alert('세션이 만료되었습니다');
+            return;
+        }
+        if (validationCheck()) {
+            await axios({
+                method: 'post',
+                url: `${process.env.REACT_APP_API_KEY}/boardsAuth/replies/${commentId}`,
+                data: {
+                    content: recommentContent,
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            alert('대댓글작성 성공');
             let res2 = await axios({
                 method: 'get',
                 url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
             });
             setOnePageData([res2.data]);
+            setRecommentOn(!recommentOn);
+            setRecommentContent('');
         }
-    };
-
-    const postUpdateCommentSend = async (commentId: any, postId: any) => {
-        if (!localStorage.getItem('token')) {
-            alert('로그인 된 상태가 아닙니다');
-            return;
-        }
-        await axios({
-            method: 'post',
-            url: `${process.env.REACT_APP_API_KEY}/boardsAuth/updateComment/${commentId}`,
-            data: {
-                content: commentUpdateContent,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        alert('수정되었습니다');
-        let res2 = await axios({
-            method: 'get',
-            url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
-        });
-        setCommentUpdate(!commentUpdate);
-        setOnePageData([res2.data]);
-    };
-
-    const postRecomment = async (commentId: any, postId: any) => {
-        if (!localStorage.getItem('token')) {
-            alert('세션이 만료되었습니다');
-            return;
-        }
-        await axios({
-            method: 'post',
-            url: `${process.env.REACT_APP_API_KEY}/boardsAuth/replies/${commentId}`,
-            data: {
-                content: recommentContent,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        alert('대댓글작성 성공');
-        let res2 = await axios({
-            method: 'get',
-            url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
-        });
-        setOnePageData([res2.data]);
-        setRecommentOn(!recommentOn);
-        setRecommentContent('');
     };
 
     useEffect(() => {
-        setToken(localStorage.getItem('token'));
-        setNickname(localStorage.getItem('nickname'));
+        if (localStorage.getItem('token')) {
+            setToken(JSON.parse(localStorage.getItem('token') || '')?.value);
+        }
+        if (localStorage.getItem('nickname')) {
+            setNickname(localStorage.getItem('nickname'));
+        }
     }, []);
 
     return (

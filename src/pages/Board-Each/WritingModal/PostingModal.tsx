@@ -16,6 +16,7 @@ import { CommentAllowCheckRadio } from './CommentAllowCheckRadio';
 import { ImagePreview } from './ImagePreview';
 import { imageDataType } from '../../Type/Type';
 import { Configer } from '../../Config/Configer';
+import { validationCheck } from '../../Validation/Validation';
 
 // 글 작성 모달
 function Modal() {
@@ -34,7 +35,7 @@ function Modal() {
 
     // 렌더링 시 토큰 등록
     useEffect(() => {
-        setToken(localStorage.getItem('token'));
+        setToken(JSON.parse(localStorage.getItem('token') || '').value);
     }, []);
 
     // 제목 핸들러
@@ -135,47 +136,49 @@ function Modal() {
     // 게시글 작성 요청
     const postComplete = async () => {
         try {
-            if (!localStorage.getItem('token')) {
+            if (!JSON.parse(localStorage.getItem('token') || '').value) {
                 alert('로그인 된 상태가 아닙니다');
                 return;
             }
-            let tagTempArr = [];
-            for (let i = 0; i < tags.length; i++) {
-                let newTag = {
-                    hashtagName: tags[i],
+            if (validationCheck()) {
+                let tagTempArr = [];
+                for (let i = 0; i < tags.length; i++) {
+                    let newTag = {
+                        hashtagName: tags[i],
+                    };
+                    tagTempArr.push(newTag);
+                }
+                let data = {
+                    title: title,
+                    content: content,
+                    views: 0,
+                    board: {
+                        boardId: boardId,
+                    },
+                    commentAllowed: commentAllowed ? 'true' : 'false',
+                    commentCount: 0,
+                    hashtags: tagTempArr,
+                    postImages: images,
                 };
-                tagTempArr.push(newTag);
+                let res = await axios({
+                    method: 'post',
+                    url: `${process.env.REACT_APP_API_KEY}/boardsAuth/createPost`,
+                    data: data,
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (res.status == 201) {
+                    alert('글 작성 성공!');
+                    setSignal(true);
+                    setPostModalOn(!postModalOn);
+                }
+                setTitle('');
+                setContent('');
+                setTags([]);
+                setImages([]);
+                setCommentAllowed(true);
             }
-            let data = {
-                title: title,
-                content: content,
-                views: 0,
-                board: {
-                    boardId: boardId,
-                },
-                commentAllowed: commentAllowed ? 'true' : 'false',
-                commentCount: 0,
-                hashtags: tagTempArr,
-                postImages: images,
-            };
-            let res = await axios({
-                method: 'post',
-                url: `${process.env.REACT_APP_API_KEY}/boardsAuth/createPost`,
-                data: data,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (res.status == 201) {
-                alert('글 작성 성공!');
-                setSignal(true);
-                setPostModalOn(!postModalOn);
-            }
-            setTitle('');
-            setContent('');
-            setTags([]);
-            setImages([]);
-            setCommentAllowed(true);
         } catch (e) {
             alert('로그인 된 상태가 아닙니다');
             return;
@@ -460,8 +463,13 @@ const _dialogBox = styled.dialog`
     box-sizing: border-box;
     background-color: white;
     z-index: 4998;
-    overflow: hidden;
+    overflow: auto;
     margin-top: -100px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 `;
 
 const _backdrop = styled.div`

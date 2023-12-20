@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { BoardStore } from '../../../store/storeT';
 import { useLocation, useNavigate } from 'react-router';
 import { HiRefresh } from 'react-icons/hi';
+import { validationCheck } from '../../Validation/Validation';
 
 // 검색창 섹션 컴포넌트
 const BoardUpperPart = () => {
@@ -69,6 +70,12 @@ const BoardUpperPart = () => {
         setSignal(true);
     };
 
+    const postExcuseCheck = () => {
+        if (validationCheck()) {
+            setPostModalOn(!postModalOn);
+        }
+    };
+
     return (
         <_listUpperPart>
             <div style={{ display: 'flex' }}>
@@ -110,19 +117,13 @@ const BoardUpperPart = () => {
                         </>
                     )}
                 </_orderKind>
-                <_postButton2
-                    className="forApp"
-                    onClick={() => setPostModalOn(!postModalOn)}
-                >
+                <_postButton2 className="forApp" onClick={postExcuseCheck}>
                     작성
                 </_postButton2>
             </div>
             <Search />
             <_buttonPlace>
-                <_postButton
-                    className="forWeb"
-                    onClick={() => setPostModalOn(!postModalOn)}
-                >
+                <_postButton className="forWeb" onClick={postExcuseCheck}>
                     작성
                 </_postButton>
             </_buttonPlace>

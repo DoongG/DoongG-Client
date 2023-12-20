@@ -60,6 +60,7 @@ export default function HotSlide() {
             url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
         });
         setOnePageData([res.data]);
+        setDetailModalOn(true);
     };
 
     // 조회수 1추가
