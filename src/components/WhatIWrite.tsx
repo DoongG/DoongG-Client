@@ -33,12 +33,24 @@ function WhatIWrite({
                 </_ModalClose>
                 <_Title>내가 쓴 글</_Title>
                 {/* Render the data received from props */}
-                {myPosts.map((post) => (
-                    <div key={post.postId}>
-                        <h3>{post.title}</h3>
-                        <p>{post.content}</p>
-                    </div>
-                ))}
+                <_MyPosts>
+                    {myPosts.map((post) => (
+                        <_EachPost key={post.postId}>
+                            <_EachPostTitle>
+                                <_EachPostTitleWrapper>
+                                    {post.title}
+                                </_EachPostTitleWrapper>
+                            </_EachPostTitle>
+                            <_EachPostContent>
+                                <_EachPostContentWrapper
+                                    dangerouslySetInnerHTML={{
+                                        __html: post.content,
+                                    }}
+                                ></_EachPostContentWrapper>
+                            </_EachPostContent>
+                        </_EachPost>
+                    ))}
+                </_MyPosts>
             </DialogBox>
             <Backdrop
                 onClick={(e: React.MouseEvent) => {
@@ -52,6 +64,55 @@ function WhatIWrite({
         </ModalContainer>
     );
 }
+
+const _EachPostContentWrapper = styled.div`
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    word-break: break-all;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+`;
+
+const _EachPostTitleWrapper = styled.div`
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    word-break: break-all;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+`;
+
+const _EachPostTitle = styled.div`
+    text-align: start;
+    display: flex;
+    align-items: center;
+    border-right: 10px solid #ffca1d;
+    width: 20%;
+`;
+
+const _EachPostContent = styled.p`
+    text-align: start;
+    margin: 5px;
+    width: 80%;
+    p {
+        margin: 0;
+    }
+`;
+
+const _EachPost = styled.div`
+    display: flex;
+    /* justify-content: space-between; */
+    margin: 5px;
+    border: 5px solid #1c393d;
+    border-radius: 5px;
+`;
+
+const _MyPosts = styled.div`
+    width: 90%;
+`;
 
 // 모달 닫기 부분
 const _ModalClose = styled.div`
@@ -86,7 +147,7 @@ const ModalContainer = styled.div`
 `;
 
 const DialogBox = styled.dialog`
-    width: 800px;
+    width: 100%;
     height: 300px;
     display: flex;
     flex-direction: column;
@@ -97,6 +158,12 @@ const DialogBox = styled.dialog`
     box-sizing: border-box;
     background-color: white;
     z-index: 10003 !important;
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 `;
 
 const Backdrop = styled.div`

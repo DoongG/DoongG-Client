@@ -14,6 +14,7 @@ import { ShareBalloon } from '../../ShareBalloon/ShareBalloon';
 import { CommentManipulate } from '../../Comment/CommentManipulate';
 import axios from 'axios';
 import Mascot from '../../../assets/Mascot-removebg-preview.png';
+import { validationCheck } from '../../Validation/Validation';
 
 // 게시물 컴포넌트
 const PostModal = () => {
@@ -39,7 +40,9 @@ const PostModal = () => {
 
     // 렌더링시 토큰 등록 이펙트
     useEffect(() => {
-        setToken(localStorage.getItem('token'));
+        if (localStorage.getItem('token')) {
+            setToken(JSON.parse(localStorage.getItem('token') || '')?.value);
+        }
         setNickname(localStorage.getItem('nickname'));
     }, []);
 
@@ -50,47 +53,56 @@ const PostModal = () => {
 
     // 댓글 작성 함수
     const postComment = async (postId: string | number) => {
-        if (!localStorage.getItem('token')) {
-            alert('세션이 만료되었습니다');
+        if (!JSON.parse(localStorage.getItem('token') || '')?.value) {
+            alert('먼저 로그인 해주세요');
             return;
         }
-        await axios({
-            method: 'post',
-            url: `${process.env.REACT_APP_API_KEY}/boardsAuth/createComment/${postId}`,
-            data: {
-                content: commentContent,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        alert('댓글작성 성공');
-        let res2 = await axios({
-            method: 'get',
-            url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
-        });
-        setOnePageData([res2.data]);
+        if (validationCheck()) {
+            try {
+                let res = await axios({
+                    method: 'post',
+                    url: `${process.env.REACT_APP_API_KEY}/boardsAuth/createComment/${postId}`,
+                    data: {
+                        content: commentContent,
+                    },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                alert('댓글작성 성공');
+                let res2 = await axios({
+                    method: 'get',
+                    url: `${process.env.REACT_APP_API_KEY}/boards/posts/${postId}`,
+                });
+                setOnePageData([res2.data]);
 
-        setCommentContent('');
+                setCommentContent('');
+            } catch (e) {
+                console.log(e);
+            }
+        }
     };
 
     // 좋아요 싫어요 현상태 데이터 요청
     const getLikeHateStatus = async () => {
-        if (localStorage.getItem('token')) {
-            try {
-                let res = await axios({
-                    method: 'get',
-                    url: `${process.env.REACT_APP_API_KEY}/boardsAuth/getReaction?postId=${onePageData[0].postId}`,
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem(
-                            'token',
-                        )}`,
-                    },
-                });
-                setLiked(res.data.liked);
-                setDisLiked(res.data.disliked);
-            } catch (e) {
-                console.log(e);
+        if (JSON.parse(localStorage.getItem('token') || '')?.value) {
+            if (validationCheck()) {
+                try {
+                    let res = await axios({
+                        method: 'get',
+                        url: `${process.env.REACT_APP_API_KEY}/boardsAuth/getReaction?postId=${onePageData[0].postId}`,
+                        headers: {
+                            Authorization: `Bearer ${
+                                JSON.parse(localStorage.getItem('token') || '')
+                                    .value
+                            }`,
+                        },
+                    });
+                    setLiked(res.data.liked);
+                    setDisLiked(res.data.disliked);
+                } catch (e) {
+                    console.log(e);
+                }
             }
         }
     };
@@ -115,84 +127,113 @@ const PostModal = () => {
                 }
             }
             setCommentsList(newData.comments);
-            if (localStorage.getItem('token')) {
-                setToken(localStorage.getItem('token'));
-                getLikeHateStatus();
-            }
-            if (localStorage.getItem('nickname')) {
-                setNickname(localStorage.getItem('nickname'));
+            if (validationCheck()) {
+                if (localStorage.getItem('token')) {
+                    setToken(
+                        JSON.parse(localStorage.getItem('token') || '').value,
+                    );
+                    getLikeHateStatus();
+                }
+                if (localStorage.getItem('nickname')) {
+                    setNickname(localStorage.getItem('nickname'));
+                }
             }
         }
     }, [onePageData]);
 
     // 게시글 삭제 요청
     const postDeletePost = async (postId: any) => {
-        if (!localStorage.getItem('token')) {
-            alert('로그인 된 상태가 아닙니다');
+        if (!JSON.parse(localStorage.getItem('token') || '')?.value) {
+            alert('먼저 로그인 해주세요');
             return;
         }
-        let confirmer = window.confirm('게시글을 삭제하시겠습니까?');
-        if (confirmer) {
-            await axios({
-                method: 'post',
-                url: `${process.env.REACT_APP_API_KEY}/boardsAuth/deletePost/${postId}`,
-                data: {},
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            alert('삭제되셨습니다');
-            setSignal(true);
-            setDetailModalOn(false);
+        if (validationCheck()) {
+            let confirmer = window.confirm('게시글을 삭제하시겠습니까?');
+            try {
+                if (confirmer) {
+                    let res = await axios({
+                        method: 'post',
+                        url: `${process.env.REACT_APP_API_KEY}/boardsAuth/deletePost/${postId}`,
+                        data: {},
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    alert('삭제되셨습니다');
+                    setSignal(true);
+                    setDetailModalOn(false);
+                }
+            } catch (e) {
+                console.log(e);
+            }
         }
     };
 
     // 좋아요 눌렀을 때 함수
     const clickLike = async () => {
-        if (!localStorage.getItem('token')) {
-            alert('로그인 상태에서만 가능합니다');
+        if (!JSON.parse(localStorage.getItem('token') || '')?.value) {
+            alert('먼저 로그인 해주세요');
             return;
         }
-        let res = await axios({
-            method: 'post',
-            url: `${process.env.REACT_APP_API_KEY}/boardsAuth/like`,
-            data: {
-                postId: onePageData[0].postId,
-                liked: true,
-                disliked: false,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        let copy = onePageData.slice(0);
-        copy[0].likeCount = res.data.likes;
-        setLiked(res.data.liked);
-        setOnePageData(copy);
+        if (validationCheck()) {
+            try {
+                let res = await axios({
+                    method: 'post',
+                    url: `${process.env.REACT_APP_API_KEY}/boardsAuth/like`,
+                    data: {
+                        postId: onePageData[0].postId,
+                        liked: true,
+                        disliked: false,
+                    },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                let copy = onePageData.slice(0);
+                copy[0].likeCount = res.data.likes;
+                setLiked(res.data.liked);
+                setOnePageData(copy);
+            } catch (e) {
+                console.log(e);
+            }
+        }
     };
 
     // 싫어요 눌렀을 때 함수
     const clickHate = async () => {
-        if (!localStorage.getItem('token')) {
-            alert('로그인 상태에서만 가능합니다');
+        if (!JSON.parse(localStorage.getItem('token') || '')?.value) {
+            alert('먼저 로그인 해주세요');
             return;
         }
-        let res = await axios({
-            method: 'post',
-            url: `${process.env.REACT_APP_API_KEY}/boardsAuth/dislike`,
-            data: {
-                postId: onePageData[0].postId,
-                liked: true,
-                disliked: false,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        let copy = onePageData.slice(0);
-        copy[0].dislikeCount = res.data.dislikes;
-        setDisLiked(res.data.disliked);
-        setOnePageData(copy);
+        if (validationCheck()) {
+            try {
+                let res = await axios({
+                    method: 'post',
+                    url: `${process.env.REACT_APP_API_KEY}/boardsAuth/dislike`,
+                    data: {
+                        postId: onePageData[0].postId,
+                        liked: true,
+                        disliked: false,
+                    },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                let copy = onePageData.slice(0);
+                copy[0].dislikeCount = res.data.dislikes;
+                setDisLiked(res.data.disliked);
+                setOnePageData(copy);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    };
+
+    const postUpdateHandler = () => {
+        if (validationCheck()) {
+            setUpdatePostId(onePageData[0]?.postId);
+            setUpdateModal(true);
+        }
     };
 
     return (
@@ -244,12 +285,7 @@ const PostModal = () => {
                     </_dateLine>
                     {nickname == onePageData[0]?.user.nickname && (
                         <_dateLine>
-                            <_recomment
-                                onClick={() => {
-                                    setUpdatePostId(onePageData[0]?.postId);
-                                    setUpdateModal(true);
-                                }}
-                            >
+                            <_recomment onClick={postUpdateHandler}>
                                 수정
                             </_recomment>
                             <_recomment

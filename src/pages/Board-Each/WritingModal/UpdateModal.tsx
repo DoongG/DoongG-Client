@@ -16,6 +16,7 @@ import { CommentAllowCheckRadio } from './CommentAllowCheckRadio';
 import { imageDataType } from '../../Type/Type';
 import { ImagePreview } from './ImagePreview';
 import { Configer } from '../../Config/Configer';
+import { validationCheck } from '../../Validation/Validation';
 
 // 글 수정 모달 컴포넌트
 function UpdateModal() {
@@ -139,50 +140,53 @@ function UpdateModal() {
 
     // 글 업데이트 함수
     const postUpdatePost = async () => {
-        if (!localStorage.getItem('token')) {
+        if (!JSON.parse(localStorage.getItem('token') || '')?.value) {
             alert('로그인 된 상태가 아닙니다');
             return;
         }
-        let tagTempArr = [];
-        for (let i = 0; i < tags.length; i++) {
-            let newTag = {
-                hashtagName: tags[i],
+
+        if (validationCheck()) {
+            let tagTempArr = [];
+            for (let i = 0; i < tags.length; i++) {
+                let newTag = {
+                    hashtagName: tags[i],
+                };
+                tagTempArr.push(newTag);
+            }
+            let data = {
+                title: title,
+                content: content,
+                views: 0,
+                board: {
+                    boardId: boardId,
+                },
+                commentAllowed: commentAllowed ? 'true' : 'false',
+                commentCount: 0,
+                hashtags: tagTempArr,
+                postImages: images,
             };
-            tagTempArr.push(newTag);
+            await axios({
+                method: 'post',
+                url: `${process.env.REACT_APP_API_KEY}/boardsAuth/updatePost/${updatePostId}`,
+                data: data,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            let res2 = await axios({
+                method: 'get',
+                url: `${process.env.REACT_APP_API_KEY}/boards/posts/${onePageData[0]?.postId}`,
+            });
+            setOnePageData([res2.data]);
+
+            alert('글 수정 성공!');
+            setSignal(!signal);
+            setTitle('');
+            setContent('');
+            setTags([]);
+            setUpdateModal(!updateModal);
         }
-        let data = {
-            title: title,
-            content: content,
-            views: 0,
-            board: {
-                boardId: boardId,
-            },
-            commentAllowed: commentAllowed ? 'true' : 'false',
-            commentCount: 0,
-            hashtags: tagTempArr,
-            postImages: images,
-        };
-        await axios({
-            method: 'post',
-            url: `${process.env.REACT_APP_API_KEY}/boardsAuth/updatePost/${updatePostId}`,
-            data: data,
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        let res2 = await axios({
-            method: 'get',
-            url: `${process.env.REACT_APP_API_KEY}/boards/posts/${onePageData[0]?.postId}`,
-        });
-        setOnePageData([res2.data]);
-
-        alert('글 수정 성공!');
-        setSignal(!signal);
-        setTitle('');
-        setContent('');
-        setTags([]);
-        setUpdateModal(!updateModal);
     };
 
     // 이미지 업데이트 모달 발동시 기존 데이터 세팅 이펙트
@@ -253,7 +257,7 @@ function UpdateModal() {
 
     // 렌더링시 토큰 등록
     useEffect(() => {
-        setToken(localStorage.getItem('token'));
+        setToken(JSON.parse(localStorage.getItem('token') || '')?.value);
     }, []);
 
     const modalClose = () => {
@@ -459,8 +463,13 @@ const _dialogBox = styled.dialog`
     box-sizing: border-box;
     background-color: white;
     z-index: 4998;
-    overflow: hidden;
+    overflow: auto;
     margin-top: -100px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 `;
 
 const _backdrop = styled.div`

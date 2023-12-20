@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import MascotCook from '../../assets/Mascot-Cook.png';
 import Refrigerator from '../../assets/refrigerator.png';
 import { ingredientType } from '../Type/Type';
+import { FaArrowLeft } from 'react-icons/fa';
 import axios from 'axios';
 
 // 냉장고 요리사 컴포넌트
@@ -208,24 +209,31 @@ const RecipeGenerator = () => {
                             })}
                     </_generatedFoods>
                 ) : (
-                    <div style={{ width: '100%' }}>
+                    <_recipeAllArea>
                         <div
-                            style={{ cursor: 'pointer' }}
+                            style={{
+                                textAlign: 'start',
+                                cursor: 'pointer',
+                                width: '100%',
+                                padding: '10px',
+                            }}
                             onClick={() => {
                                 setDetailDesc(false);
                             }}
                         >
-                            돌아가기
+                            <FaArrowLeft />
                         </div>
                         <br></br>
-                        <div>
-                            <h1>&lt;{detailPage.rcp_NM}&gt;</h1>
-                        </div>
                         <_eachRecipeArea>
-                            <img
-                                style={{ width: '60%' }}
+                            <_recipeTitleArea>
+                                <_foodNameWrapper>
+                                    ~{detailPage.rcp_NM}~
+                                </_foodNameWrapper>
+                            </_recipeTitleArea>
+                            <br></br>
+                            <_mainImgWrapper
                                 src={detailPage.att_FILE_NO_MAIN}
-                            ></img>
+                            ></_mainImgWrapper>
                             <br></br>
                             <_fontCover
                                 style={{ width: '60%', textAlign: 'start' }}
@@ -234,31 +242,42 @@ const RecipeGenerator = () => {
                             </_fontCover>
                             <br></br>
                             <br></br>
-                            <div>
-                                <h1>&lt;조리법&gt;</h1>
-                            </div>
                             <br></br>
+                            <_recipeTitleArea>
+                                <_foodNameWrapper>~조리법~</_foodNameWrapper>
+                            </_recipeTitleArea>
                         </_eachRecipeArea>
+                        <br></br>
                         {detailPage.manual.map((manual: any, index: number) => {
-                            return (
-                                <>
-                                    <div
-                                        style={{
-                                            display: 'flex',
-                                            width: '100%',
-                                        }}
-                                    >
-                                        <img
-                                            style={{ maxWidth: '200px' }}
-                                            src={detailPage.manual_img[index]}
-                                        ></img>
-                                        <_fontCover>{manual}</_fontCover>
-                                    </div>
-                                    <br></br>
-                                </>
-                            );
+                            if (manual.length > 0) {
+                                return (
+                                    <>
+                                        <div
+                                            style={{
+                                                display: 'flex',
+                                                width: '100%',
+                                                // border: '5px solid #1c393d',
+                                                borderRadius: '5px',
+                                            }}
+                                        >
+                                            <img
+                                                style={{
+                                                    maxWidth: '200px',
+                                                    borderRight:
+                                                        '10px solid #ffca1d',
+                                                }}
+                                                src={
+                                                    detailPage.manual_img[index]
+                                                }
+                                            ></img>
+                                            <_fontCover>{manual}</_fontCover>
+                                        </div>
+                                        <br></br>
+                                    </>
+                                );
+                            }
                         })}
-                    </div>
+                    </_recipeAllArea>
                 )}
             </_dialogBox>
             <_backdrop
@@ -269,6 +288,42 @@ const RecipeGenerator = () => {
         </_modalContainer>
     );
 };
+
+const _recipeAllArea = styled.div`
+    width: 100%;
+    border: 5px solid #1c393d;
+`;
+
+const _recipeTitleArea = styled.div`
+    /* width: 100%; */
+    /* text-align: start; */
+    border-top: 5px solid #1c393d;
+    border-bottom: 5px solid #1c393d;
+`;
+
+const _foodNameWrapper = styled.h1`
+    @font-face {
+        font-family: 'OG_Renaissance_Secret-Rg';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2312-1@1.1/OG_Renaissance_Secret-Rg.woff2')
+            format('woff2');
+        font-weight: normal;
+        font-style: bold;
+    }
+    font-family: 'OG_Renaissance_Secret-Rg';
+    margin-bottom: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+`;
+
+const _mainImgWrapper = styled.img`
+    border-top: 10px solid #1c393d;
+    border-bottom: 10px solid #1c393d;
+    border-right: 10px solid #ffca1d;
+    border-left: 10px solid #ffca1d;
+    border-radius: 5px;
+    width: 200px;
+    height: 200px;
+`;
 
 const _eachRecipeArea = styled.div`
     width: 100%;
@@ -450,6 +505,8 @@ const _dialogBox = styled.dialog`
     overflow: hidden;
     margin-top: -100px;
     overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
     &::-webkit-scrollbar {
         display: none;
     }

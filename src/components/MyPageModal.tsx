@@ -11,6 +11,7 @@ import { WhatIWrite } from './WhatIWrite';
 import { MyRoomReview } from './MyRoomReview';
 import { OrderHistoryModal } from './WhatIBuy';
 import { MyBag } from './MyBag';
+import { validationCheck } from '../pages/Validation/Validation';
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
@@ -25,7 +26,9 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
     const imageRef = useRef<any>(null);
     useEffect(() => {
         // 이 부분에서 로컬 스토리지에서 토큰을 가져와 상태로 관리합니다.
-        const storedToken = localStorage.getItem('token');
+        const storedToken = JSON.parse(
+            localStorage.getItem('token') || '',
+        )?.value;
         setToken(storedToken);
     }, []);
     const [isModalOpen, setModalOpen] = useState(true);
@@ -163,16 +166,18 @@ function MyPageModal({ onClickToggleModal, children, user }: MyPageModalProps) {
 
     const openWhatIWriteModal = () => {
         setWhatIWriteModalOpen(true);
-        axios
-            .get(`${process.env.REACT_APP_API_KEY}/userAuth/myPosts`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-            .then((response) => {
-                // Set the retrieved data in the state
-                setMyPosts(response.data);
-            });
+        if (validationCheck()) {
+            axios
+                .get(`${process.env.REACT_APP_API_KEY}/userAuth/myPosts`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                .then((response) => {
+                    // Set the retrieved data in the state
+                    setMyPosts(response.data);
+                });
+        }
     };
     const closeWhatIWriteModal = () => {
         setWhatIWriteModalOpen(false);

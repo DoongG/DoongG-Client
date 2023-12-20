@@ -82,7 +82,11 @@ function LoginModal({
                     const [token, nickname] = result.split(',');
 
                     // 로컬스토리지에 token과 nickname 저장
-                    localStorage.setItem('token', token);
+                    let tokenSet = {
+                        value: token,
+                        expire: Date.now() + 3600000,
+                    };
+                    localStorage.setItem('token', JSON.stringify(tokenSet));
                     localStorage.setItem('nickname', nickname);
 
                     // 로그인 성공 시 처리
