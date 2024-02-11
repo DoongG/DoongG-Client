@@ -1,10 +1,42 @@
+/* eslint-disable react/jsx-pascal-case */
 import ShoppingHeaderSelectBar from '../components/shopping-section/mainPage/HeaderSelectBar';
 import ShoppingSlideResent from '../components/shopping-section/mainPage/ResentSlideList';
 import ShoppingSlideHot from '../components/shopping-section/mainPage/HotSlideList';
 import { useShoppingHeaderSelectBarStore } from '../store/shoppingHeaderSelectBarStore';
 import ShoppingListTest from '../components/shopping-section/mainPage/ProductList';
 import styled from 'styled-components';
-import React, { useEffect, useRef, useState } from 'react';
+
+//shopping
+const Shopping = () => {
+    const { selectButton, setSelectButton } = useShoppingHeaderSelectBarStore();
+    return (
+        <>
+            <_section>
+                <div className="wrapper">
+                    <ShoppingHeaderSelectBar />
+                    {selectButton === '최근' ? (
+                        <ShoppingSlideResent />
+                    ) : (
+                        <ShoppingSlideHot />
+                    )}
+                </div>
+            </_section>
+
+            <_hr></_hr>
+            <ShoppingListTest />
+        </>
+    );
+};
+const _section = styled.section`
+    background: #fff8fa;
+    padding: 80px 0px;
+    > div {
+        width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+    }
+`;
 
 const _hr = styled.hr`
     margin: 0;
@@ -16,22 +48,5 @@ const _hr = styled.hr`
     width: 100%;
     opacity: 1;
 `;
-
-//shopping
-const Shopping = () => {
-    const { selectButton, setSelectButton } = useShoppingHeaderSelectBarStore();
-    return (
-        <>
-            <ShoppingHeaderSelectBar />
-            {selectButton === '최근' ? (
-                <ShoppingSlideResent />
-            ) : (
-                <ShoppingSlideHot />
-            )}
-            <_hr></_hr>
-            <ShoppingListTest />
-        </>
-    );
-};
 
 export { Shopping };

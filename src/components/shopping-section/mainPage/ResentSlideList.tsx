@@ -90,23 +90,21 @@ export default function ShoppingSlideResent() {
                 <_customSwiper
                     modules={[Navigation, Pagination]}
                     spaceBetween={50} // 이미지 간격
-                    slidesPerView={5} // 한번에 보이는 이미지 수
-                    slidesPerGroup={5} // 그룹 당 슬라이드 수 설정
+                    slidesPerView={3} // 한번에 보이는 이미지 수
+                    slidesPerGroup={3} // 그룹 당 슬라이드 수 설정
                     navigation
                     breakpoints={{
                         // 1300px 이상일 때
                         1200: {
-                            slidesPerView: 5,
+                            slidesPerView: 3,
                             spaceBetween: 50,
-                            slidesPerGroup: 5,
-                            //   spaceBetween: 30,
+                            slidesPerGroup: 3,
                         },
                         // 1024px 이상일 때
                         991: {
-                            slidesPerView: 4,
+                            slidesPerView: 3,
                             spaceBetween: 50,
-                            slidesPerGroup: 4,
-                            //   spaceBetween: 10,
+                            slidesPerGroup: 3,
                         },
                         // 768px 이상일 때
                         767: {
@@ -330,11 +328,12 @@ const _customFontAwesome = styled(FontAwesomeIcon)`
 `;
 
 const _swiperWrapper = styled.div`
+    float: right;
     display: flex;
     justify-content: center;
+    width: 896px;
     padding: 20px 0px 32px;
     position: relative;
-    background-color: white;
     z-index: 3;
     .swiper-wrapper {
         transition-timing-function: linear !important;
