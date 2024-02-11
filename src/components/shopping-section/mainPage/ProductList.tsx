@@ -1,9 +1,7 @@
 /* eslint-disable react/jsx-pascal-case */
 import styled from 'styled-components';
 import { useSearchParams } from 'react-router-dom';
-
 import axios from 'axios';
-
 import eyes from 'assets/eyes.png';
 import listbar from 'assets/listBar2.png';
 import React, { useState, useRef, useEffect } from 'react';
