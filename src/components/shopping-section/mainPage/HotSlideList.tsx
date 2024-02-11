@@ -1,28 +1,17 @@
+/* eslint-disable react/jsx-pascal-case */
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import axios from 'axios';
-import eyes from '../assets/eyes.png';
-import SwiperCore, {
-    Navigation,
-    Pagination,
-    Scrollbar,
-    A11y,
-} from 'swiper/modules';
+import eyes from 'assets/eyes.png';
+import { Navigation, Pagination } from 'swiper/modules';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import 'swiper/swiper-bundle.css';
 import styled from 'styled-components';
-import shopping1 from '../assets/shopping1.jpg';
-import shopping2 from '../assets/shopping2.jpg';
-import shopping3 from '../assets/shopping3.jpg';
-import shopping4 from '../assets/shopping4.jpg';
-import shopping5 from '../assets/shopping5.jpg';
 import {
     useBuyModalStore,
     useModalStore,
     useProductId,
-} from '../store/shoppingHeaderSelectBarStore';
-import { ShoppingDetailHeader } from './ShoppingDetailModal';
+} from '../../../store/shoppingHeaderSelectBarStore';
 
 interface ApiResponse {
     discountedPrice: number;
@@ -35,7 +24,7 @@ interface ApiResponse {
     category: string;
 }
 
-export default function ShoppingSlideResent() {
+export default function HotSlideList() {
     const [resentProductList, setResentProductList] = useState<ApiResponse[]>(
         [],
     );
@@ -69,7 +58,7 @@ export default function ShoppingSlideResent() {
         const getResentProduct = async () => {
             try {
                 const res = await axios.get<ApiResponse, any>(
-                    `${process.env.REACT_APP_API_KEY}/shop/new`,
+                    `${process.env.REACT_APP_API_KEY}/shop/best`,
                 );
 
                 setResentProductList(res.data);
@@ -79,6 +68,8 @@ export default function ShoppingSlideResent() {
         };
         getResentProduct();
     }, []);
+
+    console.log(resentProductList);
 
     const onClickToggleModal = (
         changedCategory: string,
@@ -116,7 +107,7 @@ export default function ShoppingSlideResent() {
                             slidesPerGroup: 4,
                             //   spaceBetween: 10,
                         },
-                        // 768px 이상일 때
+                        // 767px 이상일 때
                         767: {
                             slidesPerView: 3,
                             spaceBetween: 50,
@@ -187,29 +178,6 @@ export default function ShoppingSlideResent() {
                     })}
                 </_customSwiper>
             </_swiperWrapper>
-            {isOpenModal && (
-                <ShoppingDetailHeader
-                    onClickToggleModal={(title, category, productId) =>
-                        console.log(title, category, productId)
-                    }
-                    category={category}
-                    title={title}
-                    productId={productId}
-                ></ShoppingDetailHeader>
-            )}
-
-            {isOpenModal && (
-                <_backdrop
-                    onClick={(e: React.MouseEvent) => {
-                        e.preventDefault();
-                        setOpenModal(false);
-                        setIsOpenBuyModal(false);
-                        if (onClickToggleModal) {
-                            onClickToggleModal(category, title, productId);
-                        }
-                    }}
-                ></_backdrop>
-            )}
         </>
     );
 }
@@ -406,13 +374,4 @@ const _realPriceDiv = styled.div`
     @media (max-width: 767px) {
         font-size: 15px;
     }
-`;
-
-const _backdrop = styled.div`
-    width: 100vw;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    z-index: 3;
-    background-color: rgba(0, 0, 0, 0.2);
 `;

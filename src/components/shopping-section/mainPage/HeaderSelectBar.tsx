@@ -1,7 +1,6 @@
-import { useState } from 'react';
-import create from 'zustand';
+/* eslint-disable react/jsx-pascal-case */
 import styled from 'styled-components';
-import { useShoppingHeaderSelectBarStore } from '../store/shoppingHeaderSelectBarStore';
+import { useShoppingHeaderSelectBarStore } from '../../../store/shoppingHeaderSelectBarStore';
 
 interface Props {
     isSelected: boolean;
@@ -56,7 +55,7 @@ const _bar = styled.div`
     }
 `;
 
-export default function ShoppingHeaderSelectBar() {
+export default function HeaderSelectBar() {
     const { selectButton, setSelectButton } = useShoppingHeaderSelectBarStore();
 
     const handleButtonClick = (button: string) => {

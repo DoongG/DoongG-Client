@@ -1,12 +1,9 @@
 import styled from 'styled-components';
-import { useNavigate, useParams } from 'react-router-dom';
-import fox from '../assets/fox.jpg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
-import eyes from '../assets/eyes.png';
+import eyes from 'assets/eyes.png';
 import {
     PropsWithChildren,
     useCallback,
@@ -20,7 +17,7 @@ import {
     useBuyModalStore,
     useModalStore,
     useProductId,
-} from '../store/shoppingHeaderSelectBarStore';
+} from '../../../store/shoppingHeaderSelectBarStore';
 import { ShoppingDetailSelectBar } from './ShoppingDetailSelectBar';
 import { ShoppingDetailBuy } from './ShoppingDetailBuy';
 import Swal from 'sweetalert2';
