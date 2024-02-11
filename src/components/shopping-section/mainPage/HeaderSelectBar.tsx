@@ -1,12 +1,24 @@
 /* eslint-disable react/jsx-pascal-case */
 import styled from 'styled-components';
-import { useShoppingHeaderSelectBarStore } from '../../../store/shoppingHeaderSelectBarStore';
+import {
+    useShoppingHeaderSelectBarStore,
+    useSwiperDomStore,
+    useSwiperPageStore,
+} from '../../../store/shoppingHeaderSelectBarStore';
+import { useSwiper } from 'swiper/react';
+import { GoArrowRight } from 'react-icons/go';
+import { GoArrowLeft } from 'react-icons/go';
 
 interface Props {
     isSelected: boolean;
 }
 export default function HeaderSelectBar() {
     const { selectButton, setSelectButton } = useShoppingHeaderSelectBarStore();
+
+    // swiper Dom 상태 가져오기
+    const { swiperDom } = useSwiperDomStore();
+    // 현재 swiper page index
+    const { swiperPage, setSwiperPage } = useSwiperPageStore();
 
     const handleButtonClick = (button: string) => {
         setSelectButton(button);
@@ -42,6 +54,24 @@ export default function HeaderSelectBar() {
                     </span>{' '}
                     입니다.
                 </p>
+                <_pageBox>
+                    <_swiperBtn
+                        onClick={() => {
+                            swiperDom.swiper.slidePrev();
+                        }}
+                    >
+                        <GoArrowLeft />
+                    </_swiperBtn>
+                    <span>{swiperPage}</span>
+                    <span>/4</span>
+                    <_swiperBtn
+                        onClick={() => {
+                            swiperDom.swiper.slideNext();
+                        }}
+                    >
+                        <GoArrowRight />
+                    </_swiperBtn>
+                </_pageBox>
             </_selectWrapperBox>
         </>
     );
@@ -99,7 +129,7 @@ const _selectInnerBox = styled.div`
 const _selectButton = styled.button<Props>`
     background-color: inherit;
     border: none;
-    font-size: 24px;
+    font-size: 28px;
     cursor: pointer;
     width: 100%;
     padding: 0px 10px;
@@ -113,12 +143,27 @@ const _selectButton = styled.button<Props>`
     }
 `;
 
-const _bar = styled.div`
-    font-size: 24px;
-    padding: 0px 10px;
-    cursor: pointer;
-    color: rgb(28, 57, 61);
-    @media (max-width: 767px) {
-        font-size: 18px;
+const _swiperBtn = styled.button`
+    background: transparent;
+    border: none;
+    color: grey;
+    font-size: 30px;
+    :hover {
+        color: black;
+    }
+`;
+
+const _pageBox = styled.div`
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: grey;
+    & > :nth-child(2) {
+        margin-left: 10px;
+        color: black;
+    }
+    & > :nth-child(3) {
+        margin-right: 10px;
     }
 `;

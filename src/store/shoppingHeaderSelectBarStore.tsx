@@ -16,6 +16,39 @@ const useShoppingHeaderSelectBarStore = create<ShoppingHeaderSelectBarStore>(
     }),
 );
 
+//__________________________________________________________________________________________
+
+// swiper DOM 체크
+interface SwiperDomStore {
+    swiperDom: any;
+    setSwiperDom: (state: any) => void;
+}
+
+const useSwiperDomStore = create<SwiperDomStore>((set) => ({
+    swiperDom: null,
+    setSwiperDom: (state) =>
+        set({
+            swiperDom: state,
+        }),
+}));
+export { useSwiperDomStore };
+
+//____________________________________________________________________________________________
+
+// swiper 현재 페이지
+interface SwiperPageStore {
+    swiperPage: number;
+    setSwiperPage: (state: number) => void;
+}
+
+const useSwiperPageStore = create<SwiperPageStore>((set) => ({
+    swiperPage: 1,
+    setSwiperPage: (state) =>
+        set({
+            swiperPage: state,
+        }),
+}));
+export { useSwiperPageStore };
 //_______________________________________________________________________________________________
 
 // 제품 상세 모달 상태

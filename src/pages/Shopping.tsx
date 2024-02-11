@@ -8,7 +8,7 @@ import styled from 'styled-components';
 
 //shopping
 const Shopping = () => {
-    const { selectButton, setSelectButton } = useShoppingHeaderSelectBarStore();
+    const { selectButton } = useShoppingHeaderSelectBarStore();
     return (
         <>
             <_section>
@@ -29,7 +29,7 @@ const Shopping = () => {
 };
 const _section = styled.section`
     background: #fff8fa;
-    padding: 80px 0px;
+    padding: 30px 0px;
     > div {
         width: 1200px;
         margin: 0 auto;

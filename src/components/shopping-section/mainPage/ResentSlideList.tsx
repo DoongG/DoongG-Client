@@ -1,10 +1,8 @@
 /* eslint-disable react/jsx-pascal-case */
-import React, { useEffect, useState } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';
 import axios from 'axios';
 import eyes from 'assets/eyes.png';
-import { Navigation, Pagination } from 'swiper/modules';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import 'swiper/swiper-bundle.css';
 import styled from 'styled-components';
 
@@ -12,6 +10,8 @@ import {
     useBuyModalStore,
     useModalStore,
     useProductId,
+    useSwiperDomStore,
+    useSwiperPageStore,
 } from '../../../store/shoppingHeaderSelectBarStore';
 import { ShoppingDetailHeader } from '../detailPage/ShoppingDetailModal';
 
@@ -32,6 +32,12 @@ export default function ShoppingSlideResent() {
     );
     const { isOpenModal, setOpenModal } = useModalStore(); // 모달 창 state
     const { isOpenBuyModal, setIsOpenBuyModal } = useBuyModalStore(); //결제 모달 창 state
+    const { swiperDom, setSwiperDom } = useSwiperDomStore();
+    // 남아 있는 슬라이드 수
+    const { swiperPage, setSwiperPage } = useSwiperPageStore();
+
+    // swiper DOM 체크
+    const swiperRef = useRef<SwiperRef>(null);
 
     // 상품 리스트에서 클릭한 상품의 제목과 카테고리
     const [title, setTitle] = useState('');
@@ -70,7 +76,12 @@ export default function ShoppingSlideResent() {
         };
         getResentProduct();
     }, []);
-    console.log(resentProductList);
+
+    useEffect(() => {
+        if (swiperRef) {
+            setSwiperDom(swiperRef.current);
+        }
+    }, [swiperRef]);
 
     const onClickToggleModal = (
         changedCategory: string,
@@ -88,28 +99,30 @@ export default function ShoppingSlideResent() {
         <>
             <_swiperWrapper className="swiperWrppaer">
                 <_customSwiper
-                    modules={[Navigation, Pagination]}
-                    spaceBetween={50} // 이미지 간격
+                    ref={swiperRef}
+                    spaceBetween={10} // 이미지 간격
                     slidesPerView={3} // 한번에 보이는 이미지 수
                     slidesPerGroup={3} // 그룹 당 슬라이드 수 설정
-                    navigation
+                    onSlideChange={(e: any) => {
+                        setSwiperPage(e.activeIndex / 3 + 1);
+                    }}
                     breakpoints={{
                         // 1300px 이상일 때
                         1200: {
                             slidesPerView: 3,
-                            spaceBetween: 50,
+                            spaceBetween: 10,
                             slidesPerGroup: 3,
                         },
                         // 1024px 이상일 때
                         991: {
                             slidesPerView: 3,
-                            spaceBetween: 50,
+                            spaceBetween: 10,
                             slidesPerGroup: 3,
                         },
                         // 768px 이상일 때
                         767: {
                             slidesPerView: 3,
-                            spaceBetween: 50,
+                            spaceBetween: 30,
                             slidesPerGroup: 3,
                         },
                         575: {
@@ -151,17 +164,7 @@ export default function ShoppingSlideResent() {
                                         />
                                         <span>{item.productName}</span>
                                         <_productInfos>
-                                            <_perDiv className="perDiv">
-                                                {calculateDiscountRate(
-                                                    item.price,
-                                                    item.discountedPrice,
-                                                ).toFixed(0)}
-                                                %
-                                            </_perDiv>
                                             <_priceDiv className="priceDiv">
-                                                <_initPriceDiv className="initPriceDiv">
-                                                    {addCommas(item.price)}원
-                                                </_initPriceDiv>
                                                 <_realPriceDiv className="realPriceDiv">
                                                     {addCommas(
                                                         item.discountedPrice,
@@ -169,6 +172,13 @@ export default function ShoppingSlideResent() {
                                                     원
                                                 </_realPriceDiv>
                                             </_priceDiv>
+                                            <_perDiv className="perDiv">
+                                                {calculateDiscountRate(
+                                                    item.price,
+                                                    item.discountedPrice,
+                                                ).toFixed(0)}
+                                                %
+                                            </_perDiv>
                                         </_productInfos>
                                     </_contentWrapper>
                                 </_customSwiperSlide>
@@ -206,10 +216,8 @@ export default function ShoppingSlideResent() {
 
 // Swiper Custom
 const _customSwiper = styled(Swiper)`
-    width: 95%;
     height: 400px;
     margin: 0 !important;
-    padding: 0px 43px;
     // 슬라이드 버튼
     .swiper-button-prev,
     .swiper-button-next {
@@ -250,8 +258,6 @@ const _customSwiper = styled(Swiper)`
         }
     }
     img {
-        border-radius: 15px;
-        width: 100%;
         height: 100%;
     }
     span {
@@ -284,7 +290,7 @@ const _customSwiper = styled(Swiper)`
 `;
 // SwiperSlide Custom
 const _customSwiperSlide = styled(SwiperSlide)`
-    height: 260px;
+    width: 288px;
     @media (max-width: 1200px) {
         height: 180px;
     }
@@ -321,23 +327,19 @@ const _favoriteDiv = styled.div`
     }
 `;
 
-// 아이콘 커스텀
-const _customFontAwesome = styled(FontAwesomeIcon)`
-    font-size: 25px;
-    margin-right: 7px;
-`;
-
 const _swiperWrapper = styled.div`
     float: right;
     display: flex;
     justify-content: center;
-    width: 896px;
+    width: 885px;
     padding: 20px 0px 32px;
     position: relative;
     z-index: 3;
     .swiper-wrapper {
-        transition-timing-function: linear !important;
-        transition-duration: 500ms !important;
+        transition: all 0.3s ease-in-out;
+    }
+    .swiper-slide {
+        width: 288px !important;
     }
     @media (max-width: 575px) {
         padding: 20px 0px 20px;
@@ -345,12 +347,12 @@ const _swiperWrapper = styled.div`
 `;
 
 const _contentWrapper = styled.div`
-    width: 100%;
-    height: 100%;
+    height: 288px;
 `;
 
 const _productInfos = styled.div`
     display: flex;
+    align-items: center;
     margin-top: 10px;
     @media (max-width: 575px) {
         margin-top: 0px;
@@ -369,8 +371,7 @@ const _perDiv = styled.div`
     }
 `;
 const _priceDiv = styled.div`
-    margin-left: 15px;
-
+    margin-right: 10px;
     @media (max-width: 1200px) {
         font-size: 17px;
     }
@@ -379,18 +380,9 @@ const _priceDiv = styled.div`
     }
 `;
 
-const _initPriceDiv = styled.div`
-    text-decoration: line-through;
-    @media (max-width: 1200px) {
-        font-size: 17px;
-    }
-    @media (max-width: 767px) {
-        font-size: 15px;
-    }
-`;
 const _realPriceDiv = styled.div`
-    font-weight: 700;
-
+    font-weight: 900;
+    font-size: 20px;
     @media (max-width: 1200px) {
         font-size: 17px;
     }
