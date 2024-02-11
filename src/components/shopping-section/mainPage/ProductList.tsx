@@ -1,25 +1,21 @@
-import styled, { createGlobalStyle } from 'styled-components';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+/* eslint-disable react/jsx-pascal-case */
+import styled from 'styled-components';
+import { useSearchParams } from 'react-router-dom';
 
 import axios from 'axios';
-import shopping1 from '../assets/shopping1.jpg';
-import shopping2 from '../assets/shopping2.jpg';
-import shopping3 from '../assets/shopping3.jpg';
-import shopping4 from '../assets/shopping4.jpg';
-import shopping5 from '../assets/shopping5.jpg';
-import eyes from '../assets/eyes.png';
-import listbar from '../assets/listBar2.png';
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+
+import eyes from 'assets/eyes.png';
+import listbar from 'assets/listBar2.png';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     useBuyModalStore,
     useModalStore,
     useProductId,
-} from '../store/shoppingHeaderSelectBarStore';
+} from '../../../store/shoppingHeaderSelectBarStore';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
-import { ShoppingDetailHeader } from './ShoppingDetailModal';
-import { ShoppingDetailBuy } from './ShoppingDetailBuy';
+import { ShoppingDetailHeader } from '../detailPage/ShoppingDetailModal';
 
 interface ImgBarProps {
     shouldAnimate?: boolean;
@@ -46,7 +42,7 @@ interface ApiResponse {
 interface PropsCss {
     selected: boolean;
 }
-export default function ShoppingListTest() {
+export default function ProductList() {
     const [shouldAnimate, setShouldAnimate] = useState(false);
     const [click, setClick] = useState(false);
     const [staticChange, setStaticChange] = useState(0);
@@ -125,7 +121,7 @@ export default function ShoppingListTest() {
                 setDivHeigth(calculatedHeight);
                 imgBar.current.style.animation = 'slideDown 1s  1 forwards ';
                 categoryDiv.current.style.animation = 'listDown 1s 1 forwards ';
-                categoryDiv.current.style.bottom = `-${calculatedHeight}px !important`;
+                // categoryDiv.current.style.bottom = `-${calculatedHeight}px !important`;
                 // scrollIntoView가 작동하는 시간
                 setTimeout(() => {
                     if (listWrapper.current) {

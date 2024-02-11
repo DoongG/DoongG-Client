@@ -157,7 +157,7 @@ const RoomReviewWriteMap = () => {
                     geocoder.coord2Address(
                         mouseEvent.latLng.getLng(),
                         mouseEvent.latLng.getLat(),
-                        (result: any, status: any) => {
+                        (result: any, status: boolean) => {
                             if (
                                 status === window.kakao.maps.services.Status.OK
                             ) {
@@ -324,19 +324,6 @@ const RoomReviewWriteMap = () => {
                 <_nowIconBox className="nowIcon" onClick={onhandleNowPlace}>
                     <FaLocationCrosshairs />
                 </_nowIconBox>
-                {/* <_openCloseButton
-                    className="openCloseButton"
-                    onMouseEnter={() => setIsButtonHovered(true)}
-                    onMouseLeave={() => setIsButtonHovered(false)}
-                    onClick={}
-                >
-                    <_openCloseTopDiv
-                        isButtonHovered={isButtonHovered}
-                    ></_openCloseTopDiv>
-                    <_openCloseBottomDiv
-                        isButtonHovered={isButtonHovered}
-                    ></_openCloseBottomDiv>
-                </_openCloseButton> */}
             </_kakaoMapWrapper>
         </>
     );

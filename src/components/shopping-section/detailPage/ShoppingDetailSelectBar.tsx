@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useShoppingDetailSelectBarStore } from '../store/shoppingHeaderSelectBarStore';
+import { useShoppingDetailSelectBarStore } from '../../../store/shoppingHeaderSelectBarStore';
 
 interface Props {
     isSelect: string;

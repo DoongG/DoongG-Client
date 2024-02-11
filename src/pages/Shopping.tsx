@@ -1,8 +1,8 @@
-import ShoppingHeaderSelectBar from '../components/ShoppingHeaderSelectBar';
-import ShoppingSlideResent from '../components/ShoppingSlideResent';
-import ShoppingSlideHot from '../components/ShoppingSlideHot';
+import ShoppingHeaderSelectBar from '../components/shopping-section/mainPage/HeaderSelectBar';
+import ShoppingSlideResent from '../components/shopping-section/mainPage/ResentSlideList';
+import ShoppingSlideHot from '../components/shopping-section/mainPage/HotSlideList';
 import { useShoppingHeaderSelectBarStore } from '../store/shoppingHeaderSelectBarStore';
-import ShoppingListTest from '../components/ShoppingListTest';
+import ShoppingListTest from '../components/shopping-section/mainPage/ProductList';
 import styled from 'styled-components';
 import React, { useEffect, useRef, useState } from 'react';
 
