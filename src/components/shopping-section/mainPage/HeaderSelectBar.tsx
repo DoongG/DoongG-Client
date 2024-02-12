@@ -5,7 +5,6 @@ import {
     useSwiperDomStore,
     useSwiperPageStore,
 } from '../../../store/shoppingHeaderSelectBarStore';
-import { useSwiper } from 'swiper/react';
 import { GoArrowRight } from 'react-icons/go';
 import { GoArrowLeft } from 'react-icons/go';
 
@@ -18,7 +17,7 @@ export default function HeaderSelectBar() {
     // swiper Dom 상태 가져오기
     const { swiperDom } = useSwiperDomStore();
     // 현재 swiper page index
-    const { swiperPage, setSwiperPage } = useSwiperPageStore();
+    const { swiperPage } = useSwiperPageStore();
 
     const handleButtonClick = (button: string) => {
         setSelectButton(button);

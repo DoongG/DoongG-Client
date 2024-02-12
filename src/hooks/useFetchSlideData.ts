@@ -13,6 +13,7 @@ interface ApiResponse {
     category: string;
 }
 
+// slide(캐러셀) 데이터 가져오는 훅
 export default function useFetchSlideData() {
     const [data, setData] = useState<ApiResponse[]>([]);
     const { selectButton } = useShoppingHeaderSelectBarStore();

@@ -17,10 +17,10 @@ import useFetchSlideData from 'hooks/useFetchSlideData';
 
 export default function SlideResent() {
     const { isOpenModal, setOpenModal } = useModalStore(); // 모달 창 state
-    const { isOpenBuyModal, setIsOpenBuyModal } = useBuyModalStore(); //결제 모달 창 state
-    const { swiperDom, setSwiperDom } = useSwiperDomStore();
+    const { setIsOpenBuyModal } = useBuyModalStore(); //결제 모달 창 state
+    const { setSwiperDom } = useSwiperDomStore();
     // 남아 있는 슬라이드 수
-    const { swiperPage, setSwiperPage } = useSwiperPageStore();
+    const { setSwiperPage } = useSwiperPageStore();
 
     // swiper DOM 체크
     const swiperRef = useRef<SwiperRef>(null);
