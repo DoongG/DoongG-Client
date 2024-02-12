@@ -259,6 +259,7 @@ const _customSwiper = styled(Swiper)`
     }
     img {
         height: 100%;
+        scale: 0.7;
     }
     span {
         display: -webkit-box;
@@ -266,6 +267,7 @@ const _customSwiper = styled(Swiper)`
         -webkit-line-clamp: 2; /* 표시할 줄 수 */
         -webkit-box-orient: vertical;
         overflow: hidden;
+        padding: 0 15px;
         margin-top: 10px;
         white-space: pre-line; /* 공백 유지 */
         min-height: 42px;
@@ -291,6 +293,7 @@ const _customSwiper = styled(Swiper)`
 // SwiperSlide Custom
 const _customSwiperSlide = styled(SwiperSlide)`
     width: 288px;
+    background-color: white;
     @media (max-width: 1200px) {
         height: 180px;
     }
@@ -354,6 +357,7 @@ const _productInfos = styled.div`
     display: flex;
     align-items: center;
     margin-top: 10px;
+    padding: 0 15px;
     @media (max-width: 575px) {
         margin-top: 0px;
     }
