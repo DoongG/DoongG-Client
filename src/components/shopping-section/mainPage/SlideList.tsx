@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-pascal-case */
 import React, { useEffect, useRef, useState } from 'react';
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';
-import axios from 'axios';
 import eyes from 'assets/eyes.png';
 import 'swiper/swiper-bundle.css';
 import styled from 'styled-components';
@@ -14,22 +13,9 @@ import {
     useSwiperPageStore,
 } from '../../../store/shoppingHeaderSelectBarStore';
 import { ShoppingDetailHeader } from '../detailPage/ShoppingDetailModal';
+import useFetchSlideData from 'hooks/useFetchSlideData';
 
-interface ApiResponse {
-    discountedPrice: number;
-    price: number;
-    productID: number;
-    productImage: string;
-    productName: string;
-    stock: number;
-    viewCount: number;
-    category: string;
-}
-
-export default function ShoppingSlideResent() {
-    const [resentProductList, setResentProductList] = useState<ApiResponse[]>(
-        [],
-    );
+export default function SlideResent() {
     const { isOpenModal, setOpenModal } = useModalStore(); // 모달 창 state
     const { isOpenBuyModal, setIsOpenBuyModal } = useBuyModalStore(); //결제 모달 창 state
     const { swiperDom, setSwiperDom } = useSwiperDomStore();
@@ -58,24 +44,10 @@ export default function ShoppingSlideResent() {
         // 원래 가격과 할인된 가격을 이용하여 할인률을 계산합니다.
         const discountAmount = originalPrice - discountedPrice;
         const discountRate = (discountAmount / originalPrice) * 100;
-
         return discountRate;
     }
 
-    useEffect(() => {
-        const getResentProduct = async () => {
-            try {
-                const res = await axios.get<ApiResponse[]>(
-                    `${process.env.REACT_APP_API_KEY}/shop/new`,
-                );
-
-                setResentProductList(res.data);
-            } catch (error) {
-                console.error('데이터를 가져오는 중 오류 발생:', error);
-            }
-        };
-        getResentProduct();
-    }, []);
+    const { data } = useFetchSlideData();
 
     useEffect(() => {
         if (swiperRef) {
@@ -137,7 +109,7 @@ export default function ShoppingSlideResent() {
                         },
                     }}
                 >
-                    {resentProductList.map((item: ApiResponse) => {
+                    {data.map((item) => {
                         return (
                             <>
                                 <_customSwiperSlide
