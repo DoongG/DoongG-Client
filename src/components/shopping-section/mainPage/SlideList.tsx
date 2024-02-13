@@ -14,6 +14,9 @@ import {
 } from '../../../store/shoppingHeaderSelectBarStore';
 import { ShoppingDetailHeader } from '../detailPage/ShoppingDetailModal';
 import useFetchSlideData from 'hooks/useFetchSlideData';
+import addCommas from 'utils/addCommas';
+import calculateDiscountRate from 'utils/calculateDiscountRate';
+import { Link } from 'react-router-dom';
 
 export default function SlideResent() {
     const { isOpenModal, setOpenModal } = useModalStore(); // 모달 창 state
@@ -30,22 +33,6 @@ export default function SlideResent() {
     const [category, setCategory] = useState('');
     // const [productId, setProductId] = useState(0);
     const { productId, setProductId } = useProductId();
-
-    // 천 단위 쉼표 추가 함수
-    const addCommas = (num: number) => {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    };
-
-    // 할인률 구하는 함수
-    function calculateDiscountRate(
-        originalPrice: number,
-        discountedPrice: number,
-    ) {
-        // 원래 가격과 할인된 가격을 이용하여 할인률을 계산합니다.
-        const discountAmount = originalPrice - discountedPrice;
-        const discountRate = (discountAmount / originalPrice) * 100;
-        return discountRate;
-    }
 
     const { data } = useFetchSlideData();
 
@@ -116,43 +103,42 @@ export default function SlideResent() {
                                     key={item.productID}
                                     className="swiperslide"
                                 >
-                                    <_contentWrapper
-                                        className="contentWrapper"
-                                        onClick={() =>
-                                            onClickToggleModal(
-                                                item.category,
-                                                item.productName,
-                                                item.productID,
-                                            )
-                                        }
+                                    <Link
+                                        to={`/shopping/${item.productID}`}
+                                        style={{
+                                            color: 'black',
+                                            textDecoration: 'none',
+                                        }}
                                     >
-                                        <_favoriteDiv className="favoriteDiv">
-                                            <img src={eyes} alt="" />
-                                            <p>{item.viewCount}</p>
-                                        </_favoriteDiv>
-                                        <img
-                                            src={item.productImage}
-                                            alt="이미지1"
-                                        />
-                                        <span>{item.productName}</span>
-                                        <_productInfos>
-                                            <_priceDiv className="priceDiv">
-                                                <_realPriceDiv className="realPriceDiv">
-                                                    {addCommas(
+                                        <_contentWrapper className="contentWrapper">
+                                            <_favoriteDiv className="favoriteDiv">
+                                                <img src={eyes} alt="" />
+                                                <p>{item.viewCount}</p>
+                                            </_favoriteDiv>
+                                            <img
+                                                src={item.productImage}
+                                                alt="이미지1"
+                                            />
+                                            <span>{item.productName}</span>
+                                            <_productInfos>
+                                                <_priceDiv className="priceDiv">
+                                                    <_realPriceDiv className="realPriceDiv">
+                                                        {addCommas(
+                                                            item.discountedPrice,
+                                                        )}
+                                                        원
+                                                    </_realPriceDiv>
+                                                </_priceDiv>
+                                                <_perDiv className="perDiv">
+                                                    {calculateDiscountRate(
+                                                        item.price,
                                                         item.discountedPrice,
-                                                    )}
-                                                    원
-                                                </_realPriceDiv>
-                                            </_priceDiv>
-                                            <_perDiv className="perDiv">
-                                                {calculateDiscountRate(
-                                                    item.price,
-                                                    item.discountedPrice,
-                                                ).toFixed(0)}
-                                                %
-                                            </_perDiv>
-                                        </_productInfos>
-                                    </_contentWrapper>
+                                                    ).toFixed(0)}
+                                                    %
+                                                </_perDiv>
+                                            </_productInfos>
+                                        </_contentWrapper>
+                                    </Link>
                                 </_customSwiperSlide>
                             </>
                         );

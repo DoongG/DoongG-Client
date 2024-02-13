@@ -11,9 +11,10 @@ import { GoArrowLeft } from 'react-icons/go';
 interface Props {
     isSelected: boolean;
 }
-export default function HeaderSelectBar() {
-    const { selectButton, setSelectButton } = useShoppingHeaderSelectBarStore();
 
+export default function HeaderSelectBar() {
+    // 슬라이드 상태관리 버튼
+    const { selectButton, setSelectButton } = useShoppingHeaderSelectBarStore();
     // swiper Dom 상태 가져오기
     const { swiperDom } = useSwiperDomStore();
     // 현재 swiper page index
@@ -126,6 +127,7 @@ const _selectInnerBox = styled.div`
 `;
 
 const _selectButton = styled.button<Props>`
+    font-weight: 900;
     background-color: inherit;
     border: none;
     font-size: 28px;

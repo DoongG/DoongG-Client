@@ -14,6 +14,7 @@ const Board = lazy(() =>
 const Shopping = lazy(() =>
     import('../pages/Shopping').then(({ Shopping }) => ({ default: Shopping })),
 );
+const ShoppingDetail = lazy(() => import('../pages/ShoppingDetail'));
 const BoardUnited = lazy(() =>
     import('../pages/Board-All/BoardUnited').then(({ BoardUnited }) => ({
         default: BoardUnited,
@@ -59,6 +60,10 @@ const Router = () => {
                             element={<PostDetail />}
                         ></Route>
                         <Route path="/shopping" element={<Shopping />}></Route>
+                        <Route
+                            path="/shopping/:productId"
+                            element={<ShoppingDetail />}
+                        ></Route>
                         <Route
                             path="/roomreview"
                             element={<RoomreView />}
