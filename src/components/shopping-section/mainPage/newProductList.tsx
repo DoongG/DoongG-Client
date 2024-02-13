@@ -12,6 +12,8 @@ import { PiSoccerBallThin } from 'react-icons/pi';
 import { VscSymbolProperty } from 'react-icons/vsc';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import addCommas from 'utils/addCommas';
+import calculateDiscountRate from 'utils/calculateDiscountRate';
 
 interface ApiResponse {
     discountedPrice: number;
@@ -29,23 +31,6 @@ export default function NewProductList() {
     const [page, setPage] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [category, setCategory] = useState('뷰티');
-
-    // 할인률 구하는 함수
-    function calculateDiscountRate(
-        originalPrice: number,
-        discountedPrice: number,
-    ) {
-        // 원래 가격과 할인된 가격을 이용하여 할인률을 계산합니다.
-        const discountAmount = originalPrice - discountedPrice;
-        const discountRate = (discountAmount / originalPrice) * 100;
-
-        return discountRate;
-    }
-
-    // 천 단위 쉼표 추가 함수
-    const addCommas = (num: number) => {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    };
 
     // 상품 get요청
     useEffect(() => {
@@ -187,10 +172,11 @@ const _ul = styled.ul`
     padding: 0px;
     list-style: none;
     justify-content: space-between;
-    & > :hover {
+    & > li:hover {
         border: 2px solid rgb(28, 57, 61);
     }
     & li {
+        border: 2px solid white;
         position: relative;
         display: flex;
         align-items: center;
