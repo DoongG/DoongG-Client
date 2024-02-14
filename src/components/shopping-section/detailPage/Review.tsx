@@ -6,19 +6,16 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import styled from 'styled-components';
+import { Product_t, Review_t } from 'types/shoppingDetail';
 
-interface Props {
-    item: {
-        content: string;
-        createdAt: string;
-        nickname: string;
-    };
+type Props_t = {
+    item: Review_t;
     index: number;
-    fetchData: any;
-}
-export default function Review(props: Props) {
+    fetchData: Product_t;
+};
+
+export default function Review(props: Props_t) {
     const { item, index, fetchData } = props;
-    console.log(fetchData);
     return (
         <>
             <_reviewBox className="reviewBox">
