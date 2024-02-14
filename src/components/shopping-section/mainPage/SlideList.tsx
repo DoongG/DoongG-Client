@@ -12,7 +12,6 @@ import {
     useSwiperDomStore,
     useSwiperPageStore,
 } from '../../../store/shoppingHeaderSelectBarStore';
-import { ShoppingDetailHeader } from '../detailPage/ShoppingDetailModal';
 import useFetchSlideData from 'hooks/useFetchSlideData';
 import addCommas from 'utils/addCommas';
 import calculateDiscountRate from 'utils/calculateDiscountRate';
@@ -145,29 +144,6 @@ export default function SlideResent() {
                     })}
                 </_customSwiper>
             </_swiperWrapper>
-            {isOpenModal && (
-                <ShoppingDetailHeader
-                    onClickToggleModal={(title, category, productId) =>
-                        console.log(title, category, productId)
-                    }
-                    category={category}
-                    title={title}
-                    productId={productId}
-                ></ShoppingDetailHeader>
-            )}
-
-            {isOpenModal && (
-                <_backdrop
-                    onClick={(e: React.MouseEvent) => {
-                        e.preventDefault();
-                        setOpenModal(false);
-                        setIsOpenBuyModal(false);
-                        if (onClickToggleModal) {
-                            onClickToggleModal(category, title, productId);
-                        }
-                    }}
-                ></_backdrop>
-            )}
         </>
     );
 }
@@ -271,7 +247,7 @@ const _favoriteDiv = styled.div`
     align-items: center;
     img {
         margin-right: 5px;
-        width: 20px;
+        width: 25px;
         @media (max-width: 1200px) {
             height: 17px;
         }
