@@ -34,6 +34,21 @@ const useSwiperDomStore = create<SwiperDomStore>((set) => ({
 export { useSwiperDomStore };
 
 //____________________________________________________________________________________________
+// 연산된 가격들(원래 가격, 세일 가격)
+interface CalculatedCost {
+    beforePrice: number;
+    afterPrice: number;
+    setBeforePrice: (state: number) => void;
+    setAfterPrice: (state: number) => void;
+}
+const useCalculatedCost = create<CalculatedCost>((set) => ({
+    beforePrice: 0,
+    afterPrice: 0,
+    setBeforePrice: (state) => set({ beforePrice: state }),
+    setAfterPrice: (state) => set({ afterPrice: state }),
+}));
+export { useCalculatedCost };
+//____________________________________________________________________________________________
 
 // swiper 현재 페이지
 interface SwiperPageStore {
