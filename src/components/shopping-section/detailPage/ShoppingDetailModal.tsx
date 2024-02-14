@@ -397,10 +397,6 @@ const _ShoppingDetailModal = styled.div<ModalProps>`
     box-sizing: border-box;
     background-color: white;
     z-index: 4;
-    animation: ${(props) =>
-        props.isModal
-            ? 'scale-in-center 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both'
-            : 'scale-out-center 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both'};
 
     @media (max-width: 1200px) {
         padding: 20px 50px;

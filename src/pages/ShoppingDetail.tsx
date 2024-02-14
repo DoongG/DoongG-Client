@@ -7,13 +7,7 @@ import calculateDiscountRate from 'utils/calculateDiscountRate';
 import addCommas from 'utils/addCommas';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-
-// MUI 컴포넌트
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import Review from 'components/shopping-section/detailPage/Review';
 
 interface Review {
     nickname: string;
@@ -188,63 +182,11 @@ export default function ShoppingDetail() {
                         {fetchData.reviews.map((item, index) => {
                             return (
                                 <>
-                                    <_reviewBox className="reviewBox">
-                                        <Accordion>
-                                            <AccordionSummary
-                                                expandIcon={
-                                                    <ArrowDropDownIcon />
-                                                }
-                                                aria-controls="panel2-content"
-                                                id="panel2-header"
-                                            >
-                                                <Typography
-                                                    style={{
-                                                        padding: '0px 10px',
-                                                    }}
-                                                >
-                                                    {fetchData.reviews.length -
-                                                        index}
-                                                </Typography>
-                                                <div
-                                                    style={{
-                                                        display: 'flex',
-                                                        width: '100%',
-                                                        justifyContent:
-                                                            'space-between',
-                                                    }}
-                                                >
-                                                    <Typography className="content">
-                                                        {item.content}
-                                                    </Typography>
-                                                    <Typography
-                                                        style={{
-                                                            width: '20%',
-                                                        }}
-                                                    >
-                                                        {item.nickname}
-                                                    </Typography>
-                                                    <Typography
-                                                        style={{ width: '30%' }}
-                                                    >
-                                                        {
-                                                            item.createdAt.split(
-                                                                ' ',
-                                                            )[0]
-                                                        }
-                                                    </Typography>
-                                                </div>
-                                            </AccordionSummary>
-                                            <AccordionDetails>
-                                                <Typography
-                                                    style={{
-                                                        textAlign: 'left',
-                                                    }}
-                                                >
-                                                    {item.content}
-                                                </Typography>
-                                            </AccordionDetails>
-                                        </Accordion>
-                                    </_reviewBox>
+                                    <Review
+                                        item={item}
+                                        index={index}
+                                        fetchData={fetchData}
+                                    />
                                 </>
                             );
                         })}
@@ -502,20 +444,5 @@ const _review = styled.section`
         margin: 0;
         border-bottom: 2px solid black;
         padding-bottom: 10px;
-    }
-`;
-
-const _reviewBox = styled.div`
-    width: 70%;
-    .content {
-        text-align: left;
-        width: 50%;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        word-break: break-word;
-        margin: 0px;
-        display: -webkit-box;
-        -webkit-line-clamp: 1;
-        -webkit-box-orient: vertical;
     }
 `;
