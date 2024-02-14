@@ -271,7 +271,7 @@ const _favoriteDiv = styled.div`
     align-items: center;
     img {
         margin-right: 5px;
-        width: 20px;
+        width: 25px;
         @media (max-width: 1200px) {
             height: 17px;
         }
