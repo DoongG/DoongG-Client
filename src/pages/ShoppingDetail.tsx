@@ -14,14 +14,13 @@ import {
 } from 'store/shoppingHeaderSelectBarStore';
 import ReviewBox from 'components/shopping-section/detailPage/ReviewBox';
 import PaginationBox from 'components/shopping-section/detailPage/PaginationBox';
+import RecommendSlide from 'components/shopping-section/detailPage/RecommendSlide';
 
 export default function ShoppingDetail() {
     const { productId } = useParams();
-    // 제품 상세 정보 상태
-    const [fetchData, setFetchData] = useState<Product_t | null>(null);
-    // 수량에 따른 변하는 가격 정보
-    const { beforePrice, afterPrice } = useCalculatedCost();
-    const { pageArr } = usePagination();
+    const [fetchData, setFetchData] = useState<Product_t | null>(null); // 제품 상세 정보 상태
+    const { beforePrice, afterPrice } = useCalculatedCost(); // 수량에 따른 변하는 가격 정보
+    const { pageArr } = usePagination(); // 현재 페이지의 리뷰 목록
 
     // 상품 정보 가져오는 함수
     useEffect(() => {
@@ -126,6 +125,7 @@ export default function ShoppingDetail() {
                         })}
                         <PaginationBox {...fetchData} />
                     </_review>
+                    <RecommendSlide category={fetchData.category} />
                 </>
             )}
         </>
@@ -325,7 +325,7 @@ const _buy = styled.button`
 const _review = styled.section`
     width: 1080px;
     margin: 0 auto;
-    padding-bottom: 100px;
+    padding-bottom: 70px;
     position: relative;
     overflow: hidden;
     & > h3 {

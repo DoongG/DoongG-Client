@@ -273,7 +273,7 @@ const _swiperWrapper = styled.div`
     position: relative;
     z-index: 3;
     .swiper-wrapper {
-        transition: all 0.3s ease-in-out;
+        transition-timing-function: ease-in-out;
     }
     .swiper-slide {
         width: 288px !important;
