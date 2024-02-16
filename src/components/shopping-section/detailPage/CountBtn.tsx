@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-pascal-case */
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -8,9 +9,9 @@ import { useCalculatedCost } from 'store/shoppingHeaderSelectBarStore';
 
 export default function CountBtn(props: Product_t) {
     const { ...fetchData } = props;
+    // count에 따른 가격 상태 관리
     const { beforePrice, afterPrice, setBeforePrice, setAfterPrice } =
         useCalculatedCost();
-
     // 수량과 가격 상태
     const [count, setCount] = useState(1);
 
@@ -21,22 +22,18 @@ export default function CountBtn(props: Product_t) {
 
     // 마이너스 버튼
     const handleMinusClick = (before: number, after: number) => {
-        if (before !== undefined && after !== undefined) {
-            if (count > 1) {
-                setCount(count - 1);
-                setAfterPrice(afterPrice - after);
-                setBeforePrice(beforePrice - before);
-            }
+        if (count > 1) {
+            setCount(count - 1);
+            setAfterPrice(afterPrice - after);
+            setBeforePrice(beforePrice - before);
         }
     };
 
     // 플러스 버튼
     const handlePlusClick = (before: number, after: number) => {
-        if (before !== undefined && after !== undefined) {
-            setCount(count + 1);
-            setAfterPrice(afterPrice + after);
-            setBeforePrice(beforePrice + before);
-        }
+        setCount(count + 1);
+        setAfterPrice(afterPrice + after);
+        setBeforePrice(beforePrice + before);
     };
     return (
         <>

@@ -6,10 +6,14 @@ import { Link, useParams } from 'react-router-dom';
 import calculateDiscountRate from 'utils/calculateDiscountRate';
 import addCommas from 'utils/addCommas';
 
-import Review from 'components/shopping-section/detailPage/Review';
 import { Product_t } from 'types/shoppingDetail';
 import CountBtn from 'components/shopping-section/detailPage/CountBtn';
-import { useCalculatedCost } from 'store/shoppingHeaderSelectBarStore';
+import {
+    useCalculatedCost,
+    usePagination,
+} from 'store/shoppingHeaderSelectBarStore';
+import ReviewBox from 'components/shopping-section/detailPage/ReviewBox';
+import PaginationBox from 'components/shopping-section/detailPage/PaginationBox';
 
 export default function ShoppingDetail() {
     const { productId } = useParams();
@@ -17,6 +21,7 @@ export default function ShoppingDetail() {
     const [fetchData, setFetchData] = useState<Product_t | null>(null);
     // 수량에 따른 변하는 가격 정보
     const { beforePrice, afterPrice } = useCalculatedCost();
+    const { pageArr } = usePagination();
 
     // 상품 정보 가져오는 함수
     useEffect(() => {
@@ -108,10 +113,10 @@ export default function ShoppingDetail() {
                                 {fetchData.reviews.length}
                             </span>
                         </h3>
-                        {fetchData.reviews.map((item, index) => {
+                        {pageArr.map((item, index) => {
                             return (
                                 <>
-                                    <Review
+                                    <ReviewBox
                                         item={item}
                                         index={index}
                                         fetchData={fetchData}
@@ -119,12 +124,14 @@ export default function ShoppingDetail() {
                                 </>
                             );
                         })}
+                        <PaginationBox {...fetchData} />
                     </_review>
                 </>
             )}
         </>
     );
 }
+
 // 카테고리 경로
 const _headerWrapper = styled.div`
     padding-bottom: 20px;

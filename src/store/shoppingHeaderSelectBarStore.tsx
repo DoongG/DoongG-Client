@@ -1,3 +1,4 @@
+import { Review_t } from 'types/shoppingDetail';
 import { create } from 'zustand';
 
 // 스토어의 상태를 나타내는 인터페이스 정의
@@ -17,6 +18,19 @@ const useShoppingHeaderSelectBarStore = create<ShoppingHeaderSelectBarStore>(
 );
 
 //__________________________________________________________________________________________
+// pagination에 따른 상태 관리
+interface PaginationStore {
+    pageArr: Review_t[];
+    setPageArr: (state: Review_t[]) => void;
+}
+
+const usePagination = create<PaginationStore>((set) => ({
+    pageArr: [],
+    setPageArr: (newArray) => set({ pageArr: newArray }),
+}));
+
+export { usePagination };
+//___________________________________________________________________________________________
 
 // swiper DOM 체크
 interface SwiperDomStore {

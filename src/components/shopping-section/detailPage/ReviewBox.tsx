@@ -14,7 +14,7 @@ type Props_t = {
     fetchData: Product_t;
 };
 
-export default function Review(props: Props_t) {
+export default function ReviewBox(props: Props_t) {
     const { item, index, fetchData } = props;
     return (
         <>
