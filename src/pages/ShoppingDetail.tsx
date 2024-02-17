@@ -15,6 +15,7 @@ import {
 import ReviewBox from 'components/shopping-section/detailPage/ReviewBox';
 import PaginationBox from 'components/shopping-section/detailPage/PaginationBox';
 import RecommendSlide from 'components/shopping-section/detailPage/RecommendSlide';
+import EmptyReviewBox from 'components/shopping-section/detailPage/EmptyReviewBox';
 
 export default function ShoppingDetail() {
     const { productId } = useParams();
@@ -48,11 +49,9 @@ export default function ShoppingDetail() {
                                     <li>HOME</li>
                                 </Link>
                                 <div>{'>'}</div>
-
-                                <li onClick={() => window.location.reload()}>
-                                    SHOP
-                                </li>
-
+                                <Link to={'/shopping'}>
+                                    <li>SHOP</li>
+                                </Link>
                                 <div>{'>'}</div>
                                 <li>{fetchData.category}</li>
                             </ul>
@@ -112,17 +111,21 @@ export default function ShoppingDetail() {
                                 {fetchData.reviews.length}
                             </span>
                         </h3>
-                        {pageArr.map((item, index) => {
-                            return (
-                                <>
-                                    <ReviewBox
-                                        item={item}
-                                        index={index}
-                                        fetchData={fetchData}
-                                    />
-                                </>
-                            );
-                        })}
+                        {fetchData.reviews.length > 0 ? (
+                            pageArr.map((item, index) => {
+                                return (
+                                    <>
+                                        <ReviewBox
+                                            item={item}
+                                            index={index}
+                                            fetchData={fetchData}
+                                        />
+                                    </>
+                                );
+                            })
+                        ) : (
+                            <EmptyReviewBox />
+                        )}
                         <PaginationBox {...fetchData} />
                     </_review>
                     <RecommendSlide category={fetchData.category} />
@@ -324,12 +327,12 @@ const _buy = styled.button`
 // review
 const _review = styled.section`
     width: 1080px;
+    min-height: 345px;
     margin: 0 auto;
     padding-bottom: 70px;
     position: relative;
     overflow: hidden;
     & > h3 {
-        width: 70%;
         text-align: left;
         margin: 0;
         border-bottom: 2px solid black;

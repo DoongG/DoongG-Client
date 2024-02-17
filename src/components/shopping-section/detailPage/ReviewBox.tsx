@@ -71,7 +71,6 @@ export default function ReviewBox(props: Props_t) {
 }
 
 const _reviewBox = styled.div`
-    width: 70%;
     border-bottom: 1px solid lightgrey;
     .content {
         text-align: left;

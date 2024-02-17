@@ -41,7 +41,10 @@ export default function PaginationBox(props: Product_t) {
 }
 //pagination
 const _customStack = styled(Stack)`
-    width: 70%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    position: absolute;
+    bottom: 30px;
     align-items: center;
     margin-top: 20px;
 `;
