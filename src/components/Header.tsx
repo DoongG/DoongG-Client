@@ -10,6 +10,7 @@ import { User } from './data/User';
 import logo from '../assets/logo-removebg-preview.png';
 import axios from 'axios';
 import { validationCheck } from '../pages/Validation/Validation';
+import CartIcon from './shopping-section/cart/CartIcon';
 
 const _headerArea = styled.div`
     position: relative;
@@ -173,21 +174,28 @@ const Header = () => {
             </_Menu>
             {localStorage.getItem('token') ? (
                 <div style={{ display: 'flex' }}>
+                    {/* 장바구니 버튼 */}
+                    <CartIcon />
                     {/* 마이페이지 버튼 */}
                     <LogoutButton onClick={onClickToggleMyPageModal}>
                         <FaUser
                             style={{
                                 fontSize: '20px',
                                 marginRight: '5px',
+                                padding: '0px 8px',
+
                                 color: 'rgb(121, 180, 175)',
                             }}
                         />
                     </LogoutButton>
+                    {/* 로그아웃 버튼 */}
                     <LogoutButton onClick={handleLogout}>
                         <FaSignOutAlt
                             style={{
                                 fontSize: '20px',
                                 marginRight: '5px',
+                                padding: '0px 8px',
+
                                 color: 'rgb(121, 180, 175)',
                             }}
                         />

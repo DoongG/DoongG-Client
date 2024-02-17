@@ -16,6 +16,7 @@ import ReviewBox from 'components/shopping-section/detailPage/ReviewBox';
 import PaginationBox from 'components/shopping-section/detailPage/PaginationBox';
 import RecommendSlide from 'components/shopping-section/detailPage/RecommendSlide';
 import EmptyReviewBox from 'components/shopping-section/detailPage/EmptyReviewBox';
+import CartBtn from 'components/shopping-section/detailPage/CartBtn';
 
 export default function ShoppingDetail() {
     const { productId } = useParams();
@@ -95,9 +96,7 @@ export default function ShoppingDetail() {
                                 </_priceBox>
                                 <CountBtn {...fetchData} />
                                 <_buyBox className="buyBox">
-                                    <_cart className="cart" id="success">
-                                        장바구니 담기
-                                    </_cart>
+                                    <CartBtn />
                                     <_buy className="buy">구매하기</_buy>
                                 </_buyBox>
                             </_infoBox>
