@@ -63,7 +63,7 @@ export default function HeaderSelectBar() {
                         <GoArrowLeft />
                     </_swiperBtn>
                     <span>{swiperPage}</span>
-                    <span>/4</span>
+                    <span>/3</span>
                     <_swiperBtn
                         onClick={() => {
                             swiperDom.swiper.slideNext();
