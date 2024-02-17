@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import React, { PropsWithChildren, useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { AiOutlineClose } from 'react-icons/ai';

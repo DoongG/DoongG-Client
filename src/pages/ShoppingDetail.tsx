@@ -5,48 +5,31 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import calculateDiscountRate from 'utils/calculateDiscountRate';
 import addCommas from 'utils/addCommas';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import Review from 'components/shopping-section/detailPage/Review';
 
-interface Review {
-    nickname: string;
-    content: string;
-    createdAt: string;
-}
-
-interface DetailInfos {
-    productID: number;
-    productName: string;
-    productImage: string;
-    productDescription?: string;
-    category: string;
-    stock: number;
-    price: number;
-    discountedPrice: number;
-    viewCount: number;
-    createAt: string;
-    reviews: Review[];
-}
+import { Product_t } from 'types/shoppingDetail';
+import CountBtn from 'components/shopping-section/detailPage/CountBtn';
+import {
+    useCalculatedCost,
+    usePagination,
+} from 'store/shoppingHeaderSelectBarStore';
+import ReviewBox from 'components/shopping-section/detailPage/ReviewBox';
+import PaginationBox from 'components/shopping-section/detailPage/PaginationBox';
+import RecommendSlide from 'components/shopping-section/detailPage/RecommendSlide';
+import EmptyReviewBox from 'components/shopping-section/detailPage/EmptyReviewBox';
 
 export default function ShoppingDetail() {
     const { productId } = useParams();
-    // 제품 상세 정보 상태
-    const [fetchData, setFetchData] = useState<DetailInfos | null>(null);
-    // 수량과 가격 상태
-    const [count, setCount] = useState(1);
-    const [beforePrice, setbeforePrice] = useState(0);
-    const [afterPrice, setAfterPrice] = useState(0);
+    const [fetchData, setFetchData] = useState<Product_t | null>(null); // 제품 상세 정보 상태
+    const { beforePrice, afterPrice } = useCalculatedCost(); // 수량에 따른 변하는 가격 정보
+    const { pageArr } = usePagination(); // 현재 페이지의 리뷰 목록
 
     // 상품 정보 가져오는 함수
     useEffect(() => {
         const getDetailInfos = async () => {
             try {
-                const res = await axios.get<DetailInfos, any>(
+                const res = await axios.get<Product_t, any>(
                     `${process.env.REACT_APP_API_KEY}/shop/get/${productId}`,
                 );
-                setbeforePrice(res.data.price);
-                setAfterPrice(res.data.discountedPrice);
                 setFetchData(res.data);
             } catch (error) {
                 console.error('데이터를 가져오는 중 오류 발생:', error);
@@ -55,31 +38,6 @@ export default function ShoppingDetail() {
         getDetailInfos();
     }, [productId]);
 
-    // 마이너스 버튼
-    const handleMinusClick = (
-        before: number | undefined,
-        after: number | undefined,
-    ) => {
-        if (before !== undefined && after !== undefined) {
-            if (count > 1) {
-                setCount(count - 1);
-                setAfterPrice(afterPrice - after);
-                setbeforePrice(beforePrice - before);
-            }
-        }
-    };
-
-    // 플러스 버튼
-    const handlePlusClick = (
-        before: number | undefined,
-        after: number | undefined,
-    ) => {
-        if (before !== undefined && after !== undefined) {
-            setCount(count + 1);
-            setAfterPrice(afterPrice + after);
-            setbeforePrice(beforePrice + before);
-        }
-    };
     return (
         <>
             {fetchData && (
@@ -91,11 +49,9 @@ export default function ShoppingDetail() {
                                     <li>HOME</li>
                                 </Link>
                                 <div>{'>'}</div>
-
-                                <li onClick={() => window.location.reload()}>
-                                    SHOP
-                                </li>
-
+                                <Link to={'/shopping'}>
+                                    <li>SHOP</li>
+                                </Link>
                                 <div>{'>'}</div>
                                 <li>{fetchData.category}</li>
                             </ul>
@@ -137,31 +93,7 @@ export default function ShoppingDetail() {
                                         </_per>
                                     </_beforePrice>
                                 </_priceBox>
-                                <_countBox className="countBox">
-                                    <_minus
-                                        className="minus"
-                                        onClick={() =>
-                                            handleMinusClick(
-                                                fetchData.price,
-                                                fetchData.discountedPrice,
-                                            )
-                                        }
-                                    >
-                                        <FontAwesomeIcon icon={faMinus} />
-                                    </_minus>
-                                    <_count>{count}</_count>
-                                    <_plus
-                                        className="plus"
-                                        onClick={() =>
-                                            handlePlusClick(
-                                                fetchData.price,
-                                                fetchData.discountedPrice,
-                                            )
-                                        }
-                                    >
-                                        <FontAwesomeIcon icon={faPlus} />
-                                    </_plus>
-                                </_countBox>
+                                <CountBtn {...fetchData} />
                                 <_buyBox className="buyBox">
                                     <_cart className="cart" id="success">
                                         장바구니 담기
@@ -179,23 +111,30 @@ export default function ShoppingDetail() {
                                 {fetchData.reviews.length}
                             </span>
                         </h3>
-                        {fetchData.reviews.map((item, index) => {
-                            return (
-                                <>
-                                    <Review
-                                        item={item}
-                                        index={index}
-                                        fetchData={fetchData}
-                                    />
-                                </>
-                            );
-                        })}
+                        {fetchData.reviews.length > 0 ? (
+                            pageArr.map((item, index) => {
+                                return (
+                                    <>
+                                        <ReviewBox
+                                            item={item}
+                                            index={index}
+                                            fetchData={fetchData}
+                                        />
+                                    </>
+                                );
+                            })
+                        ) : (
+                            <EmptyReviewBox />
+                        )}
+                        <PaginationBox {...fetchData} />
                     </_review>
+                    <RecommendSlide category={fetchData.category} />
                 </>
             )}
         </>
     );
 }
+
 // 카테고리 경로
 const _headerWrapper = styled.div`
     padding-bottom: 20px;
@@ -335,52 +274,6 @@ const _afterPrice = styled.div`
     }
 `;
 
-// 수량 박스
-const _countBox = styled.div`
-    margin-top: 15px;
-    display: flex;
-    @media (max-width: 1200px) {
-        margin-top: 20px;
-    }
-    @media (max-width: 991px) {
-        margin-top: 10px;
-    }
-`;
-const _minus = styled.button`
-    padding: 10px 13px;
-    border: 1px solid #8080801f;
-    background-color: #8080801f;
-    @media (max-width: 1200px) {
-        font-size: 14px;
-    }
-    @media (max-width: 767px) {
-        padding: 0px 7px;
-    }
-`;
-
-const _count = styled.button`
-    padding: 10px 18px;
-    border: 1px solid #8080801f;
-    background-color: #f9f9f9;
-    @media (max-width: 1200px) {
-        font-size: 14px;
-    }
-    @media (max-width: 767px) {
-        padding: 0px 7px;
-    }
-`;
-const _plus = styled.button`
-    padding: 10px 13px;
-    border: 1px solid #8080801f;
-    background-color: #8080801f;
-    @media (max-width: 1200px) {
-        font-size: 14px;
-    }
-    @media (max-width: 767px) {
-        padding: 0px 7px;
-    }
-`;
-
 // 장바구니 & 결제 버튼
 const _buyBox = styled.div`
     width: 100%;
@@ -434,12 +327,12 @@ const _buy = styled.button`
 // review
 const _review = styled.section`
     width: 1080px;
+    min-height: 345px;
     margin: 0 auto;
-    padding-bottom: 100px;
+    padding-bottom: 70px;
     position: relative;
     overflow: hidden;
     & > h3 {
-        width: 70%;
         text-align: left;
         margin: 0;
         border-bottom: 2px solid black;

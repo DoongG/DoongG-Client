@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import { Link, useLocation } from 'react-router-dom';
 import { styled } from 'styled-components';
 import { LoginModal } from '../components/LoginModal';
@@ -7,8 +8,6 @@ import { FiLogIn } from 'react-icons/fi';
 import { MyPageModal } from '../components/MyPageModal';
 import { User } from './data/User';
 import logo from '../assets/logo-removebg-preview.png';
-import profileImg from '../assets/Mascot.jpg';
-import { useSpring, animated } from 'react-spring';
 import axios from 'axios';
 import { validationCheck } from '../pages/Validation/Validation';
 
