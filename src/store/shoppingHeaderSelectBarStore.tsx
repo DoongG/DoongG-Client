@@ -18,6 +18,18 @@ const useShoppingHeaderSelectBarStore = create<ShoppingHeaderSelectBarStore>(
 );
 
 //__________________________________________________________________________________________
+// 제품 수량
+interface CountStore {
+    count: number;
+    setCount: (state: number) => void;
+}
+const useCount = create<CountStore>((set) => ({
+    count: 1,
+    setCount: (state) => set({ count: state }),
+}));
+export { useCount };
+
+//__________________________________________________________________________________________
 // pagination에 따른 상태 관리
 interface PaginationStore {
     pageArr: Review_t[];

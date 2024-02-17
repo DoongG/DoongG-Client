@@ -5,15 +5,19 @@ import styled from 'styled-components';
 import { Product_t } from 'types/shoppingDetail';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { useCalculatedCost } from 'store/shoppingHeaderSelectBarStore';
+import {
+    useCalculatedCost,
+    useCount,
+} from 'store/shoppingHeaderSelectBarStore';
 
 export default function CountBtn(props: Product_t) {
     const { ...fetchData } = props;
     // count에 따른 가격 상태 관리
     const { beforePrice, afterPrice, setBeforePrice, setAfterPrice } =
         useCalculatedCost();
-    // 수량과 가격 상태
-    const [count, setCount] = useState(1);
+
+    // 수량
+    const { count, setCount } = useCount();
 
     useEffect(() => {
         setBeforePrice(fetchData.price);

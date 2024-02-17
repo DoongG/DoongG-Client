@@ -18,7 +18,6 @@ export default function PaginationBox(props: Product_t) {
 
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
-        console.log(fetchData.reviews);
     };
 
     useEffect(() => {
