@@ -1,37 +1,32 @@
-import ShoppingHeaderSelectBar from '../components/ShoppingHeaderSelectBar';
-import ShoppingSlideResent from '../components/ShoppingSlideResent';
-import ShoppingSlideHot from '../components/ShoppingSlideHot';
-import { useShoppingHeaderSelectBarStore } from '../store/shoppingHeaderSelectBarStore';
-import ShoppingListTest from '../components/ShoppingListTest';
+/* eslint-disable react/jsx-pascal-case */
+import ShoppingHeaderSelectBar from '../components/shopping-section/mainPage/HeaderSelectBar';
+import SlideList from '../components/shopping-section/mainPage/SlideList';
 import styled from 'styled-components';
-import React, { useEffect, useRef, useState } from 'react';
-
-const _hr = styled.hr`
-    margin: 0;
-    padding: 1px;
-    background-color: rgb(28, 57, 61);
-    border-bottom: none;
-    z-index: 3;
-    position: relative;
-    width: 100%;
-    opacity: 1;
-`;
+import NewProductList from 'components/shopping-section/mainPage/newProductList';
 
 //shopping
 const Shopping = () => {
-    const { selectButton, setSelectButton } = useShoppingHeaderSelectBarStore();
     return (
         <>
-            <ShoppingHeaderSelectBar />
-            {selectButton === '최근' ? (
-                <ShoppingSlideResent />
-            ) : (
-                <ShoppingSlideHot />
-            )}
-            <_hr></_hr>
-            <ShoppingListTest />
+            <_section>
+                <div className="wrapper">
+                    <ShoppingHeaderSelectBar />
+                    <SlideList />
+                </div>
+            </_section>
+            <NewProductList />
         </>
     );
 };
+const _section = styled.section`
+    background: #fff8fa;
+    padding: 30px 0px;
+    > div {
+        width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+    }
+`;
 
 export { Shopping };

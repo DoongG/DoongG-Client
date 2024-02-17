@@ -1,12 +1,10 @@
+/* eslint-disable react/jsx-pascal-case */
 import styled from 'styled-components';
-import { useNavigate, useParams } from 'react-router-dom';
-import fox from '../assets/fox.jpg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
-import eyes from '../assets/eyes.png';
+import eyes from 'assets/eyes.png';
 import {
     PropsWithChildren,
     useCallback,
@@ -20,7 +18,7 @@ import {
     useBuyModalStore,
     useModalStore,
     useProductId,
-} from '../store/shoppingHeaderSelectBarStore';
+} from '../../../store/shoppingHeaderSelectBarStore';
 import { ShoppingDetailSelectBar } from './ShoppingDetailSelectBar';
 import { ShoppingDetailBuy } from './ShoppingDetailBuy';
 import Swal from 'sweetalert2';
@@ -399,10 +397,6 @@ const _ShoppingDetailModal = styled.div<ModalProps>`
     box-sizing: border-box;
     background-color: white;
     z-index: 4;
-    animation: ${(props) =>
-        props.isModal
-            ? 'scale-in-center 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both'
-            : 'scale-out-center 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both'};
 
     @media (max-width: 1200px) {
         padding: 20px 50px;

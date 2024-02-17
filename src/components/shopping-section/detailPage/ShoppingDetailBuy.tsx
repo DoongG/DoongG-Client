@@ -1,7 +1,8 @@
+/* eslint-disable react/jsx-pascal-case */
 import styled from 'styled-components';
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { AiOutlineClose, AiOutlineConsoleSql } from 'react-icons/ai';
-import { useBuyModalStore } from '../store/shoppingHeaderSelectBarStore';
+import { useBuyModalStore } from '../../../store/shoppingHeaderSelectBarStore';
 import { useForm } from 'react-hook-form';
 import DaumPostcode from 'react-daum-postcode';
 import fox from '../assets/fox.jpg';
@@ -63,7 +64,6 @@ const ShoppingDetailBuy = ({
 
     // 결제 모달 닫는 함수
     const closeModal = () => {
-
         setTimeout(() => {
             isOpenBuyModal && setIsOpenBuyModal(!isOpenBuyModal);
         }, 200);
@@ -277,14 +277,6 @@ const ShoppingDetailBuy = ({
                                 !errors.name &&
                                 watch('restAddress') &&
                                 !errors.restAddress
-                            }
-                            disabled={
-                                !(
-                                    watch('name') &&
-                                    !errors.name &&
-                                    watch('restAddress') &&
-                                    !errors.restAddress
-                                )
                             }
                         >
                             결제하기
@@ -620,9 +612,6 @@ const _payButton = styled.button<ValidProps>`
     font-weight: 700;
     width: 100%;
     cursor: ${(props) => (props.valid ? 'pointer' : 'not-allowed')};
-    &:disabled {
-        cursor: not-allowed;
-    }
 `;
 const _inValidIcon = styled.div`
     content: '';
