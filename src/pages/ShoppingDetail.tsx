@@ -184,7 +184,7 @@ const _productInfo = styled.section`
 `;
 
 const _imgBox = styled.div`
-    border: 2px solid black;
+    /* border: 2px solid black; */
     /* aspect-ratio: 16/9; */
     height: 400px;
     width: 400px;

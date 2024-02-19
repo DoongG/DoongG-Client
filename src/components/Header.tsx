@@ -16,7 +16,7 @@ const _headerArea = styled.div`
     position: relative;
     font-size: 14px;
     width: 100%;
-    height: 50px;
+    height: 60px;
     background-color: rgb(28, 57, 61);
     display: flex;
     justify-content: space-between;

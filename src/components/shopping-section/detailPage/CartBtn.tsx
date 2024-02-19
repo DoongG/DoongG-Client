@@ -2,14 +2,16 @@
 import axios from 'axios';
 import useFetchToken from 'hooks/useFetchToken';
 import { useParams } from 'react-router-dom';
+import { useQueryStore } from 'store/server_state/getCart';
 import { useCount } from 'store/shoppingHeaderSelectBarStore';
 import styled from 'styled-components';
 import Swal from 'sweetalert2';
 
 export default function CartBtn() {
     const { productId } = useParams();
-    const { count } = useCount();
-    const token = useFetchToken();
+    const { count } = useCount(); // 제품 수량 상태
+    const token = useFetchToken(); // 사용자 정보 토큰
+    const { refetch } = useQueryStore(); // 장바구니 개수 상태 관리
 
     // 장바구니 함수
     const onClickCartModal = () => {
@@ -33,6 +35,7 @@ export default function CartBtn() {
                         text: '장바구니에 추가되었습니다.',
                         icon: 'success',
                     });
+                    refetch();
                 });
         } else {
             Swal.fire({

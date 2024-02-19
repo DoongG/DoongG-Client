@@ -1,36 +1,30 @@
 /* eslint-disable react/jsx-pascal-case */
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import useFetchToken from 'hooks/useFetchToken';
 import { FaPlus } from 'react-icons/fa';
 
 import { useEffect, useState } from 'react';
 import { FaCartShopping } from 'react-icons/fa6';
 import styled from 'styled-components';
+import { useQuery } from '@tanstack/react-query';
+import { Cart_t } from 'types/shoppingDetail';
+import { useQueryStore } from 'store/server_state/getCart';
 
 type Css = {
     position: boolean;
 };
 
 export default function CartIcon() {
-    const token = useFetchToken();
     const [cartCount, setCartCount] = useState(0);
+    const { data, refetch } = useQueryStore();
+    const token = useFetchToken();
 
     useEffect(() => {
-        if (token) {
-            const getCartItemCount = () => {
-                axios
-                    .get(`${process.env.REACT_APP_API_KEY}/userAuth/getCart`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    })
-                    .then((response) => {
-                        setCartCount(response.data.length);
-                    });
-            };
-            getCartItemCount();
+        refetch();
+        if (data) {
+            setCartCount(data.length);
         }
-    }, [token]);
+    }, [data, token]);
 
     return (
         <>
@@ -43,21 +37,23 @@ export default function CartIcon() {
                         color: 'rgb(121, 180, 175)',
                     }}
                 />
-                <_countBox
-                    className="countBox"
-                    position={cartCount > 9 ? true : false}
-                >
-                    {cartCount <= 9 ? (
-                        <_count>{cartCount}</_count>
-                    ) : (
-                        <_count>
-                            9
-                            <FaPlus
-                                style={{ width: '7px', marginLeft: '1px' }}
-                            />
-                        </_count>
-                    )}
-                </_countBox>
+                {cartCount > 0 ? (
+                    <_countBox
+                        className="countBox"
+                        position={cartCount > 9 ? true : false}
+                    >
+                        {cartCount <= 9 ? (
+                            <_count>{cartCount}</_count>
+                        ) : (
+                            <_count>
+                                9
+                                <FaPlus
+                                    style={{ width: '7px', marginLeft: '1px' }}
+                                />
+                            </_count>
+                        )}
+                    </_countBox>
+                ) : null}
             </_shoppingBox>
         </>
     );
