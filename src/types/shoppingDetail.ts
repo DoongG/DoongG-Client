@@ -19,3 +19,14 @@ export type Review_t = {
     content: string;
     createdAt: string;
 };
+
+// Cart 타입
+export type Cart_t = {
+    createdAt: string;
+    discountedPrice: number;
+    price: number;
+    productID: number;
+    productImage: string;
+    productName: string;
+    quantity: number;
+};

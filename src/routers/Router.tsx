@@ -1,6 +1,13 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-
+import {
+    useQuery,
+    QueryClient,
+    QueryClientProvider,
+} from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Suspense, lazy } from 'react';
+
+const queryClient = new QueryClient();
 
 // 라우트 기반 코드 분할
 const Main = lazy(() =>
@@ -42,35 +49,44 @@ const Router = () => {
     return (
         <>
             <BrowserRouter>
-                <Suspense>
-                    <Header />
-                    <Routes>
-                        <Route path="/" element={<Main />}></Route>
-                        <Route path="/board" element={<BoardUnited />}></Route>
-                        <Route
-                            path="/boards/search/:boardName"
-                            element={<Board />}
-                        ></Route>
-                        <Route
-                            path="/board/:boardName"
-                            element={<Board />}
-                        ></Route>
-                        <Route
-                            path="/posts/:id"
-                            element={<PostDetail />}
-                        ></Route>
-                        <Route path="/shopping" element={<Shopping />}></Route>
-                        <Route
-                            path="/shopping/:productId"
-                            element={<ShoppingDetail />}
-                        ></Route>
-                        <Route
-                            path="/roomreview"
-                            element={<RoomreView />}
-                        ></Route>
-                        <Route path="/*" element={<PageNotFound />}></Route>
-                    </Routes>
-                </Suspense>
+                <QueryClientProvider client={queryClient}>
+                    <Suspense>
+                        <Header />
+                        <Routes>
+                            <Route path="/" element={<Main />}></Route>
+                            <Route
+                                path="/board"
+                                element={<BoardUnited />}
+                            ></Route>
+                            <Route
+                                path="/boards/search/:boardName"
+                                element={<Board />}
+                            ></Route>
+                            <Route
+                                path="/board/:boardName"
+                                element={<Board />}
+                            ></Route>
+                            <Route
+                                path="/posts/:id"
+                                element={<PostDetail />}
+                            ></Route>
+                            <Route
+                                path="/shopping"
+                                element={<Shopping />}
+                            ></Route>
+                            <Route
+                                path="/shopping/:productId"
+                                element={<ShoppingDetail />}
+                            ></Route>
+                            <Route
+                                path="/roomreview"
+                                element={<RoomreView />}
+                            ></Route>
+                            <Route path="/*" element={<PageNotFound />}></Route>
+                        </Routes>
+                        <ReactQueryDevtools initialIsOpen={true} />
+                    </Suspense>
+                </QueryClientProvider>
             </BrowserRouter>
         </>
     );
