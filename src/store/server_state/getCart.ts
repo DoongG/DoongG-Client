@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import useFetchToken from 'hooks/useFetchToken';
-import { Cart_t } from 'types/shoppingDetail';
 
 // 장바구니 갯수 상태
 const useQueryStore = () => {

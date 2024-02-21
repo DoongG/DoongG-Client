@@ -10,7 +10,7 @@ import { User } from './data/User';
 import logo from '../assets/logo-removebg-preview.png';
 import axios from 'axios';
 import { validationCheck } from '../pages/Validation/Validation';
-import CartIcon from './shopping-section/cart/CartIcon';
+import CartIcon from './shopping-section/detailPage/CartIcon';
 
 const _headerArea = styled.div`
     position: relative;
@@ -175,7 +175,10 @@ const Header = () => {
             {localStorage.getItem('token') ? (
                 <div style={{ display: 'flex' }}>
                     {/* 장바구니 버튼 */}
-                    <CartIcon />
+                    <Link to={'/cart'}>
+                        <CartIcon />
+                    </Link>
+
                     {/* 마이페이지 버튼 */}
                     <LogoutButton onClick={onClickToggleMyPageModal}>
                         <FaUser

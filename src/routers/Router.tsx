@@ -1,9 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import {
-    useQuery,
-    QueryClient,
-    QueryClientProvider,
-} from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Suspense, lazy } from 'react';
 
@@ -22,6 +18,7 @@ const Shopping = lazy(() =>
     import('../pages/Shopping').then(({ Shopping }) => ({ default: Shopping })),
 );
 const ShoppingDetail = lazy(() => import('../pages/ShoppingDetail'));
+const Cart = lazy(() => import('../pages/Cart'));
 const BoardUnited = lazy(() =>
     import('../pages/Board-All/BoardUnited').then(({ BoardUnited }) => ({
         default: BoardUnited,
@@ -78,6 +75,7 @@ const Router = () => {
                                 path="/shopping/:productId"
                                 element={<ShoppingDetail />}
                             ></Route>
+                            <Route path="/cart" element={<Cart />}></Route>
                             <Route
                                 path="/roomreview"
                                 element={<RoomreView />}
