@@ -14,7 +14,7 @@ export const useIntersectionObserver = ({
     hasNextPage,
     fetchNextPage,
 }: IuseIntersectionObserverProps) => {
-    //관찰할 요소입니다. 스크롤 최하단 div요소에 setTarget을 ref로 넣어 사용할 것입니다.
+    //관찰할 요소
     const [target, setTarget] = useState<HTMLDivElement | null | undefined>(
         null,
     );
