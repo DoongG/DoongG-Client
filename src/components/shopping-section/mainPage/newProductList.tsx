@@ -10,12 +10,15 @@ import { TfiPaintRoller } from 'react-icons/tfi';
 import { PiTelevisionThin } from 'react-icons/pi';
 import { PiSoccerBallThin } from 'react-icons/pi';
 import { VscSymbolProperty } from 'react-icons/vsc';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import addCommas from 'utils/addCommas';
 import calculateDiscountRate from 'utils/calculateDiscountRate';
+import { useInfiniteQuery } from 'react-query';
+import { AiOutlineConsoleSql } from 'react-icons/ai';
+import { useIntersectionObserver } from 'hooks/useIntersectionObserver';
 
-interface ApiResponse {
+type ApiResponse = {
     discountedPrice: number;
     price: number;
     productID: number;
@@ -24,7 +27,13 @@ interface ApiResponse {
     stock: number;
     viewCount: number;
     category: string;
-}
+};
+type ProductResponse = {
+    products: ApiResponse[];
+    total: number;
+    category: string;
+    page: number;
+};
 
 export default function NewProductList() {
     const [allProductList, setAllProductList] = useState<ApiResponse[]>([]);
@@ -33,19 +42,22 @@ export default function NewProductList() {
     const [category, setCategory] = useState('뷰티');
 
     // 상품 get요청
-    useEffect(() => {
-        const getAllProduct = async (category: string) => {
-            try {
-                const res = await axios.get<ApiResponse, any>(
-                    `${process.env.REACT_APP_API_KEY}/shop/getAll/${category}`,
-                );
-                setAllProductList(res.data);
-            } catch (error) {
-                console.error('데이터를 가져오는 중 오류 발생:', error);
-            }
-        };
-        getAllProduct(category);
-    }, [category]);
+    // useEffect(() => {
+    //     const getAllProduct = async (category: string) => {
+    //         try {
+    //             const res = await axios.get<ApiResponse, any>(
+    //                 `${
+    //                     process.env.REACT_APP_API_KEY
+    //                 }/shop/getAll/${category}`,
+    //             );
+    //             setAllProductList(res.data);
+    //             console.log(res.data);
+    //         } catch (error) {
+    //             console.error('데이터를 가져오는 중 오류 발생:', error);
+    //         }
+    //     };
+    //     getAllProduct(category);
+    // }, [category]);
 
     // 카테고리 클릭 이벤트
     const handleClickCategory = (e: React.MouseEvent<HTMLElement>) => {
@@ -54,6 +66,35 @@ export default function NewProductList() {
             setCategory(categoryName);
         }
     };
+
+    // Axios 함수
+    const getAllProduct = async (category: string, page: number) => {
+        const res = await axios.get(
+            `${process.env.REACT_APP_API_KEY}/shop/getAll/${category}?page=${page}`,
+        );
+        return (await res.data) as ApiResponse[];
+    };
+
+    //infinite query
+    const { data, hasNextPage, fetchNextPage, isFetchingNextPage } =
+        useInfiniteQuery({
+            queryKey: ['product'],
+            queryFn: ({ pageParam = 0 }) => getAllProduct(category, pageParam),
+            getNextPageParam: (lastPage, allPages) => {
+                return allPages.length < 13 && allPages.length + 1;
+            },
+            select: (data) => ({
+                pages: data?.pages.flatMap((page) => page),
+                pageParams: data.pageParams,
+            }),
+        });
+    console.log(data);
+
+    // intersectionObserver
+    const { setTarget } = useIntersectionObserver({
+        hasNextPage,
+        fetchNextPage,
+    });
 
     return (
         <>
@@ -95,7 +136,7 @@ export default function NewProductList() {
                         </_ul>
                     </_selectTab>
                     <_contentBox className="contentBox">
-                        {allProductList.map((item: ApiResponse) => {
+                        {data?.pages.map((item: ApiResponse, i: number) => {
                             return (
                                 <>
                                     <_productDiv className="productDiv">
@@ -133,9 +174,13 @@ export default function NewProductList() {
                                 </>
                             );
                         })}
-                        <div id="observer" style={{ height: '10px' }}></div>
                     </_contentBox>
                 </div>
+                <div
+                    ref={setTarget}
+                    id="observer"
+                    style={{ height: '10px' }}
+                ></div>
             </_productList>
         </>
     );
