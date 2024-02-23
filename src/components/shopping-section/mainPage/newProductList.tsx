@@ -16,6 +16,7 @@ import addCommas from 'utils/addCommas';
 import calculateDiscountRate from 'utils/calculateDiscountRate';
 import { useInfiniteQuery } from 'react-query';
 import { useIntersectionObserver } from 'hooks/useIntersectionObserver';
+import { useQueryClient } from 'react-query';
 
 type ApiResponse = {
     discountedPrice: number;
@@ -30,11 +31,13 @@ type ApiResponse = {
 
 export default function NewProductList() {
     const [category, setCategory] = useState('뷰티');
+    const queryClient = useQueryClient();
 
     // 카테고리 클릭 이벤트
     const handleClickCategory = (e: React.MouseEvent<HTMLElement>) => {
         if (e.currentTarget.lastChild?.textContent) {
             const categoryName = e.currentTarget.lastChild?.textContent;
+            queryClient.removeQueries({ queryKey: 'product' }); // 이전 카테고리 캐시를 삭제
             setCategory(categoryName);
         }
     };
@@ -48,11 +51,11 @@ export default function NewProductList() {
     };
 
     //무한 스크롤(react-query)
-    const { data, hasNextPage, fetchNextPage, refetch } = useInfiniteQuery({
+    const { data, hasNextPage, fetchNextPage } = useInfiniteQuery({
         queryKey: ['product', category], // 카테고리 변경 시 함수 재 실행
         queryFn: ({ pageParam = 0 }) => getAllProduct(category, pageParam),
         getNextPageParam: (lastPage, allPages) => {
-            return allPages.length < 13 && allPages.length + 1; // 끝 페이지(12페이지)가 아니면 현재 페이지+1
+            return lastPage.length === 12 && allPages.length + 1; // 마지막 페이지의 데이터가 12개 시 현재 페이지 + 1
         },
         select: (data) => ({
             pages: data?.pages.flatMap((page) => page),
