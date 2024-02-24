@@ -10,31 +10,26 @@ import { TfiPaintRoller } from 'react-icons/tfi';
 import { PiTelevisionThin } from 'react-icons/pi';
 import { PiSoccerBallThin } from 'react-icons/pi';
 import { VscSymbolProperty } from 'react-icons/vsc';
+
 import { Fragment, useState } from 'react';
 import axios from 'axios';
 import addCommas from 'utils/addCommas';
 import calculateDiscountRate from 'utils/calculateDiscountRate';
 import { useInfiniteQuery } from 'react-query';
 import { useIntersectionObserver } from 'hooks/useIntersectionObserver';
-
-type ApiResponse = {
-    discountedPrice: number;
-    price: number;
-    productID: number;
-    productImage: string;
-    productName: string;
-    stock: number;
-    viewCount: number;
-    category: string;
-};
+import { useQueryClient } from 'react-query';
+import { Produdct_list_t } from 'types/shoppingDetail';
+import ScrollToTopBtn from '../detailPage/ScrollToTopBtn';
 
 export default function NewProductList() {
     const [category, setCategory] = useState('뷰티');
+    const queryClient = useQueryClient();
 
     // 카테고리 클릭 이벤트
     const handleClickCategory = (e: React.MouseEvent<HTMLElement>) => {
         if (e.currentTarget.lastChild?.textContent) {
             const categoryName = e.currentTarget.lastChild?.textContent;
+            queryClient.removeQueries({ queryKey: 'product' }); // 이전 카테고리 캐시를 삭제
             setCategory(categoryName);
         }
     };
@@ -44,23 +39,21 @@ export default function NewProductList() {
         const res = await axios.get(
             `${process.env.REACT_APP_API_KEY}/shop/getAll/${category}?page=${page}`,
         );
-        return (await res.data) as ApiResponse[];
+        return (await res.data) as Produdct_list_t[];
     };
 
     //무한 스크롤(react-query)
-    const { data, hasNextPage, fetchNextPage, refetch } = useInfiniteQuery({
+    const { data, hasNextPage, fetchNextPage } = useInfiniteQuery({
         queryKey: ['product', category], // 카테고리 변경 시 함수 재 실행
         queryFn: ({ pageParam = 0 }) => getAllProduct(category, pageParam),
         getNextPageParam: (lastPage, allPages) => {
-            return allPages.length < 13 && allPages.length + 1; // 끝 페이지(12페이지)가 아니면 현재 페이지+1
+            return lastPage.length === 12 && allPages.length + 1; // 마지막 페이지의 데이터가 12개 시 현재 페이지 + 1
         },
         select: (data) => ({
             pages: data?.pages.flatMap((page) => page),
             pageParams: data.pageParams,
         }),
     });
-
-    console.log(data);
 
     // intersectionObserver
     const { setTarget } = useIntersectionObserver({
@@ -108,7 +101,7 @@ export default function NewProductList() {
                         </_ul>
                     </_selectTab>
                     <_contentBox className="contentBox">
-                        {data?.pages.map((item: ApiResponse) => {
+                        {data?.pages.map((item: Produdct_list_t) => {
                             return (
                                 <Fragment key={item.productID}>
                                     <_productDiv className="productDiv">
@@ -153,6 +146,7 @@ export default function NewProductList() {
                     id="observer"
                     style={{ height: '10px' }}
                 ></div>
+                <ScrollToTopBtn />
             </_productList>
         </>
     );
