@@ -10,6 +10,7 @@ import { TfiPaintRoller } from 'react-icons/tfi';
 import { PiTelevisionThin } from 'react-icons/pi';
 import { PiSoccerBallThin } from 'react-icons/pi';
 import { VscSymbolProperty } from 'react-icons/vsc';
+
 import { Fragment, useState } from 'react';
 import axios from 'axios';
 import addCommas from 'utils/addCommas';
@@ -17,17 +18,8 @@ import calculateDiscountRate from 'utils/calculateDiscountRate';
 import { useInfiniteQuery } from 'react-query';
 import { useIntersectionObserver } from 'hooks/useIntersectionObserver';
 import { useQueryClient } from 'react-query';
-
-type ApiResponse = {
-    discountedPrice: number;
-    price: number;
-    productID: number;
-    productImage: string;
-    productName: string;
-    stock: number;
-    viewCount: number;
-    category: string;
-};
+import { Produdct_list_t } from 'types/shoppingDetail';
+import ScrollToTopBtn from '../detailPage/ScrollToTopBtn';
 
 export default function NewProductList() {
     const [category, setCategory] = useState('뷰티');
@@ -47,7 +39,7 @@ export default function NewProductList() {
         const res = await axios.get(
             `${process.env.REACT_APP_API_KEY}/shop/getAll/${category}?page=${page}`,
         );
-        return (await res.data) as ApiResponse[];
+        return (await res.data) as Produdct_list_t[];
     };
 
     //무한 스크롤(react-query)
@@ -62,8 +54,6 @@ export default function NewProductList() {
             pageParams: data.pageParams,
         }),
     });
-
-    console.log(data);
 
     // intersectionObserver
     const { setTarget } = useIntersectionObserver({
@@ -111,7 +101,7 @@ export default function NewProductList() {
                         </_ul>
                     </_selectTab>
                     <_contentBox className="contentBox">
-                        {data?.pages.map((item: ApiResponse) => {
+                        {data?.pages.map((item: Produdct_list_t) => {
                             return (
                                 <Fragment key={item.productID}>
                                     <_productDiv className="productDiv">
@@ -156,6 +146,7 @@ export default function NewProductList() {
                     id="observer"
                     style={{ height: '10px' }}
                 ></div>
+                <ScrollToTopBtn />
             </_productList>
         </>
     );

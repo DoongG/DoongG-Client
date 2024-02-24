@@ -13,6 +13,17 @@ export type Product_t = {
     reviews: Review_t[];
 };
 
+export type Produdct_list_t = {
+    discountedPrice: number;
+    price: number;
+    productID: number;
+    productImage: string;
+    productName: string;
+    stock: number;
+    viewCount: number;
+    category: string;
+};
+
 // review 타입
 export type Review_t = {
     nickname: string;

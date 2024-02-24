@@ -19,12 +19,14 @@ export default function CartIcon() {
     const { data, refetch } = useQueryStore();
     const token = useFetchToken();
 
+    // 로그인 시 장바구니 수량 확인
     useEffect(() => {
+        console.log(data);
         refetch();
-        if (data) {
-            setCartCount(data.length);
-        }
-    }, [data, token]);
+        // if (data) {
+        //     setCartCount(data.length);
+        // }
+    }, [token, refetch]);
 
     return (
         <>
@@ -37,13 +39,13 @@ export default function CartIcon() {
                         color: 'rgb(121, 180, 175)',
                     }}
                 />
-                {cartCount > 0 ? (
+                {data && data.length > 0 ? (
                     <_countBox
                         className="countBox"
-                        position={cartCount > 9 ? true : false}
+                        position={data.length > 9 ? true : false}
                     >
-                        {cartCount <= 9 ? (
-                            <_count>{cartCount}</_count>
+                        {data.length <= 9 ? (
+                            <_count>{data.length}</_count>
                         ) : (
                             <_count>
                                 9
