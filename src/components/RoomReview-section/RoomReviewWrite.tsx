@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { useButtonHoverd } from '../store/shoppingHeaderSelectBarStore';
+import { useButtonHoverd } from '../../store/shoppingHeaderSelectBarStore';
 
 interface Props {
     address: string;

@@ -10,12 +10,11 @@ import { Product_t, Review_t } from 'types/shoppingDetail';
 
 type Props_t = {
     item: Review_t;
-    index: number;
     fetchData: Product_t;
 };
 
 export default function ReviewBox(props: Props_t) {
-    const { item, index, fetchData } = props;
+    const { item, fetchData } = props;
     return (
         <>
             <_reviewBox className="reviewBox">
@@ -30,7 +29,7 @@ export default function ReviewBox(props: Props_t) {
                                 padding: '0px 10px',
                             }}
                         >
-                            {fetchData.reviews.length - index}
+                            {fetchData.reviews.length - item.reviewId + 1}
                         </Typography>
                         <div
                             style={{

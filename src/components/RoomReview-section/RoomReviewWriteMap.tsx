@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { RoomReviewWrite } from './RoomReviewWrite';
@@ -5,14 +6,14 @@ import { RoomReviewWatch } from './RoomReviewWatch';
 import { IoIosSearch } from 'react-icons/io';
 import DaumPostcode from 'react-daum-postcode';
 import { FaLocationCrosshairs } from 'react-icons/fa6';
-import mapMascot from '../assets/mapMascot4.png';
+import mapMascot from 'assets/mapMascot4.png';
 
 import {
     useButtonHoverd,
     useButtonStore,
     useCenterLatLng,
     useReviewDateStore,
-} from '../store/shoppingHeaderSelectBarStore';
+} from '../../store/shoppingHeaderSelectBarStore';
 
 const { kakao } = window;
 
@@ -376,7 +377,7 @@ const _nowIconBox = styled.div`
 
 const _kakaoMapWrapper = styled.div`
     width: 80%;
-    height: calc(100vh - 50px);
+    height: calc(100vh - 60px);
 `;
 const _buttonWrapper = styled.div`
     position: absolute;
