@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
@@ -6,7 +7,7 @@ import { useStore } from 'zustand';
 import {
     useMarkerOnOff,
     useVisibleMarker,
-} from '../store/shoppingHeaderSelectBarStore';
+} from '../../store/shoppingHeaderSelectBarStore';
 interface Props {
     marker: boolean;
     markerOnOff: boolean;

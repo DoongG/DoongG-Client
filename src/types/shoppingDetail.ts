@@ -26,6 +26,7 @@ export type Produdct_list_t = {
 
 // review 타입
 export type Review_t = {
+    reviewId: number;
     nickname: string;
     content: string;
     createdAt: string;

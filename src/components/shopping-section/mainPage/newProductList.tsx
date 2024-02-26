@@ -20,9 +20,10 @@ import { useIntersectionObserver } from 'hooks/useIntersectionObserver';
 import { useQueryClient } from 'react-query';
 import { Produdct_list_t } from 'types/shoppingDetail';
 import ScrollToTopBtn from '../detailPage/ScrollToTopBtn';
+import { Link } from 'react-router-dom';
 
 export default function NewProductList() {
-    const [category, setCategory] = useState('뷰티');
+    const [category, setCategory] = useState('뷰티'); // 카테고리 초기값
     const queryClient = useQueryClient();
 
     // 카테고리 클릭 이벤트
@@ -44,7 +45,7 @@ export default function NewProductList() {
 
     //무한 스크롤(react-query)
     const { data, hasNextPage, fetchNextPage } = useInfiniteQuery({
-        queryKey: ['product', category], // 카테고리 변경 시 함수 재 실행
+        queryKey: ['product', category],
         queryFn: ({ pageParam = 0 }) => getAllProduct(category, pageParam),
         getNextPageParam: (lastPage, allPages) => {
             return lastPage.length === 12 && allPages.length + 1; // 마지막 페이지의 데이터가 12개 시 현재 페이지 + 1
@@ -101,44 +102,57 @@ export default function NewProductList() {
                         </_ul>
                     </_selectTab>
                     <_contentBox className="contentBox">
-                        {data?.pages.map((item: Produdct_list_t) => {
-                            return (
-                                <Fragment key={item.productID}>
-                                    <_productDiv className="productDiv">
-                                        <_imgDiv className="imgDiv">
-                                            <_img
-                                                src={item.productImage}
-                                            ></_img>
-                                            <_favoriteDiv className="favoriteDiv">
-                                                <img src={eyes} alt="" />
-                                                <p>{item.viewCount}</p>
-                                            </_favoriteDiv>
-                                        </_imgDiv>
-                                        <_infosDiv className="infosDiv">
-                                            <_name className="title">
-                                                {item.productName}
-                                            </_name>
-                                            <_price className="price">
-                                                <_priceDiv>
-                                                    <_realPriceDiv className="afterPrice">
-                                                        {addCommas(
-                                                            item.discountedPrice,
-                                                        )}
-                                                    </_realPriceDiv>
-                                                </_priceDiv>
-                                                <_per className="per">
-                                                    {calculateDiscountRate(
-                                                        item.price,
-                                                        item.discountedPrice,
-                                                    ).toFixed(0)}
-                                                    %
-                                                </_per>
-                                            </_price>
-                                        </_infosDiv>
-                                    </_productDiv>
-                                </Fragment>
-                            );
-                        })}
+                        {data && data.pages.length > 0 ? (
+                            data.pages.map((item: Produdct_list_t) => {
+                                return (
+                                    <_Link to={`/shopping/${item.productID}`}>
+                                        <Fragment key={item.productID}>
+                                            <_productDiv className="productDiv">
+                                                <_imgDiv className="imgDiv">
+                                                    <_img
+                                                        src={item.productImage}
+                                                    ></_img>
+                                                    <_favoriteDiv className="favoriteDiv">
+                                                        <img
+                                                            src={eyes}
+                                                            alt=""
+                                                        />
+                                                        <p>{item.viewCount}</p>
+                                                    </_favoriteDiv>
+                                                </_imgDiv>
+                                                <_infosDiv className="infosDiv">
+                                                    <_name className="title">
+                                                        {item.productName}
+                                                    </_name>
+                                                    <_price className="price">
+                                                        <_priceDiv>
+                                                            <_realPriceDiv className="afterPrice">
+                                                                {addCommas(
+                                                                    item.discountedPrice,
+                                                                )}
+                                                            </_realPriceDiv>
+                                                        </_priceDiv>
+                                                        <_per className="per">
+                                                            {calculateDiscountRate(
+                                                                item.price,
+                                                                item.discountedPrice,
+                                                            ).toFixed(0)}
+                                                            %
+                                                        </_per>
+                                                    </_price>
+                                                </_infosDiv>
+                                            </_productDiv>
+                                        </Fragment>
+                                    </_Link>
+                                );
+                            })
+                        ) : (
+                            <_emptyBox className="emptyBox">
+                                상품이 없습니다.
+                                <br />
+                                다른 카테고리를 선택해주세요.
+                            </_emptyBox>
+                        )}
                     </_contentBox>
                 </div>
                 <div
@@ -209,17 +223,25 @@ const _ul = styled.ul`
 `;
 
 // 상품 박스 css
+
 const _contentBox = styled.div`
     display: flex;
     flex-wrap: wrap;
+    justify-content: cneter;
+`;
+const _Link = styled(Link)`
+    width: 23%;
+    margin: 40px 10px 0px 10px;
+    border-radius: 10px;
+    background-color: white;
+    color: black;
+    text-decoration: none;
 `;
 
 const _productDiv = styled.div`
-    width: 25%;
-    margin-top: 40px;
-
-    border-radius: 10px;
-    background-color: white;
+    &:hover {
+        box-shadow: 0px -1px 5px black;
+    }
 `;
 const _imgDiv = styled.div`
     width: 288px;
@@ -263,6 +285,8 @@ const _favoriteDiv = styled.div`
 const _infosDiv = styled.div`
     margin-top: 10px;
     text-align: left;
+    padding-left: 10px;
+    padding-bottom: 10px;
 `;
 
 const _name = styled.div`
@@ -300,10 +324,17 @@ const _priceDiv = styled.div`
     }
 `;
 
-const _initPriceDiv = styled.div`
-    text-decoration: line-through;
-`;
 const _realPriceDiv = styled.div`
     font-size: 20px;
     font-weight: 900;
+`;
+
+const _emptyBox = styled.div`
+    font-size: 20px;
+    width: 100%;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1.7;
 `;
