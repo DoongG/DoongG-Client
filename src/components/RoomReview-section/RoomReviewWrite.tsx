@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
@@ -16,6 +17,7 @@ interface CssProps {
     isButtonHovered: boolean;
 }
 const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
+    console.log(address, mylat, mylng);
     const [content, setContent] = useState('');
     const [modalShow, setModalShow] = useState(false);
     // false = input이 클릭되어 있지 않을 때, true = input이 클릭되어 있을 때
