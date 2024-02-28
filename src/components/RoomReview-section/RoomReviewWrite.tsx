@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';

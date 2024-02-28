@@ -151,7 +151,7 @@ const useButtonStore = create<buttonStroe>((set) => ({
 export { useButtonStore };
 
 //____________________________________________________________________________________________________-
-// 클릭한 곳을 DB로 보낼 주소, 위도, 경도
+// 클릭한 곳을 DB로 보낼 주소, 위도, 경도, 마커
 interface ReviewDateStore {
     address: string;
     mylat: number;

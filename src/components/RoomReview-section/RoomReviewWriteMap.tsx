@@ -120,7 +120,6 @@ const RoomReviewWriteMap = () => {
 
                     setMap(kakaoMap);
                     setMarker(initialMarker);
-
                     setCount(count + 1);
                 },
                 //에러 메시지

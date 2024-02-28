@@ -13,7 +13,6 @@ import {
 import axios from 'axios';
 import DaumPostcode from 'react-daum-postcode';
 import { FaLocationCrosshairs } from 'react-icons/fa6';
-import GoNowPlaceBtn from './common/GoNowPlaceBtn';
 
 const { kakao } = window;
 declare global {
@@ -278,6 +277,36 @@ const RoomReviewWatchMap = () => {
             );
         }
     };
+    // 현위치 이동 함수
+    const onhandleNowPlace = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                setMylat(position.coords.latitude);
+                setMylng(position.coords.longitude);
+                // 주소-좌표 변환 객체를 생성
+                var geocoder = new window.kakao.maps.services.Geocoder();
+                geocoder.coord2Address(
+                    position.coords.longitude,
+                    position.coords.latitude,
+                    (result: any, status: any) => {
+                        if (status === window.kakao.maps.services.Status.OK) {
+                            let addr = !!result[0].road_address
+                                ? result[0].road_address.address_name
+                                : result[0].address.address_name;
+                            setAddress(addr);
+                        }
+                    },
+                );
+            });
+        }
+        // 기존 마커를 제거하고 새로운 마커를 넣는다.
+        let currentPos = new window.kakao.maps.LatLng(mylat, mylng);
+        map.panTo(currentPos);
+        setMap(map);
+        marker.setMap(null);
+        marker.setPosition(currentPos);
+        marker.setMap(map);
+    };
     return (
         <>
             <_kakaoMapWrapper id="map">
@@ -325,7 +354,9 @@ const RoomReviewWatchMap = () => {
                     </_searchAddressInputBox>
                 )}
 
-                <GoNowPlaceBtn />
+                <_nowIconBox className="nowIcon" onClick={onhandleNowPlace}>
+                    <FaLocationCrosshairs />
+                </_nowIconBox>
             </_kakaoMapWrapper>
         </>
     );
