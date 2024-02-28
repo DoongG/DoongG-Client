@@ -37,7 +37,8 @@ export default function NewMap() {
         setOpenPostModal(!openPostModal);
     };
     const { map, displayInitMarker } = useMap(newMap);
-    displayInitMarker(mylat, mylng); // 현재 위치 마커표시
+    // 초기 마커 & 지도 클릭 시 마커 생성 메소드
+    displayInitMarker(mylat, mylng);
 
     return (
         <>
@@ -110,7 +111,7 @@ const _nowIconBox = styled.div`
 
 const _kakaoMapWrapper = styled.div`
     width: 80%;
-    height: calc(100vh - 50px);
+    height: calc(100vh - 60px);
 `;
 
 const _buttonWrapper = styled.div`

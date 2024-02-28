@@ -7,13 +7,18 @@ export default function useMap<T>(
     containerRef: RefObject<T extends HTMLElement ? T : HTMLElement>,
 ) {
     const [map, setMap] = useState();
+
     // 클릭한 곳의 내용
     const { address, mylat, mylng, setAddress, setMylat, setMylng } =
         useReviewDateStore();
 
     // 초기 마커 나타내는 메소드
     const displayInitMarker = async (lat: number, lng: number) => {
-        if (map) await initMarker(map, lat, lng);
+        if (map) {
+            const [mouseLat, mouseLng] = await initMarker(map, lat, lng);
+            const addr1 = await coordToAddress(mouseLat, mouseLng);
+            setAddress(addr1);
+        }
     };
 
     useEffect(() => {
@@ -35,7 +40,8 @@ export default function useMap<T>(
                                 ),
                             }),
                         );
-                        await coordToAddress(latitude, longitude, setAddress);
+                        const addr = await coordToAddress(latitude, longitude);
+                        setAddress(addr);
                     },
                     (error) => {
                         console.error('Error getting current location:', error);
