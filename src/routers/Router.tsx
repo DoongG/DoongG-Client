@@ -83,10 +83,6 @@ const Router = () => {
                             ></Route>
                             <Route path="/*" element={<PageNotFound />}></Route>
                         </Routes>
-                        <ReactQueryDevtools
-                            initialIsOpen={false}
-                            position="bottom-right"
-                        />
                     </Suspense>
                 </QueryClientProvider>
             </BrowserRouter>

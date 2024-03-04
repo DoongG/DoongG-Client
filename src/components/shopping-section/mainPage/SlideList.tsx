@@ -111,12 +111,15 @@ export default function SlideResent() {
                                     >
                                         <_contentWrapper className="contentWrapper">
                                             <_favoriteDiv className="favoriteDiv">
-                                                <img src={eyes} alt="" />
+                                                <img
+                                                    src={eyes}
+                                                    alt="eye-icon"
+                                                />
                                                 <p>{item.viewCount}</p>
                                             </_favoriteDiv>
                                             <img
                                                 src={item.productImage}
-                                                alt="이미지1"
+                                                alt={item.productName}
                                             />
                                             <span>{item.productName}</span>
                                             <_productInfos>

@@ -36,7 +36,7 @@ export default function NewMap() {
         // 주소 찾기 버튼 이벤트
         setOpenPostModal(!openPostModal);
     };
-    const { map, displayInitMarker } = useMap(newMap);
+    const { map, displayInitMarker, placeCurLocation } = useMap(newMap);
     // 초기 마커 & 지도 클릭 시 마커 생성 메소드
     displayInitMarker(mylat, mylng);
 
@@ -86,7 +86,7 @@ export default function NewMap() {
 
                 <_nowIconBox
                     className="nowIcon"
-                    onClick={() => console.log('현재 위치로 이동')}
+                    onClick={() => placeCurLocation()}
                 >
                     <FaLocationCrosshairs />
                 </_nowIconBox>

@@ -20,22 +20,15 @@ const initMarker = async (
     });
 
     // 클릭한 곳 마커 표시
-    return new Promise((resolve) => {
-        window.kakao.maps.event.addListener(
-            map,
-            'click',
-            async (mouseEvent: any) => {
-                // 클릭한 위도, 경도 정보를 가져옵니다
-                let latlng = mouseEvent.latLng;
-                // 마커 위치를 클릭한 위치로 옮깁니다
-                marker.setPosition(latlng);
-                marker.setMap(map);
-                resolve([
-                    mouseEvent.latLng.getLat(),
-                    mouseEvent.latLng.getLng(),
-                ]);
-            },
-        );
+    return await new Promise((resolve) => {
+        window.kakao.maps.event.addListener(map, 'click', (mouseEvent: any) => {
+            // 클릭한 위도, 경도 정보를 가져옵니다
+            let latlng = mouseEvent.latLng;
+            // 마커 위치를 클릭한 위치로 옮깁니다
+            marker.setPosition(latlng);
+            marker.setMap(map);
+            resolve([mouseEvent.latLng.getLat(), mouseEvent.latLng.getLng()]);
+        });
     });
 };
 
