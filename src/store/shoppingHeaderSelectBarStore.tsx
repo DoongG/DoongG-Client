@@ -156,17 +156,25 @@ interface ReviewDateStore {
     address: string;
     mylat: number;
     mylng: number;
+    map: any;
+    marker: any;
     setAddress: (state: string) => void;
     setMylat: (state: number) => void;
     setMylng: (state: number) => void;
+    setMap: (state: any) => void;
+    setMarker: (state: any) => void;
 }
 const useReviewDateStore = create<ReviewDateStore>((set) => ({
     address: '',
     mylat: 0,
     mylng: 0,
+    map: undefined,
+    marker: undefined,
     setAddress: (state) => set({ address: state }),
     setMylat: (state) => set({ mylat: state }),
     setMylng: (state) => set({ mylng: state }),
+    setMap: (state) => set({ map: state }),
+    setMarker: (state) => set({ marker: state }),
 }));
 
 export { useReviewDateStore };
