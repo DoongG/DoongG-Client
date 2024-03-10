@@ -103,6 +103,8 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
                                     rows={10}
                                     onChange={onChangeContent}
                                     value={content}
+                                    // onfocus="this.placeholder = ''"
+                                    // 클릭될 때 작동
                                     onFocus={() => {
                                         setIsInputClicked(true);
                                     }}

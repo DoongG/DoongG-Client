@@ -4,6 +4,7 @@ import { curLocation } from 'components/RoomReview-section/common/curLocation';
 import { RefObject, useEffect, useState } from 'react';
 import { useReviewDateStore } from 'store/shoppingHeaderSelectBarStore';
 import mapMascot from 'assets/mapMascot4.png';
+import { searchAddress } from 'components/RoomReview-section/common/searchAddress';
 
 export default function useMap(containerRef: RefObject<HTMLElement>) {
     const {
@@ -42,6 +43,16 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
             const [lat, lng] = await curLocation(map);
             const addr = await coordToAddress(lat, lng); // 좌표 - 주소 변환
             setAddress(addr);
+        }
+    };
+
+    // 검색한 주소로 이동 함수
+    const placeSearchLocation = async (data: any) => {
+        if (map) {
+            const position = await searchAddress(data);
+            setAddress(data.address);
+            marker.setPosition(position);
+            map.panTo(position);
         }
     };
 
@@ -91,5 +102,5 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
             }
         })();
     }, [containerRef]);
-    return { placeCurLocation };
+    return { placeCurLocation, placeSearchLocation };
 }

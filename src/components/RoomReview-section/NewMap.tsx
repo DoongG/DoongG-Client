@@ -34,6 +34,7 @@ export default function NewMap() {
     // 주소 입력 모달 상태 state
     const [daumAddress, setDaumAddress] = useState('');
     const newMap = useRef(null);
+    const { placeCurLocation, placeSearchLocation } = useMap(newMap);
     const handleChangeReview = (write: string) => {
         if (write === '리뷰쓰기') {
             setButton(true);
@@ -41,12 +42,13 @@ export default function NewMap() {
             setButton(false);
         }
     };
-    // 주소 검색 함수
-    const onSearchAddress = () => {
-        // 주소 찾기 버튼 이벤트
-        setOpenPostModal(!openPostModal);
+
+    // 주소 입력 후 위치 이동
+    const onCompletePost = async (data: any) => {
+        await placeSearchLocation(data);
+        setDaumAddress(data.address);
+        setOpenPostModal(false);
     };
-    const { placeCurLocation } = useMap(newMap);
 
     return (
         <>
@@ -70,8 +72,14 @@ export default function NewMap() {
                     </_buttonSee>
                 </_buttonWrapper>
                 <_searchAddressInputBox className="Hello">
-                    <_inputBox className="inputBox" onClick={onSearchAddress}>
+                    <_inputBox
+                        className="inputBox"
+                        onClick={() => {
+                            setOpenPostModal(!openPostModal);
+                        }}
+                    >
                         <input
+                            autoComplete="off"
                             type="text"
                             id="addr"
                             placeholder="주소를 입력해주세요"
@@ -82,9 +90,7 @@ export default function NewMap() {
                         </_iconBox>
                         {openPostModal && (
                             <_DaumPostcode
-                                onComplete={() =>
-                                    console.log('주소 입력후 지도 위치 변경')
-                                } // 값을 선택할 경우 실행되는 이벤트
+                                onComplete={onCompletePost} // 값을 선택할 경우 실행되는 이벤트
                                 autoClose={false} // 값을 선택할 경우 사용되는 DOM을 제거하여 자동 닫힘 설정
                                 defaultQuery="" // 팝업을 열때 기본적으로 입력되는 검색어
                             />
