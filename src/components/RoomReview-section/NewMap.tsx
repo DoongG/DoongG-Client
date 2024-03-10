@@ -16,8 +16,18 @@ interface Props {
 
 export default function NewMap() {
     // 클릭한 곳의 내용
-    const { address, mylat, mylng, setAddress, setMylat, setMylng } =
-        useReviewDateStore();
+    const {
+        address,
+        mylat,
+        mylng,
+        map,
+        marker,
+        setAddress,
+        setMylat,
+        setMylng,
+        setMap,
+        setMarker,
+    } = useReviewDateStore();
     const { button, setButton } = useButtonStore();
     // 주소 찾는 모달 상태
     const [openPostModal, setOpenPostModal] = useState(false);
@@ -36,9 +46,9 @@ export default function NewMap() {
         // 주소 찾기 버튼 이벤트
         setOpenPostModal(!openPostModal);
     };
-    const { map, displayInitMarker, placeCurLocation } = useMap(newMap);
+    const { placeCurLocation } = useMap(newMap);
     // 초기 마커 & 지도 클릭 시 마커 생성 메소드
-    displayInitMarker(mylat, mylng);
+    // displayInitMarker();
 
     return (
         <>
@@ -84,10 +94,7 @@ export default function NewMap() {
                     </_inputBox>
                 </_searchAddressInputBox>
 
-                <_nowIconBox
-                    className="nowIcon"
-                    onClick={() => placeCurLocation()}
-                >
+                <_nowIconBox className="nowIcon" onClick={placeCurLocation}>
                     <FaLocationCrosshairs />
                 </_nowIconBox>
             </_kakaoMapWrapper>

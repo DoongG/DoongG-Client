@@ -7,7 +7,7 @@ const curLocation = (map: any): Promise<number[]> => {
                     lng = position.coords.longitude; // 경도
 
                 let locPosition = new window.kakao.maps.LatLng(lat, lng);
-                map.setCenter(locPosition);
+                map.panTo(locPosition);
                 resolve([lat, lng]);
             });
         } else {
