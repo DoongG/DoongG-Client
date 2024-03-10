@@ -47,8 +47,6 @@ export default function NewMap() {
         setOpenPostModal(!openPostModal);
     };
     const { placeCurLocation } = useMap(newMap);
-    // 초기 마커 & 지도 클릭 시 마커 생성 메소드
-    // displayInitMarker();
 
     return (
         <>

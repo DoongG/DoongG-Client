@@ -19,7 +19,7 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
         setMarker,
     } = useReviewDateStore();
 
-    // 클릭한 곳 마커 생성 및 주소 반환 함수
+    // 클릭한 곳 마커 생성 및 주소 반환
     useEffect(() => {
         const displayInitMarker = async () => {
             if (map) {
@@ -90,6 +90,6 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
                 );
             }
         })();
-    }, []);
+    }, [containerRef]);
     return { placeCurLocation };
 }
