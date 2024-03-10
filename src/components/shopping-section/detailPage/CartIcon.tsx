@@ -21,11 +21,11 @@ export default function CartIcon() {
 
     // 로그인 시 장바구니 수량 확인
     useEffect(() => {
-        console.log(data);
         refetch();
         // if (data) {
         //     setCartCount(data.length);
         // }
+        console.log(data);
     }, [token, refetch]);
 
     return (

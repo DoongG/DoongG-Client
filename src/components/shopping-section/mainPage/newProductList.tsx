@@ -35,12 +35,12 @@ export default function NewProductList() {
         }
     };
 
-    // Axios 함수
+    // 카테고리별 상품 가져오는 Axios 함수
     const getAllProduct = async (category: string, page: number) => {
         const res = await axios.get(
             `${process.env.REACT_APP_API_KEY}/shop/getAll/${category}?page=${page}`,
         );
-        return (await res.data) as Produdct_list_t[];
+        return res.data as Produdct_list_t[];
     };
 
     //무한 스크롤(react-query)
@@ -111,6 +111,7 @@ export default function NewProductList() {
                                                 <_imgDiv className="imgDiv">
                                                     <_img
                                                         src={item.productImage}
+                                                        alt={item.productName}
                                                     ></_img>
                                                     <_favoriteDiv className="favoriteDiv">
                                                         <img

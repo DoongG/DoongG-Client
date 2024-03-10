@@ -1,12 +1,13 @@
 /* eslint-disable react/jsx-pascal-case */
 import styled from 'styled-components';
-import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useButtonHoverd } from '../../store/shoppingHeaderSelectBarStore';
+import useFetchToken from 'hooks/useFetchToken';
+import Swal from 'sweetalert2';
 
 interface Props {
     address: string;
@@ -18,60 +19,17 @@ interface CssProps {
 }
 const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
     const [content, setContent] = useState('');
-    const [modalShow, setModalShow] = useState(false);
     // false = input이 클릭되어 있지 않을 때, true = input이 클릭되어 있을 때
     let [isInputClicked, setIsInputClicked] = useState(false);
-    // 글쓰는 컴포넌트 활성화 상태
-    const { isButtonHovered, setIsButtonHovered } = useButtonHoverd();
 
+    const { isButtonHovered, setIsButtonHovered } = useButtonHoverd(); // 글쓰는 컴포넌트 활성화 상태
+    const token = useFetchToken(); // 로그인 정보 토큰
     // content 변경함수
     const onChangeContent: React.ChangeEventHandler<HTMLTextAreaElement> = (
         e,
     ) => {
         setContent(e.target.value);
     };
-
-    const [token, setToken] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchToken = async () => {
-            const storedToken = localStorage.getItem('token');
-            setToken(storedToken);
-        };
-        fetchToken();
-    }, []);
-
-    //모달 창
-    function MyVerticallyCenteredModal(props: any) {
-        return (
-            <Modal
-                {...props}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                        경고❗
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <h4>당신의 자취방이 맞으신가요?</h4>
-                    <p>
-                        만약 거짓으로 작성된 내용이 금전적 이득을 얻기 위한
-                        사기행위의 일부로 여겨진다면, 사기에 대한 형사 책임이
-                        발생할 수 있습니다. 또한, 허위 진술에 대한 법적 책임도
-                        발생할 수 있습니다.
-                    </p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={props.onHide}>취소</Button>
-                    <Button onClick={submitAddress}>확인</Button>
-                </Modal.Footer>
-            </Modal>
-        );
-    }
-
     // 주소,리뷰 post 함수
     const submitAddress = () => {
         axios
@@ -90,10 +48,18 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
                 },
             )
             .then(function (response) {
+                Swal.fire({
+                    text: '리뷰가 작성되었습니다.',
+                    icon: 'success',
+                });
                 setContent('');
-                setModalShow(false);
             })
-            .catch(function (error) {});
+            .catch(function (error) {
+                Swal.fire({
+                    text: '로그인 후 사용해주세요.',
+                    icon: 'error',
+                });
+            });
     };
 
     return (
@@ -146,22 +112,13 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
                             </_contentBox>
                         </_infosBox>
                         <_ButtonBox className="buttonBox">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setModalShow(true);
-                                }}
-                            >
+                            <button type="button" onClick={submitAddress}>
                                 리뷰 달기
                             </button>
                         </_ButtonBox>
                     </_reviewBox>
                 </form>
             </_reviewComponent>
-            <MyVerticallyCenteredModal
-                show={modalShow}
-                onHide={() => setModalShow(false)}
-            />
         </>
     );
 };

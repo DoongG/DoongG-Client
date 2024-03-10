@@ -140,6 +140,7 @@ const Header = () => {
                         marginLeft: '20px',
                         // marginTop: '10px',
                     }}
+                    alt="logo"
                 />
             </_Logo>
             <_Menu>
