@@ -125,7 +125,7 @@ const RoomReviewWrite: React.FC<Props> = ({ address, mylat, mylng }) => {
 const _reviewComponent = styled.div<CssProps>`
     background-color: white;
     width: 20%;
-    ${(props) => props.isButtonHovered && `opacity: 0.5;`}
+    opacity: ${(props) => props.isButtonHovered && `0.5;`};
     @media (max-width: 991px) {
         width: 25%;
     }

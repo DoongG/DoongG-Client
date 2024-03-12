@@ -158,23 +158,27 @@ interface ReviewDateStore {
     mylng: number;
     map: any;
     marker: any;
+    centerLevel: number;
     setAddress: (state: string) => void;
     setMylat: (state: number) => void;
     setMylng: (state: number) => void;
     setMap: (state: any) => void;
     setMarker: (state: any) => void;
+    setCenterLevel: (state: number) => void;
 }
 const useReviewDateStore = create<ReviewDateStore>((set) => ({
     address: '',
-    mylat: 0,
-    mylng: 0,
+    mylat: 33.450701,
+    mylng: 126.570667,
     map: undefined,
     marker: undefined,
+    centerLevel: 4,
     setAddress: (state) => set({ address: state }),
     setMylat: (state) => set({ mylat: state }),
     setMylng: (state) => set({ mylng: state }),
     setMap: (state) => set({ map: state }),
     setMarker: (state) => set({ marker: state }),
+    setCenterLevel: (state) => set({ centerLevel: state }),
 }));
 
 export { useReviewDateStore };

@@ -23,8 +23,10 @@ const initMarker = async (
             if (curMarker) {
                 curMarker.setMap(null);
             }
+
             // 클릭한 위도, 경도 정보를 가져옵니다
             let latlng = mouseEvent.latLng;
+
             // 마커 위치를 클릭한 위치로 이동
             marker.setPosition(latlng);
             marker.setMap(map);
