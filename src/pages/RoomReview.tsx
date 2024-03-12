@@ -8,7 +8,8 @@ import {
 } from '../store/shoppingHeaderSelectBarStore';
 import { RoomReviewWriteMap } from '../components/RoomReview-section/RoomReviewWriteMap';
 import { RoomReviewWatchMap } from '../components/RoomReview-section/RoomReviewWatchMap';
-import NewMap from 'components/RoomReview-section/NewMap';
+import Map_watch from 'components/RoomReview-section/Map_watch';
+import Map_write from 'components/RoomReview-section/Map_write';
 
 const { kakao } = window;
 
@@ -24,18 +25,7 @@ const RoomreView = () => {
     return (
         <>
             <_WrapperBox className="wrapperBox">
-                <NewMap />
-                <RoomReviewWrite
-                    address={address}
-                    mylat={mylat}
-                    mylng={mylng}
-                />
-                {/* {button === true ? (
-                    <RoomReviewWriteMap />
-                ) : (
-                    <RoomReviewWatchMap />
-                )}
-
+                {button === true ? <Map_write /> : <Map_watch />}
                 {button === true ? (
                     <RoomReviewWrite
                         address={address}
@@ -44,7 +34,7 @@ const RoomreView = () => {
                     />
                 ) : (
                     <RoomReviewWatch />
-                )} */}
+                )}
             </_WrapperBox>
         </>
     );

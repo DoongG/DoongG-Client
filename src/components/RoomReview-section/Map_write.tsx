@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-pascal-case */
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
     useButtonStore,
     useReviewDateStore,
@@ -9,12 +9,14 @@ import { FaLocationCrosshairs } from 'react-icons/fa6';
 import { IoIosSearch } from 'react-icons/io';
 import DaumPostcode from 'react-daum-postcode';
 import useMap from 'hooks/useMap';
+import mapMascot from 'assets/mapMascot4.png';
+import { initMarker } from './common/initMarker';
 
 interface Props {
     button: boolean;
 }
 
-export default function NewMap() {
+export default function Map_write() {
     // 클릭한 곳의 내용
     const {
         address,
@@ -29,19 +31,15 @@ export default function NewMap() {
         setMarker,
     } = useReviewDateStore();
     const { button, setButton } = useButtonStore();
-    // 주소 찾는 모달 상태
-    const [openPostModal, setOpenPostModal] = useState(false);
-    // 주소 입력 모달 상태 state
-    const [daumAddress, setDaumAddress] = useState('');
+    const [openPostModal, setOpenPostModal] = useState(false); // 주소 찾는 모달 상태
+    const [daumAddress, setDaumAddress] = useState(''); // 주소 입력 모달 상태 state
     const newMap = useRef(null);
-    const { placeCurLocation, placeSearchLocation } = useMap(newMap);
-    const handleChangeReview = (write: string) => {
-        if (write === '리뷰쓰기') {
-            setButton(true);
-        } else {
-            setButton(false);
-        }
-    };
+    const {
+        placeCurLocation,
+        placeSearchLocation,
+        displayInitMarker,
+        getCenterLatLng,
+    } = useMap(newMap); // 지도 관련 훅
 
     // 주소 입력 후 위치 이동
     const onCompletePost = async (data: any) => {
@@ -49,6 +47,13 @@ export default function NewMap() {
         setDaumAddress(data.address);
         setOpenPostModal(false);
     };
+    useEffect(() => {
+        displayInitMarker();
+    }, [marker]);
+
+    useEffect(() => {
+        getCenterLatLng();
+    }, [map]);
 
     return (
         <>
@@ -57,7 +62,7 @@ export default function NewMap() {
                     <_buttonWrite
                         button={button}
                         onClick={() => {
-                            handleChangeReview('리뷰쓰기');
+                            setButton(true);
                         }}
                     >
                         리뷰 달기
@@ -65,7 +70,7 @@ export default function NewMap() {
                     <_buttonSee
                         button={button}
                         onClick={() => {
-                            handleChangeReview('리뷰보기');
+                            setButton(false);
                         }}
                     >
                         전체 리뷰 보기
