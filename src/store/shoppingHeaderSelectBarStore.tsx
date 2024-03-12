@@ -189,20 +189,24 @@ interface MarkerOnOff {
     clickedAddress: string;
     clickedDate: string;
     clickedContent: string;
+    clickedId: number;
     setMarkerOnOff: (state: boolean) => void;
     setClickedAddress: (state: string) => void;
     setClickedDate: (state: string) => void;
     setClickedContent: (state: string) => void;
+    setClickedId: (state: number) => void;
 }
 const useMarkerOnOff = create<MarkerOnOff>((set) => ({
     markerOnOff: false,
     clickedAddress: '',
     clickedDate: '',
     clickedContent: '',
+    clickedId: 0,
     setMarkerOnOff: (state) => set({ markerOnOff: state }),
     setClickedAddress: (state) => set({ clickedAddress: state }),
     setClickedDate: (state) => set({ clickedDate: state }),
     setClickedContent: (state) => set({ clickedContent: state }),
+    setClickedId: (state) => set({ clickedId: state }),
 }));
 export { useMarkerOnOff };
 

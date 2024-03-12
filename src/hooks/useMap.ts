@@ -4,10 +4,12 @@ import { curLocation } from 'components/RoomReview-section/common/curLocation';
 import { RefObject, useEffect, useState } from 'react';
 import {
     useButtonStore,
+    useMarkerOnOff,
     useReviewDateStore,
 } from 'store/shoppingHeaderSelectBarStore';
 import mapMascot from 'assets/mapMascot4.png';
 import { searchAddress } from 'components/RoomReview-section/common/searchAddress';
+import { viewAllMarkers } from 'components/RoomReview-section/common/viewAllMarkers';
 
 export default function useMap(containerRef: RefObject<HTMLElement>) {
     const {
@@ -25,6 +27,13 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
         setCenterLevel,
     } = useReviewDateStore();
     const { button, setButton } = useButtonStore();
+    const {
+        setClickedId,
+        setClickedAddress,
+        setClickedDate,
+        setClickedContent,
+        setMarkerOnOff,
+    } = useMarkerOnOff();
 
     // 클릭한 곳 마커 생성 및 주소 반환
     const displayInitMarker = async () => {
@@ -71,7 +80,19 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
     };
 
     // 모든 리뷰 보기
-    const viewAllReviews = async () => {};
+    const viewAllReviews = async (markers: any) => {
+        if (map && markers) {
+            let [address, date, id, content, isMelon] = await viewAllMarkers(
+                map,
+                markers,
+            );
+            setClickedAddress(address);
+            setClickedDate(date);
+            setClickedId(id);
+            setClickedContent(content);
+            setMarkerOnOff(isMelon);
+        }
+    };
 
     // 검색한 주소로 이동 함수
     const placeSearchLocation = async (data: any) => {
@@ -121,5 +142,6 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
         placeSearchLocation,
         displayInitMarker,
         getCenterLatLng,
+        viewAllReviews,
     };
 }

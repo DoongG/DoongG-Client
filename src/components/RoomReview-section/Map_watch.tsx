@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
     useButtonStore,
+    useMarkerOnOff,
     useReviewDateStore,
 } from 'store/shoppingHeaderSelectBarStore';
 import styled from 'styled-components';
@@ -11,6 +12,7 @@ import DaumPostcode from 'react-daum-postcode';
 import useMap from 'hooks/useMap';
 import mapMascot from 'assets/mapMascot4.png';
 import { initMarker } from './common/initMarker';
+import axios from 'axios';
 
 interface Props {
     button: boolean;
@@ -34,8 +36,25 @@ export default function Map_watch() {
     const [openPostModal, setOpenPostModal] = useState(false); // 주소 찾는 모달 상태
     const [daumAddress, setDaumAddress] = useState(''); // 주소 입력 모달 상태 state
     const newMap = useRef(null);
-    const { placeCurLocation, placeSearchLocation, getCenterLatLng } =
-        useMap(newMap); // 지도 관련 훅
+    const {
+        placeCurLocation,
+        placeSearchLocation,
+        getCenterLatLng,
+        viewAllReviews,
+    } = useMap(newMap); // 지도 관련 훅
+    // 모든 마커
+    const [markers, setMarkers] = useState<any>();
+    const {
+        clickedAddress,
+        clickedContent,
+        clickedId,
+        clickedDate,
+        markerOnOff,
+        setClickedAddress,
+        setClickedDate,
+        setClickedContent,
+        setMarkerOnOff,
+    } = useMarkerOnOff();
 
     // 주소 입력 후 위치 이동
     const onCompletePost = async (data: any) => {
@@ -43,12 +62,31 @@ export default function Map_watch() {
         setDaumAddress(data.address);
         setOpenPostModal(false);
     };
+
+    // 마커가 있을 경우 마커 삭제
     if (marker) {
         marker.setMap(null);
     }
+
+    // 지도의 중심 좌표 움직임을 관측
     useEffect(() => {
         getCenterLatLng();
     }, [map]);
+
+    //DB의 모든 좌표 가져오기
+    useEffect(() => {
+        // 지정된 ID를 가진 유저에 대한 요청
+        axios
+            .get(`${process.env.REACT_APP_API_KEY}/roomRivew/getAll`)
+            .then(function (response) {
+                // 성공 핸들링
+                setMarkers(response.data);
+                viewAllReviews(response.data);
+            })
+            .catch(function (error) {
+                // 에러 핸들링
+            });
+    }, [map, clickedId]);
 
     return (
         <>
