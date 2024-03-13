@@ -4,6 +4,7 @@ import {
     useButtonStore,
     useMarkerOnOff,
     useReviewDateStore,
+    useVisibleMarker,
 } from 'store/shoppingHeaderSelectBarStore';
 import styled from 'styled-components';
 import { FaLocationCrosshairs } from 'react-icons/fa6';
@@ -20,18 +21,7 @@ interface Props {
 
 export default function Map_watch() {
     // 클릭한 곳의 내용
-    const {
-        address,
-        mylat,
-        mylng,
-        map,
-        marker,
-        setAddress,
-        setMylat,
-        setMylng,
-        setMap,
-        setMarker,
-    } = useReviewDateStore();
+    const { map, marker } = useReviewDateStore();
     const { button, setButton } = useButtonStore();
     const [openPostModal, setOpenPostModal] = useState(false); // 주소 찾는 모달 상태
     const [daumAddress, setDaumAddress] = useState(''); // 주소 입력 모달 상태 state
@@ -41,20 +31,12 @@ export default function Map_watch() {
         placeSearchLocation,
         getCenterLatLng,
         viewAllReviews,
+        viewReviewInMap,
     } = useMap(newMap); // 지도 관련 훅
     // 모든 마커
     const [markers, setMarkers] = useState<any>();
-    const {
-        clickedAddress,
-        clickedContent,
-        clickedId,
-        clickedDate,
-        markerOnOff,
-        setClickedAddress,
-        setClickedDate,
-        setClickedContent,
-        setMarkerOnOff,
-    } = useMarkerOnOff();
+    const { clickedId } = useMarkerOnOff();
+    const { visibleMarker, setVisibleMarker } = useVisibleMarker();
 
     // 주소 입력 후 위치 이동
     const onCompletePost = async (data: any) => {
@@ -82,6 +64,8 @@ export default function Map_watch() {
                 // 성공 핸들링
                 setMarkers(response.data);
                 viewAllReviews(response.data);
+                // console.log(response.data);
+                viewReviewInMap(response.data);
             })
             .catch(function (error) {
                 // 에러 핸들링

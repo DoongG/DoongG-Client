@@ -6,10 +6,12 @@ import {
     useButtonStore,
     useMarkerOnOff,
     useReviewDateStore,
+    useVisibleMarker,
 } from 'store/shoppingHeaderSelectBarStore';
 import mapMascot from 'assets/mapMascot4.png';
 import { searchAddress } from 'components/RoomReview-section/common/searchAddress';
 import { viewAllMarkers } from 'components/RoomReview-section/common/viewAllMarkers';
+import { clusterer } from 'components/RoomReview-section/common/clusterer';
 
 export default function useMap(containerRef: RefObject<HTMLElement>) {
     const {
@@ -34,6 +36,8 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
         setClickedContent,
         setMarkerOnOff,
     } = useMarkerOnOff();
+    // 지도에 보이는 마커
+    const { visibleMarker, setVisibleMarker } = useVisibleMarker();
 
     // 클릭한 곳 마커 생성 및 주소 반환
     const displayInitMarker = async () => {
@@ -79,18 +83,67 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
         }
     };
 
-    // 모든 리뷰 보기
+    // 모든 리뷰 보기 && 클릭한 마커의 리뷰 보기
     const viewAllReviews = async (markers: any) => {
         if (map && markers) {
-            let [address, date, id, content, isMelon] = await viewAllMarkers(
+            let [address, date, id, content, isClicked] = await viewAllMarkers(
                 map,
                 markers,
             );
+            // 마커 고유값 설정
             setClickedAddress(address);
             setClickedDate(date);
             setClickedId(id);
             setClickedContent(content);
-            setMarkerOnOff(isMelon);
+            setMarkerOnOff(isClicked);
+        }
+    };
+
+    // 지도 영역 마커만 출력
+    const viewReviewInMap = async (markers: any) => {
+        if (map && markers) {
+            // 컴포넌트가 열렸을 때 현재위치의 방 리뷰들을 볼 수 있는 코드
+            // 지도 영역정보를 얻어옵니다
+            let bounds = map.getBounds();
+            // 영역정보의 남서쪽 정보를 얻어옵니다
+            let sw = bounds.getSouthWest();
+            // 영역정보의 북동쪽 정보를 얻어옵니다
+            let ne = bounds.getNorthEast();
+            // 지도영역 마커만 filter
+            const selectedMarker = markers.filter((item: any) => {
+                // 현재 지도 영역의 남서쪽, 북동쪽 좌표
+                let lb = new window.kakao.maps.LatLngBounds(sw, ne);
+                let l1 = new window.kakao.maps.LatLng(
+                    item.latitude,
+                    item.longitude,
+                );
+                // true -> 출력O
+                // false -> 출력X
+                return lb.contain(l1);
+            });
+            setVisibleMarker(selectedMarker);
+            window.kakao.maps.event.addListener(
+                map,
+                'bounds_changed',
+                function () {
+                    let bounds = map.getBounds();
+                    let sw = bounds.getSouthWest();
+                    let ne = bounds.getNorthEast();
+                    // 지도영역 마커만 filter
+                    if (markers) {
+                        const selectedMarker = markers.filter((item: any) => {
+                            // 현재 지도 영역의 남서쪽, 북동쪽 좌표
+                            let lb = new window.kakao.maps.LatLngBounds(sw, ne);
+                            let l1 = new window.kakao.maps.LatLng(
+                                item.latitude,
+                                item.longitude,
+                            );
+                            return lb.contain(l1); // true -> 출력, false -> 출력X
+                        });
+                        setVisibleMarker(selectedMarker);
+                    }
+                },
+            );
         }
     };
 
@@ -143,5 +196,6 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
         displayInitMarker,
         getCenterLatLng,
         viewAllReviews,
+        viewReviewInMap,
     };
 }
