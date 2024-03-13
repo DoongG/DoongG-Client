@@ -64,7 +64,6 @@ export default function Map_watch() {
                 // 성공 핸들링
                 setMarkers(response.data);
                 viewAllReviews(response.data);
-                // console.log(response.data);
                 viewReviewInMap(response.data);
             })
             .catch(function (error) {

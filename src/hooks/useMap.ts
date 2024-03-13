@@ -11,7 +11,6 @@ import {
 import mapMascot from 'assets/mapMascot4.png';
 import { searchAddress } from 'components/RoomReview-section/common/searchAddress';
 import { viewAllMarkers } from 'components/RoomReview-section/common/viewAllMarkers';
-import { clusterer } from 'components/RoomReview-section/common/clusterer';
 
 export default function useMap(containerRef: RefObject<HTMLElement>) {
     const {

@@ -1,5 +1,11 @@
 const viewAllMarkers = async (map: any, markers: any) => {
     return new Promise<[string, string, number, string, boolean]>((resolve) => {
+        const clusterer = new window.kakao.maps.MarkerClusterer({
+            map: map,
+            averageCenter: true,
+            minLevel: 1,
+        });
+        let viewMarker: any[] = [];
         const markerList = markers.map(async (item: any) => {
             // 마커 이미지 속성
             let imageSize = new window.kakao.maps.Size(24, 35);
@@ -19,6 +25,7 @@ const viewAllMarkers = async (map: any, markers: any) => {
                 title: item.content,
                 image: markerImage,
             });
+            viewMarker.push(marker);
             // 마커 고유값 설정
             marker.address = item.address;
             marker.createdAt = item.createdAt;
@@ -35,6 +42,10 @@ const viewAllMarkers = async (map: any, markers: any) => {
                     true,
                 ]);
             });
+        });
+        // 모든 마커 생성이 완료된 후에 클러스터러에 마커들을 추가
+        Promise.all(markerList).then(() => {
+            clusterer.addMarkers(viewMarker);
         });
     });
 };
