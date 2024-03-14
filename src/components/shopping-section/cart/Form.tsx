@@ -2,8 +2,32 @@
 import styled from 'styled-components';
 import CartItemBox from './CartItemBox';
 import PaymentBox from './PaymentBox';
+import { useEffect } from 'react';
+import axios from 'axios';
+import useFetchToken from 'hooks/useFetchToken';
 
 export default function Form() {
+    const token = useFetchToken();
+    useEffect(() => {
+        const getItem = async () => {
+            try {
+                const res = await axios.get(
+                    `${process.env.REACT_APP_API_KEY}/userAuth/getCart`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    },
+                );
+                console.log(res);
+            } catch (error) {
+                console.log('errer', error);
+            }
+        };
+        if (token) {
+            getItem();
+        }
+    }, [token]);
     return (
         <>
             <_form name="cart_form">
