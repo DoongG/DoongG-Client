@@ -4,15 +4,13 @@ import {
     useButtonStore,
     useMarkerOnOff,
     useReviewDateStore,
-    useVisibleMarker,
 } from 'store/shoppingHeaderSelectBarStore';
 import styled from 'styled-components';
 import { FaLocationCrosshairs } from 'react-icons/fa6';
 import { IoIosSearch } from 'react-icons/io';
 import DaumPostcode from 'react-daum-postcode';
 import useMap from 'hooks/useMap';
-import mapMascot from 'assets/mapMascot4.png';
-import { initMarker } from './common/initMarker';
+
 import axios from 'axios';
 
 interface Props {
@@ -36,7 +34,6 @@ export default function Map_watch() {
     // 모든 마커
     const [markers, setMarkers] = useState<any>();
     const { clickedId } = useMarkerOnOff();
-    const { visibleMarker, setVisibleMarker } = useVisibleMarker();
 
     // 주소 입력 후 위치 이동
     const onCompletePost = async (data: any) => {

@@ -1,9 +1,8 @@
 import { coordToAddress } from 'components/RoomReview-section/common/coordToAddress';
 import { initMarker } from 'components/RoomReview-section/common/initMarker';
 import { curLocation } from 'components/RoomReview-section/common/curLocation';
-import { RefObject, useEffect, useState } from 'react';
+import { RefObject, useEffect } from 'react';
 import {
-    useButtonStore,
     useMarkerOnOff,
     useReviewDateStore,
     useVisibleMarker,
@@ -11,10 +10,10 @@ import {
 import mapMascot from 'assets/mapMascot4.png';
 import { searchAddress } from 'components/RoomReview-section/common/searchAddress';
 import { viewAllMarkers } from 'components/RoomReview-section/common/viewAllMarkers';
+import { RoomReviews_t } from 'types/shoppingDetail';
 
 export default function useMap(containerRef: RefObject<HTMLElement>) {
     const {
-        address,
         mylat,
         mylng,
         map,
@@ -27,7 +26,6 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
         setMarker,
         setCenterLevel,
     } = useReviewDateStore();
-    const { button, setButton } = useButtonStore();
     const {
         setClickedId,
         setClickedAddress,
@@ -36,7 +34,7 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
         setMarkerOnOff,
     } = useMarkerOnOff();
     // 지도에 보이는 마커
-    const { visibleMarker, setVisibleMarker } = useVisibleMarker();
+    const { setVisibleMarker } = useVisibleMarker();
 
     // 클릭한 곳 마커 생성 및 주소 반환
     const displayInitMarker = async () => {
@@ -75,15 +73,15 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
     // 현위치로 이동 함수
     const placeCurLocation = async () => {
         if (map) {
-            marker.setMap(null);
+            marker.setMap(null); // 남아있는 마커 지우기
             const [lat, lng] = await curLocation(map);
             const addr = await coordToAddress(lat, lng); // 좌표 - 주소 변환
             setAddress(addr);
         }
     };
 
-    // 모든 리뷰 보기 && 클릭한 마커의 리뷰 보기
-    const viewAllReviews = async (markers: any) => {
+    // 모든 리뷰 보기 && 클릭한 마커의 리뷰 보기 && 클러스터러 기능
+    const viewAllReviews = async (markers: RoomReviews_t[]) => {
         if (map && markers) {
             let [address, date, id, content, isClicked] = await viewAllMarkers(
                 map,
@@ -99,7 +97,7 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
     };
 
     // 지도 영역 마커만 출력
-    const viewReviewInMap = async (markers: any) => {
+    const viewReviewInMap = async (markers: RoomReviews_t[]) => {
         if (map && markers) {
             // 컴포넌트가 열렸을 때 현재위치의 방 리뷰들을 볼 수 있는 코드
             // 지도 영역정보를 얻어옵니다
@@ -109,7 +107,7 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
             // 영역정보의 북동쪽 정보를 얻어옵니다
             let ne = bounds.getNorthEast();
             // 지도영역 마커만 filter
-            const selectedMarker = markers.filter((item: any) => {
+            const selectedMarker = markers.filter((item: RoomReviews_t) => {
                 // 현재 지도 영역의 남서쪽, 북동쪽 좌표
                 let lb = new window.kakao.maps.LatLngBounds(sw, ne);
                 let l1 = new window.kakao.maps.LatLng(
@@ -130,15 +128,20 @@ export default function useMap(containerRef: RefObject<HTMLElement>) {
                     let ne = bounds.getNorthEast();
                     // 지도영역 마커만 filter
                     if (markers) {
-                        const selectedMarker = markers.filter((item: any) => {
-                            // 현재 지도 영역의 남서쪽, 북동쪽 좌표
-                            let lb = new window.kakao.maps.LatLngBounds(sw, ne);
-                            let l1 = new window.kakao.maps.LatLng(
-                                item.latitude,
-                                item.longitude,
-                            );
-                            return lb.contain(l1); // true -> 출력, false -> 출력X
-                        });
+                        const selectedMarker = markers.filter(
+                            (item: RoomReviews_t) => {
+                                // 현재 지도 영역의 남서쪽, 북동쪽 좌표
+                                let lb = new window.kakao.maps.LatLngBounds(
+                                    sw,
+                                    ne,
+                                );
+                                let l1 = new window.kakao.maps.LatLng(
+                                    item.latitude,
+                                    item.longitude,
+                                );
+                                return lb.contain(l1); // true -> 출력, false -> 출력X
+                            },
+                        );
                         setVisibleMarker(selectedMarker);
                     }
                 },

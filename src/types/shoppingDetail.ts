@@ -42,3 +42,12 @@ export type Cart_t = {
     productName: string;
     quantity: number;
 };
+
+export type RoomReviews_t = {
+    address: string;
+    content: string;
+    createdAt: string;
+    latitude: string;
+    longitude: string;
+    reviewId: number;
+};

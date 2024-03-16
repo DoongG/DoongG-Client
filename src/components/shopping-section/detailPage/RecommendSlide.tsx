@@ -29,7 +29,7 @@ export default function RecommendSlide(props: Props) {
             }
         };
         getData();
-    }, [token]);
+    }, []);
     return (
         <>
             <_recommend className="recommend">

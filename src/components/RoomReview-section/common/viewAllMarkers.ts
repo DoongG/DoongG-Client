@@ -1,12 +1,14 @@
-const viewAllMarkers = async (map: any, markers: any) => {
+import { RoomReviews_t } from 'types/shoppingDetail';
+
+const viewAllMarkers = async (map: any, markers: RoomReviews_t[]) => {
     return new Promise<[string, string, number, string, boolean]>((resolve) => {
         const clusterer = new window.kakao.maps.MarkerClusterer({
             map: map,
             averageCenter: true,
             minLevel: 1,
         });
-        let viewMarker: any[] = [];
-        const markerList = markers.map(async (item: any) => {
+        let viewMarker: RoomReviews_t[] = [];
+        const markerList = markers.map(async (item: RoomReviews_t) => {
             // 마커 이미지 속성
             let imageSize = new window.kakao.maps.Size(24, 35);
             let imageSrc =
