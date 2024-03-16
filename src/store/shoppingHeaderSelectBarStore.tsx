@@ -1,4 +1,4 @@
-import { Review_t } from 'types/shoppingDetail';
+import { Review_t, RoomReviews_t } from 'types/shoppingDetail';
 import { create } from 'zustand';
 
 // 스토어의 상태를 나타내는 인터페이스 정의
@@ -213,11 +213,11 @@ export { useMarkerOnOff };
 //___________________________________________________________________________________________________________
 // 지도 영역에 보이는 마커
 interface VisibleMarker {
-    visibleMarker: [];
-    setVisibleMarker: (state: []) => void;
+    visibleMarker: RoomReviews_t[] | undefined;
+    setVisibleMarker: (state: RoomReviews_t[] | undefined) => void;
 }
 const useVisibleMarker = create<VisibleMarker>((set) => ({
-    visibleMarker: [],
+    visibleMarker: undefined,
     setVisibleMarker: (state) => set({ visibleMarker: state }),
 }));
 export { useVisibleMarker };

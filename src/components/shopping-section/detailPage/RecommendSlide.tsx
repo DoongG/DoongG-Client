@@ -3,9 +3,11 @@ import styled from 'styled-components';
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';
 // Import Swiper styles
 import 'swiper/css';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GoArrowRight } from 'react-icons/go';
 import { GoArrowLeft } from 'react-icons/go';
+import axios from 'axios';
+import useFetchToken from 'hooks/useFetchToken';
 type Props = {
     category: string;
 };
@@ -14,6 +16,20 @@ export default function RecommendSlide(props: Props) {
     const { category } = props;
     const swiperRef = useRef<SwiperRef>(null);
     const [page, setPage] = useState(1);
+    const token = useFetchToken();
+    useEffect(() => {
+        const getData = async () => {
+            try {
+                const res = await axios.get(
+                    `${process.env.REACT_APP_API_KEY}/shop/recommended`,
+                );
+                console.log(res);
+            } catch (error) {
+                console.log('error', error);
+            }
+        };
+        getData();
+    }, []);
     return (
         <>
             <_recommend className="recommend">

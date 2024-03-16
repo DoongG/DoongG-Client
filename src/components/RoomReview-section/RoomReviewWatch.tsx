@@ -8,18 +8,11 @@ import {
     useMarkerOnOff,
     useVisibleMarker,
 } from '../../store/shoppingHeaderSelectBarStore';
+import { RoomReviews_t } from 'types/shoppingDetail';
 interface Props {
     marker: boolean;
     markerOnOff: boolean;
     clickedReviewHeight: number;
-}
-interface VisibleMarker {
-    address: string;
-    content: string;
-    createdAt: string;
-    id: number;
-    latitude: string | number;
-    longitude: string | number;
 }
 
 const RoomReviewWatch = () => {
@@ -94,10 +87,10 @@ const RoomReviewWatch = () => {
                     <_watch className="watch">근처 자취방</_watch>
                     {visibleMarker ? (
                         visibleMarker
-                            .filter((item: VisibleMarker) => {
+                            .filter((item: RoomReviews_t) => {
                                 return item.address !== clickedAddress;
                             })
-                            .map((item: VisibleMarker) => {
+                            .map((item: RoomReviews_t) => {
                                 return (
                                     <>
                                         <_reviewBoxWrapper className="reviewBoxWrapper">
